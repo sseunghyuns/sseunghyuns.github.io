@@ -1,0 +1,2324 @@
+
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/assets/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/assets/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Deep Learning,Classification,Computer Vision,CNN,Tensorflow," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="대회 소개 운전 중인 운전자의 이미지로 운전자의 행동 분류하는 대회">
+<meta name="keywords" content="Deep Learning, Classification, Computer Vision, CNN, Tensorflow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="State Farm Distracted Driver Detection(Classification)">
+<meta property="og:url" content="http://localhost:4000/classification/2021/01/14/statefarm/">
+<meta property="og:site_name" content="Seung Hyun's Blog">
+<meta property="og:description" content="대회 소개 운전 중인 운전자의 이미지로 운전자의 행동 분류하는 대회">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="/assets/img/notebook/statefarm/state-farm-distracted-driver-detection_9_0.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="State Farm Distracted Driver Detection(Classification)">
+<meta name="twitter:description" content="대회 소개 운전 중인 운전자의 이미지로 운전자의 행동 분류하는 대회">
+<meta name="twitter:image" content="/assets/img/notebook/statefarm/state-farm-distracted-driver-detection_9_0.png">
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '작성자'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://localhost:4000/"/>
+
+
+
+
+
+  <title>State Farm Distracted Driver Detection(Classification) | Seung Hyun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="ko">
+
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Seung Hyun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            홈
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            카테고리
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            아카이브
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            태그
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            검색
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="" spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+<div id="posts" class="posts-expand">
+  
+  
+
+  
+
+  
+  
+  
+
+  <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/classification/2021/01/14/statefarm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Seung Hyun Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/assets/images/profile.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Seung Hyun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+          
+          
+            State Farm Distracted Driver Detection(Classification)
+          
+        </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">작성일</span>
+              
+              <time title="" itemprop="dateCreated datePublished" datetime="2021-01-14T22:15:00+09:00">
+                2021-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/Classification" itemprop="url" rel="index">
+                    <span itemprop="name">Classification</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <h1 id="대회-소개"><font color="darkblue">대회 소개</font></h1>
+<p><strong>운전 중인 운전자의 이미지로 운전자의 행동 분류하는 대회</strong></p>
+
+<h3 id="state-farm-distracted-driver-detection">State Farm Distracted Driver Detection</h3>
+<p><strong>Can computer vision spot distracted drivers?</strong><br />
+<a href="https://www.kaggle.com/c/state-farm-distracted-driver-detection/overview">https://www.kaggle.com/c/state-farm-distracted-driver-detection/overview</a></p>
+
+<hr />
+
+<p><strong><em>Description</em></strong></p>
+
+<p>We’ve all been there: a light turns green and the car in front of you doesn’t budge. Or, a previously unremarkable vehicle suddenly slows and starts swerving from side-to-side.</p>
+
+<p>When you pass the offending driver, what do you expect to see? You certainly aren’t surprised when you spot a driver who is texting, seemingly enraptured by social media, or in a lively hand-held conversation on their phone.</p>
+
+<p>According to the CDC motor vehicle safety division, one in five car accidents is caused by a distracted driver. Sadly, this translates to 425,000 people injured and 3,000 people killed by distracted driving every year.</p>
+
+<p>State Farm hopes to improve these alarming statistics, and better insure their customers, by testing whether dashboard cameras can automatically detect drivers engaging in distracted behaviors. Given a dataset of 2D dashboard camera images, State Farm is challenging Kagglers to classify each driver’s behavior. Are they driving attentively, wearing their seatbelt, or taking a selfie with their friends in the backseat?</p>
+
+<hr />
+
+<p><strong><em>What to do</em></strong></p>
+
+<p>The 10 classes to predict are:</p>
+
+<p>c0: normal driving<br />
+c1: texting - right<br />
+c2: talking on the phone - right<br />
+c3: texting - left<br />
+c4: talking on the phone - left<br />
+c5: operating the radio<br />
+c6: drinking<br />
+c7: reaching behind<br />
+c8: hair and makeup<br />
+c9: talking to passenger</p>
+
+<hr />
+<p><br /></p>
+
+<h2 id="import-library"><font color="blue">Import Library</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> <span class="c"># linear algebra</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span> <span class="c"># data processing, CSV file I/O (e.g. pd.read_csv)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.applications</span> <span class="kn">import</span> <span class="n">EfficientNetB1</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">ImageDataGenerator</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.callbacks</span> <span class="kn">import</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ReduceLROnPlateau</span> 
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">StratifiedKFold</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_colwidth</span> <span class="o">=</span><span class="mi">999</span>
+</code></pre></td></tr></tbody></table></div></div>
+<hr />
+<p><br /></p>
+
+<h2 id="이미지-리스트-불러오기"><font color="blue">이미지 리스트 불러오기</font></h2>
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">total</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'/kaggle/input/state-farm-distracted-driver-detection/driver_imgs_list.csv'</span><span class="p">)</span>
+<span class="n">total</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>subject</th>
+      <th>classname</th>
+      <th>img</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>p002</td>
+      <td>c0</td>
+      <td>img_44733.jpg</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>p002</td>
+      <td>c0</td>
+      <td>img_72999.jpg</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>p002</td>
+      <td>c0</td>
+      <td>img_25094.jpg</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>p002</td>
+      <td>c0</td>
+      <td>img_69092.jpg</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>p002</td>
+      <td>c0</td>
+      <td>img_92629.jpg</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>22419</th>
+      <td>p081</td>
+      <td>c9</td>
+      <td>img_56936.jpg</td>
+    </tr>
+    <tr>
+      <th>22420</th>
+      <td>p081</td>
+      <td>c9</td>
+      <td>img_46218.jpg</td>
+    </tr>
+    <tr>
+      <th>22421</th>
+      <td>p081</td>
+      <td>c9</td>
+      <td>img_25946.jpg</td>
+    </tr>
+    <tr>
+      <th>22422</th>
+      <td>p081</td>
+      <td>c9</td>
+      <td>img_67850.jpg</td>
+    </tr>
+    <tr>
+      <th>22423</th>
+      <td>p081</td>
+      <td>c9</td>
+      <td>img_9684.jpg</td>
+    </tr>
+  </tbody>
+</table>
+<p>22424 rows × 3 columns</p>
+</div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="train-dataset-만들기"><font color="blue">Train Dataset 만들기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">train</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">'../input/state-farm-distracted-driver-detection/imgs/train/*/*'</span><span class="p">)</span>
+<span class="n">train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">'path'</span> <span class="p">:</span> <span class="n">train</span><span class="p">})</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s">'img'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_df</span><span class="p">[</span><span class="s">'path'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s">'classname'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_df</span><span class="p">[</span><span class="s">'path'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">train_df</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>path</th>
+      <th>img</th>
+      <th>classname</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c5/img_68208.jpg</td>
+      <td>img_68208.jpg</td>
+      <td>c5</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c5/img_77583.jpg</td>
+      <td>img_77583.jpg</td>
+      <td>c5</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c5/img_49189.jpg</td>
+      <td>img_49189.jpg</td>
+      <td>c5</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c5/img_6690.jpg</td>
+      <td>img_6690.jpg</td>
+      <td>c5</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c5/img_95740.jpg</td>
+      <td>img_95740.jpg</td>
+      <td>c5</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>22419</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c0/img_6087.jpg</td>
+      <td>img_6087.jpg</td>
+      <td>c0</td>
+    </tr>
+    <tr>
+      <th>22420</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c0/img_36959.jpg</td>
+      <td>img_36959.jpg</td>
+      <td>c0</td>
+    </tr>
+    <tr>
+      <th>22421</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c0/img_19429.jpg</td>
+      <td>img_19429.jpg</td>
+      <td>c0</td>
+    </tr>
+    <tr>
+      <th>22422</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c0/img_99342.jpg</td>
+      <td>img_99342.jpg</td>
+      <td>c0</td>
+    </tr>
+    <tr>
+      <th>22423</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/train/c0/img_48589.jpg</td>
+      <td>img_48589.jpg</td>
+      <td>c0</td>
+    </tr>
+  </tbody>
+</table>
+<p>22424 rows × 3 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_df</span><span class="p">[</span><span class="s">'classname'</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="c"># 클래스 개수</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>10
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="데이터-확인"><font color="blue">데이터 확인</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/statefarm/state-farm-distracted-driver-detection_9_0.png" alt="png" /></p>
+
+<hr />
+<p><br /></p>
+
+<h3 id="test-dataset-만들기"><font color="blue">Test Dataset 만들기</font></h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="n">test</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">'../input/state-farm-distracted-driver-detection/imgs/test/*'</span><span class="p">)</span>
+<span class="n">test_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">'path'</span> <span class="p">:</span> <span class="n">test</span><span class="p">})</span>
+<span class="n">test_df</span><span class="p">[</span><span class="s">'img'</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="s">'path'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">test_df</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>path</th>
+      <th>img</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_96590.jpg</td>
+      <td>img_96590.jpg</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_32366.jpg</td>
+      <td>img_32366.jpg</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_99675.jpg</td>
+      <td>img_99675.jpg</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_85937.jpg</td>
+      <td>img_85937.jpg</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_73903.jpg</td>
+      <td>img_73903.jpg</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>79721</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_109.jpg</td>
+      <td>img_109.jpg</td>
+    </tr>
+    <tr>
+      <th>79722</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_53257.jpg</td>
+      <td>img_53257.jpg</td>
+    </tr>
+    <tr>
+      <th>79723</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_90376.jpg</td>
+      <td>img_90376.jpg</td>
+    </tr>
+    <tr>
+      <th>79724</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_28000.jpg</td>
+      <td>img_28000.jpg</td>
+    </tr>
+    <tr>
+      <th>79725</th>
+      <td>../input/state-farm-distracted-driver-detection/imgs/test/img_93083.jpg</td>
+      <td>img_93083.jpg</td>
+    </tr>
+  </tbody>
+</table>
+<p>79726 rows × 2 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8</pre></td><td class="code"><pre class="highlight"><code><span class="n">idg_test</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span>
+
+<span class="n">test_generator</span> <span class="o">=</span> <span class="n">idg_test</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span><span class="n">test_df</span><span class="p">,</span>
+                                             <span class="n">x_col</span> <span class="o">=</span> <span class="s">'path'</span><span class="p">,</span>
+                                             <span class="n">y_col</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                                             <span class="n">class_mode</span> <span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                             <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                             <span class="n">target_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>Found 79726 validated image filenames.
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="k-fold-cross-validation교차검증으로-모델-학습하기"><font color="blue">K-fold Cross Validation(교차검증)으로 모델 학습하기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">kfold</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<h3 id="모든-데이터셋을-학습시켜-보다-안정적인-모델-성능-뽑아내기"><strong>모든 데이터셋을 학습시켜 보다 안정적인 모델 성능 뽑아내기</strong></h3>
+<ul>
+  <li>이 대회에서 교차검증 없이 모델을 학습하면 특정 <code class="highlighter-rouge">subject</code>(운전자)에 과적합되는 문제가 발생한다.</li>
+  <li>모델이 <code class="highlighter-rouge">classname</code>을 예측할 때 <code class="highlighter-rouge">subject</code>에 크게 영향을 받을 수 있다는 것이다.</li>
+  <li><code class="highlighter-rouge">train_test_split</code>에서 <code class="highlighter-rouge">stratify</code>옵션을 주어 학습을 해도, 데이터의 일부분만을 추출하는 것이기 때문에 Test 데이터의 분포가 Valid 데이터셋의 분포와 다를 수 있다.</li>
+  <li>결국 일정 부분의 학습 데이터를 잃는 것이기에, 전체 데이터셋을 모두 훈련에 사용하고 싶을 때 교차 검증을 진행한다.</li>
+  <li>k-fold Cross Validation 특징
+    <ul>
+      <li>전체 데이터를 훈련 및 평가할 수 있음.</li>
+      <li>앙상블의 효과를 얻을 수 있다. k-fold 학습마다 독립적인 모델을 학습한다라고 생각하면 쉽다.</li>
+      <li>같은 작업을 여러번 반복하는 것이기에 시간은 오래 걸린다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55</pre></td><td class="code"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">index</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">train_index</span><span class="p">,</span> <span class="n">valid_index</span> <span class="ow">in</span> <span class="n">kfold</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">train_df</span><span class="p">[</span><span class="s">'classname'</span><span class="p">]):</span>
+
+    <span class="n">X_train</span> <span class="o">=</span> <span class="n">train_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_index</span><span class="p">]</span>
+    <span class="n">X_val</span> <span class="o">=</span> <span class="n">train_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">valid_index</span><span class="p">]</span>
+        
+    <span class="n">idg_train</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span>
+    <span class="n">idg_val</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span>
+    
+
+    <span class="n">train_generator</span> <span class="o">=</span> <span class="n">idg_train</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> 
+                                                   <span class="n">x_col</span> <span class="o">=</span> <span class="s">'path'</span><span class="p">,</span>
+                                                   <span class="n">y_col</span> <span class="o">=</span> <span class="s">'classname'</span><span class="p">,</span>
+                                                   <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+                                                   <span class="n">target_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+    
+    
+    <span class="n">val_generator</span> <span class="o">=</span> <span class="n">idg_val</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> 
+                                               <span class="n">x_col</span> <span class="o">=</span> <span class="s">'path'</span><span class="p">,</span>
+                                               <span class="n">y_col</span> <span class="o">=</span> <span class="s">'classname'</span><span class="p">,</span>
+                                               <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+                                               <span class="n">target_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+    
+    
+    
+    
+    <span class="n">early_stop</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                              <span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">model_ckpt</span> <span class="o">=</span> <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span> <span class="s">'best.h5'</span><span class="p">,</span>
+                                 <span class="n">monitor</span> <span class="o">=</span> <span class="s">'val_loss'</span><span class="p">,</span>
+                                <span class="n">save_best_only</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                <span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">rl</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">patience</span><span class="o">=</span><span class="mi">4</span><span class="p">,)</span> 
+ 
+
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EfficientNetB1</span><span class="p">(</span><span class="n">include_top</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="s">'imagenet'</span><span class="p">,</span><span class="n">pooling</span> <span class="o">=</span> <span class="s">'avg'</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'softmax'</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">optimizer</span> <span class="o">=</span> <span class="s">'adam'</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="s">'categorical_crossentropy'</span><span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s">'acc'</span><span class="p">])</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_generator</span><span class="p">,</span>
+             <span class="n">validation_data</span> <span class="o">=</span> <span class="n">val_generator</span><span class="p">,</span>
+             <span class="n">epochs</span><span class="o">=</span>  <span class="mi">20</span><span class="p">,</span>
+             <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">early_stop</span><span class="p">,</span> <span class="n">model_ckpt</span><span class="p">,</span> <span class="n">rl</span><span class="p">])</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s">'best.h5'</span><span class="p">)</span>    
+    
+    <span class="n">result</span> <span class="o">+=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_generator</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span> <span class="o">/</span><span class="mi">5</span>
+    <span class="n">index</span> <span class="o">+=</span><span class="mi">1</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'fin : '</span><span class="p">,</span><span class="n">index</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="제출"><font color="blue">제출</font></h2>
+
+<ul>
+  <li>sample_submission.csv 에서 각 이미지의 순서와 result의 이미지 순서가 다르기 때문에 새로 Dataframe을 만드는 것이 편하다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'c0'</span><span class="p">,</span> <span class="s">'c1'</span><span class="p">,</span> <span class="s">'c2'</span><span class="p">,</span> <span class="s">'c3'</span><span class="p">,</span><span class="s">'c4'</span><span class="p">,</span> <span class="s">'c5'</span><span class="p">,</span> <span class="s">'c6'</span><span class="p">,</span> <span class="s">'c7'</span><span class="p">,</span><span class="s">'c8'</span><span class="p">,</span> <span class="s">'c9'</span><span class="p">])</span>
+<span class="n">result_df</span>                                        
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>c0</th>
+      <th>c1</th>
+      <th>c2</th>
+      <th>c3</th>
+      <th>c4</th>
+      <th>c5</th>
+      <th>c6</th>
+      <th>c7</th>
+      <th>c8</th>
+      <th>c9</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4.898581e-03</td>
+      <td>6.054179e-03</td>
+      <td>5.146383e-03</td>
+      <td>5.325366e-04</td>
+      <td>7.062429e-04</td>
+      <td>0.012463</td>
+      <td>0.642532</td>
+      <td>2.142958e-02</td>
+      <td>3.042254e-01</td>
+      <td>0.002012</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4.047657e-08</td>
+      <td>4.258116e-08</td>
+      <td>7.385115e-08</td>
+      <td>7.353977e-08</td>
+      <td>5.030099e-08</td>
+      <td>0.999987</td>
+      <td>0.000007</td>
+      <td>2.678771e-08</td>
+      <td>2.975033e-07</td>
+      <td>0.000006</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4.653947e-01</td>
+      <td>9.502587e-03</td>
+      <td>3.015550e-02</td>
+      <td>7.141132e-03</td>
+      <td>8.581814e-03</td>
+      <td>0.001376</td>
+      <td>0.228859</td>
+      <td>1.078819e-03</td>
+      <td>2.433791e-01</td>
+      <td>0.004531</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>8.255903e-05</td>
+      <td>1.916165e-05</td>
+      <td>1.645608e-05</td>
+      <td>2.139845e-03</td>
+      <td>2.219971e-04</td>
+      <td>0.990963</td>
+      <td>0.000140</td>
+      <td>5.377778e-06</td>
+      <td>3.694886e-05</td>
+      <td>0.006375</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3.502117e-07</td>
+      <td>1.061771e-04</td>
+      <td>4.572770e-05</td>
+      <td>2.403757e-06</td>
+      <td>1.187768e-05</td>
+      <td>0.000053</td>
+      <td>0.000408</td>
+      <td>9.991777e-01</td>
+      <td>1.797632e-04</td>
+      <td>0.000014</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>79721</th>
+      <td>7.563246e-03</td>
+      <td>1.897852e-02</td>
+      <td>2.062093e-01</td>
+      <td>1.308421e-03</td>
+      <td>5.482526e-03</td>
+      <td>0.002233</td>
+      <td>0.118231</td>
+      <td>1.006306e-01</td>
+      <td>5.321654e-01</td>
+      <td>0.007198</td>
+    </tr>
+    <tr>
+      <th>79722</th>
+      <td>2.018641e-03</td>
+      <td>3.363243e-04</td>
+      <td>4.372783e-04</td>
+      <td>4.747344e-01</td>
+      <td>4.001005e-01</td>
+      <td>0.004480</td>
+      <td>0.000733</td>
+      <td>3.581994e-04</td>
+      <td>8.031728e-04</td>
+      <td>0.115998</td>
+    </tr>
+    <tr>
+      <th>79723</th>
+      <td>8.465707e-02</td>
+      <td>5.784687e-01</td>
+      <td>3.608754e-03</td>
+      <td>3.662695e-02</td>
+      <td>1.371328e-02</td>
+      <td>0.011587</td>
+      <td>0.017968</td>
+      <td>7.717087e-02</td>
+      <td>3.644365e-02</td>
+      <td>0.139756</td>
+    </tr>
+    <tr>
+      <th>79724</th>
+      <td>6.226664e-08</td>
+      <td>4.983243e-08</td>
+      <td>7.004503e-09</td>
+      <td>2.172765e-08</td>
+      <td>6.979324e-08</td>
+      <td>0.999966</td>
+      <td>0.000004</td>
+      <td>6.643240e-09</td>
+      <td>2.172691e-06</td>
+      <td>0.000028</td>
+    </tr>
+    <tr>
+      <th>79725</th>
+      <td>5.966864e-02</td>
+      <td>2.801355e-02</td>
+      <td>7.123795e-03</td>
+      <td>6.038536e-04</td>
+      <td>2.516853e-03</td>
+      <td>0.004967</td>
+      <td>0.027987</td>
+      <td>1.176820e-03</td>
+      <td>8.555837e-01</td>
+      <td>0.012359</td>
+    </tr>
+  </tbody>
+</table>
+<p>79726 rows × 10 columns</p>
+</div>
+<hr />
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'../input/state-farm-distracted-driver-detection/sample_submission.csv'</span><span class="p">)</span>
+<span class="n">sub</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>img</th>
+      <th>c0</th>
+      <th>c1</th>
+      <th>c2</th>
+      <th>c3</th>
+      <th>c4</th>
+      <th>c5</th>
+      <th>c6</th>
+      <th>c7</th>
+      <th>c8</th>
+      <th>c9</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>img_1.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>img_10.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>img_100.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>img_1000.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>img_100000.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>79721</th>
+      <td>img_99994.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>79722</th>
+      <td>img_99995.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>79723</th>
+      <td>img_99996.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>79724</th>
+      <td>img_99998.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>79725</th>
+      <td>img_99999.jpg</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+      <td>0.1</td>
+    </tr>
+  </tbody>
+</table>
+<p>79726 rows × 11 columns</p>
+</div>
+<hr />
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">my_sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">test_df</span><span class="p">,</span> <span class="n">result_df</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">'path'</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">my_sub</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>img</th>
+      <th>c0</th>
+      <th>c1</th>
+      <th>c2</th>
+      <th>c3</th>
+      <th>c4</th>
+      <th>c5</th>
+      <th>c6</th>
+      <th>c7</th>
+      <th>c8</th>
+      <th>c9</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>img_96590.jpg</td>
+      <td>4.898581e-03</td>
+      <td>6.054179e-03</td>
+      <td>5.146383e-03</td>
+      <td>5.325366e-04</td>
+      <td>7.062429e-04</td>
+      <td>0.012463</td>
+      <td>0.642532</td>
+      <td>2.142958e-02</td>
+      <td>3.042254e-01</td>
+      <td>0.002012</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>img_32366.jpg</td>
+      <td>4.047657e-08</td>
+      <td>4.258116e-08</td>
+      <td>7.385115e-08</td>
+      <td>7.353977e-08</td>
+      <td>5.030099e-08</td>
+      <td>0.999987</td>
+      <td>0.000007</td>
+      <td>2.678771e-08</td>
+      <td>2.975033e-07</td>
+      <td>0.000006</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>img_99675.jpg</td>
+      <td>4.653947e-01</td>
+      <td>9.502587e-03</td>
+      <td>3.015550e-02</td>
+      <td>7.141132e-03</td>
+      <td>8.581814e-03</td>
+      <td>0.001376</td>
+      <td>0.228859</td>
+      <td>1.078819e-03</td>
+      <td>2.433791e-01</td>
+      <td>0.004531</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>img_85937.jpg</td>
+      <td>8.255903e-05</td>
+      <td>1.916165e-05</td>
+      <td>1.645608e-05</td>
+      <td>2.139845e-03</td>
+      <td>2.219971e-04</td>
+      <td>0.990963</td>
+      <td>0.000140</td>
+      <td>5.377778e-06</td>
+      <td>3.694886e-05</td>
+      <td>0.006375</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>img_73903.jpg</td>
+      <td>3.502117e-07</td>
+      <td>1.061771e-04</td>
+      <td>4.572770e-05</td>
+      <td>2.403757e-06</td>
+      <td>1.187768e-05</td>
+      <td>0.000053</td>
+      <td>0.000408</td>
+      <td>9.991777e-01</td>
+      <td>1.797632e-04</td>
+      <td>0.000014</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>79721</th>
+      <td>img_109.jpg</td>
+      <td>7.563246e-03</td>
+      <td>1.897852e-02</td>
+      <td>2.062093e-01</td>
+      <td>1.308421e-03</td>
+      <td>5.482526e-03</td>
+      <td>0.002233</td>
+      <td>0.118231</td>
+      <td>1.006306e-01</td>
+      <td>5.321654e-01</td>
+      <td>0.007198</td>
+    </tr>
+    <tr>
+      <th>79722</th>
+      <td>img_53257.jpg</td>
+      <td>2.018641e-03</td>
+      <td>3.363243e-04</td>
+      <td>4.372783e-04</td>
+      <td>4.747344e-01</td>
+      <td>4.001005e-01</td>
+      <td>0.004480</td>
+      <td>0.000733</td>
+      <td>3.581994e-04</td>
+      <td>8.031728e-04</td>
+      <td>0.115998</td>
+    </tr>
+    <tr>
+      <th>79723</th>
+      <td>img_90376.jpg</td>
+      <td>8.465707e-02</td>
+      <td>5.784687e-01</td>
+      <td>3.608754e-03</td>
+      <td>3.662695e-02</td>
+      <td>1.371328e-02</td>
+      <td>0.011587</td>
+      <td>0.017968</td>
+      <td>7.717087e-02</td>
+      <td>3.644365e-02</td>
+      <td>0.139756</td>
+    </tr>
+    <tr>
+      <th>79724</th>
+      <td>img_28000.jpg</td>
+      <td>6.226664e-08</td>
+      <td>4.983243e-08</td>
+      <td>7.004503e-09</td>
+      <td>2.172765e-08</td>
+      <td>6.979324e-08</td>
+      <td>0.999966</td>
+      <td>0.000004</td>
+      <td>6.643240e-09</td>
+      <td>2.172691e-06</td>
+      <td>0.000028</td>
+    </tr>
+    <tr>
+      <th>79725</th>
+      <td>img_93083.jpg</td>
+      <td>5.966864e-02</td>
+      <td>2.801355e-02</td>
+      <td>7.123795e-03</td>
+      <td>6.038536e-04</td>
+      <td>2.516853e-03</td>
+      <td>0.004967</td>
+      <td>0.027987</td>
+      <td>1.176820e-03</td>
+      <td>8.555837e-01</td>
+      <td>0.012359</td>
+    </tr>
+  </tbody>
+</table>
+<p>79726 rows × 11 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">my_sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'sub.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c"># 0.18165</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<ul>
+  <li>Final score which evaluated with multi-class logarithmic loss is <strong>0.18165</strong>.</li>
+</ul>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            
+            <a href="/tag/#/Deep%20Learning" rel="tag"># Deep Learning</a>
+          
+            
+            <a href="/tag/#/Classification" rel="tag"># Classification</a>
+          
+            
+            <a href="/tag/#/Computer%20Vision" rel="tag"># Computer Vision</a>
+          
+            
+            <a href="/tag/#/CNN" rel="tag"># CNN</a>
+          
+            
+            <a href="/tag/#/Tensorflow" rel="tag"># Tensorflow</a>
+          
+        </div>
+      
+
+      
+      
+      
+      
+      
+
+      
+      
+        <div class="post-nav" id="post-nav-id">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/classification/2021/01/21/invasive/" rel="next" title="Invasive Species Monitoring(Classification)">
+                <i class="fa fa-chevron-left"></i> Invasive Species Monitoring(Classification)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/classification/2021/01/06/plantseedlings/" rel="prev" title="Plant Seedlings Classification(Classification)">
+                Plant Seedlings Classification(Classification) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+      
+
+      
+    </footer>
+  </article>
+
+  <div class="post-spread">
+    
+  </div>
+</div>
+
+
+
+<head>
+    <!-- Begin section for dataframe table formatting -->
+    <style type="text/css">
+    table.dataframe {
+        width: 100%;
+        height: 240px;
+        display: block;
+        overflow: auto;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+    }
+    table.dataframe th {
+      font-weight: bold;
+      padding: 4px;
+    }
+    table.dataframe td {
+      padding: 4px;
+    }
+    table.dataframe tr:hover {
+      background: #b8d1f3; 
+    }
+    </style>
+    <!-- End section for dataframe table formatting -->
+  </head>
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        
+        
+        
+
+
+
+
+
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            목차
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            흝어보기
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/assets/images/profile.jpg"
+               alt="Seung Hyun Lee" />
+          <p class="site-author-name" itemprop="name">Seung Hyun Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">포스트</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">카테고리</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">태그</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://github.com/sseunghyuns" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/%EC%8A%B9%ED%98%84-%EC%9D%B4-6b2a371a6/" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.rocketpunch.com/@kannasta9621" target="_blank" title="RoketPunch">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  RoketPunch
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+            
+              <div class="post-toc-content">
+    <ol class=nav>
+      <li class="nav-item nav-level-1"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-2"> <a class="nav-link" href="#import-library"> <span class="nav-number">1.1</span> <span class="nav-text">Import Library</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지-리스트-불러오기"> <span class="nav-number">1.2</span> <span class="nav-text">이미지 리스트 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-dataset-만들기"> <span class="nav-number">1.3</span> <span class="nav-text">Train Dataset 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-확인"> <span class="nav-number">1.4</span> <span class="nav-text">데이터 확인</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#test-dataset-만들기"> <span class="nav-number">1.4.1</span> <span class="nav-text">Test Dataset 만들기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#k-fold-cross-validation교차검증으로-모델-학습하기"> <span class="nav-number">1.5</span> <span class="nav-text">K-fold Cross Validation(교차검증)으로 모델 학습하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모든-데이터셋을-학습시켜-보다-안정적인-모델-성능-뽑아내기"> <span class="nav-number">1.5.1</span> <span class="nav-text">모든 데이터셋을 학습시켜 보다 안정적인 모델 성능 뽑아내기</strong</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#제출"> <span class="nav-number">1.6</span> <span class="nav-text">제출</font</span> </a> </li> </ol> </li>
+    </ol>
+  </div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Seung Hyun Lee</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://jekyllrb.com">Jekyll</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/simpleyyt/jekyll-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/assets/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/assets/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/assets/js/src/post-details.js?v=5.1.1"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+  
+
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
+

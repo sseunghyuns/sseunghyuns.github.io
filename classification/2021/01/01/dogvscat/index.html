@@ -1,0 +1,1854 @@
+
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/assets/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/assets/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Deep Learning,Classification,Computer Vision,Tensorflow," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="대회 소개 개와 고양이 이미지를 분류하는 대회">
+<meta name="keywords" content="Deep Learning, Classification, Computer Vision, Tensorflow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dogs vs. Cats(Classification)">
+<meta property="og:url" content="http://localhost:4000/classification/2021/01/01/dogvscat/">
+<meta property="og:site_name" content="Seung Hyun's Blog">
+<meta property="og:description" content="대회 소개 개와 고양이 이미지를 분류하는 대회">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="/assets/img/notebook/dogvscat/dogs-vs-cats_4_0.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dogs vs. Cats(Classification)">
+<meta name="twitter:description" content="대회 소개 개와 고양이 이미지를 분류하는 대회">
+<meta name="twitter:image" content="/assets/img/notebook/dogvscat/dogs-vs-cats_4_0.png">
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '작성자'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://localhost:4000/"/>
+
+
+
+
+
+  <title>Dogs vs. Cats(Classification) | Seung Hyun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="ko">
+
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Seung Hyun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            홈
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            카테고리
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            아카이브
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            태그
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            검색
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="" spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+<div id="posts" class="posts-expand">
+  
+  
+
+  
+
+  
+  
+  
+
+  <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/classification/2021/01/01/dogvscat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Seung Hyun Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/assets/images/profile.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Seung Hyun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+          
+          
+            Dogs vs. Cats(Classification)
+          
+        </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">작성일</span>
+              
+              <time title="" itemprop="dateCreated datePublished" datetime="2021-01-01T21:01:00+09:00">
+                2021-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/Classification" itemprop="url" rel="index">
+                    <span itemprop="name">Classification</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <h1 id="대회-소개"><font color="darkblue">대회 소개</font></h1>
+<p><strong>개와 고양이 이미지를 분류하는 대회</strong></p>
+
+<h3 id="dogs-vs-cats-redux-kernels-edition">Dogs vs. Cats Redux: Kernels Edition</h3>
+<p><strong>Distinguish images of dogs from cats</strong><br />
+<a href="https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition">https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition</a></p>
+
+<hr />
+
+<p><strong><em>Description</em></strong></p>
+
+<p>In 2013, we hosted one of our favorite for-fun competitions:  Dogs vs. Cats. Much has since changed in the machine learning landscape, particularly in deep learning and image analysis. Back then, a tensor flow was the diffusion of the creamer in a bored mathematician’s cup of coffee. Now, even the cucumber farmers are neural netting their way to a bounty.</p>
+
+<p>Much has changed at Kaggle as well. Our online coding environment Kernels didn’t exist in 2013, and so it was that we approached sharing by scratching primitive glpyhs on cave walls with sticks and sharp objects. No more. Now, Kernels have taken over as the way to share code on Kaggle. IPython is out and Jupyter Notebook is in. We even have TensorFlow. What more could a data scientist ask for? But seriously, what more? Pull requests welcome.</p>
+
+<p>We are excited to bring back the infamous Dogs vs. Cats classification problem as a playground competition with kernels enabled. Although modern techniques may make light of this once-difficult problem, it is through practice of new techniques on old datasets that we will make light of machine learning’s future challenges.</p>
+
+<hr />
+<p><br /></p>
+
+<h2 id="데이터-준비-및-확인"><font color="blue">데이터 준비 및 확인</font></h2>
+
+<h4 id="이미지-분류-대회에서-"><strong>이미지 분류 대회에서 …</strong></h4>
+<ul>
+  <li>아이디어 얻기 위해 데이터 하나 하나 뜯어보며 이미지 형태를 파악해야 한다.</li>
+  <li>머신러닝 대회에서 독립변수의 개수가 같아야 하는 것처럼 딥러닝에서도 Input 크기가 같아야 한다. 따라서 크기 조정 등의 최소한의 전처리가 필요하다.</li>
+  <li>이미지 크기 조정 시 이미 작은 이미지는 상관 없는데, 큰 이미지를 작은 이미지로 축소할 때 정보의 손실이 있을 수 있다.(나중에 더 깊게 다룰 예정)</li>
+</ul>
+
+<h4 id="이미지-분류-베이스-라인-잡기"><strong>이미지 분류 베이스 라인 잡기</strong></h4>
+<ul>
+  <li><code class="highlighter-rouge">Data Preprocessing</code>
+    <ul>
+      <li>glob 이용하여 데이터 불러오기</li>
+      <li>이미지 경로, 이미지 클래스를 칼럼으로 갖는 데이터 프레임 만들기</li>
+      <li>train_test_split으로 train, valid 데이터 만들기
+        <ul>
+          <li>stratify 옵션으로 label 비율 맞춰서 데이터셋 나누기</li>
+        </ul>
+      </li>
+      <li>keras의 ImageDataGenerator 라이브러리를 사용하여 이미지 데이터 전처리하기</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">Modeling</code>
+    <ul>
+      <li>모델 선언 및 학습 층 쌓기</li>
+      <li>최적화 함수, 손실 함수 정하기</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">train</code>
+    <ul>
+      <li>모델로 전처리된 이미지 학습하기</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+<p><br /></p>
+
+<h2 id="-데이터-확인-"><font color="blue"> 데이터 확인 </font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span> 
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="err">!</span><span class="n">unzip</span> <span class="s">'/kaggle/input/dogs-vs-cats-redux-kernels-edition/train.zip'</span>
+<span class="err">!</span><span class="n">unzip</span> <span class="s">'/kaggle/input/dogs-vs-cats-redux-kernels-edition/test.zip'</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'train/cat.100.jpg'</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/dogvscat/dogs-vs-cats_4_0.png" alt="png" /></p>
+
+<hr />
+<p><br /></p>
+
+<h2 id="이미지-경로-클래스를-칼럼으로-갖는-데이터프레임-만들기"><font color="blue">이미지 경로, 클래스를 칼럼으로 갖는 데이터프레임 만들기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">glob</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">"path"</span> <span class="p">:</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">"train/*"</span><span class="p">)})</span>
+<span class="n">train</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s">'path'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">"/"</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">train</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>path</th>
+      <th>label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>train/dog.10300.jpg</td>
+      <td>dog</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>train/cat.7540.jpg</td>
+      <td>cat</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>train/dog.5684.jpg</td>
+      <td>dog</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>train/cat.10367.jpg</td>
+      <td>cat</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>train/cat.537.jpg</td>
+      <td>cat</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>24995</th>
+      <td>train/cat.2300.jpg</td>
+      <td>cat</td>
+    </tr>
+    <tr>
+      <th>24996</th>
+      <td>train/dog.7893.jpg</td>
+      <td>dog</td>
+    </tr>
+    <tr>
+      <th>24997</th>
+      <td>train/dog.8167.jpg</td>
+      <td>dog</td>
+    </tr>
+    <tr>
+      <th>24998</th>
+      <td>train/dog.6154.jpg</td>
+      <td>dog</td>
+    </tr>
+    <tr>
+      <th>24999</th>
+      <td>train/dog.4016.jpg</td>
+      <td>dog</td>
+    </tr>
+  </tbody>
+</table>
+<p>25000 rows × 2 columns</p>
+</div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="train-valid-셋-만들기"><font color="blue">Train, Valid 셋 만들기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">train</span><span class="p">,</span>
+                                 <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+                                  <span class="n">stratify</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s">'label'</span><span class="p">],</span>
+                                 <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="keras의-imagedatagenerator-사용하여-데이터-전처리"><font color="blue">keras의 ImageDataGenerator 사용하여 데이터 전처리</font></h2>
+
+<h4 id="data-augmentation"><code class="highlighter-rouge">Data Augmentation</code></h4>
+
+<ul>
+  <li>대회별로 도움되는 변형 옵션을 찾아야 한다.</li>
+  <li>
+    <p>데이터 변형을 한다고 해서 이미지 수가 두배가 되는게 아니다.</p>
+  </li>
+  <li>에폭당 50%확률로 변형이 적용되는데, 이는 ImageDataGenerator()에서 50%확률로 default 값이 지정되어 있기 때문이다.
+    <ul>
+      <li>한 <code class="highlighter-rouge">epoch</code>당 원본 이미지 50% + 변형 이미지 50%가 학습되는 것이므로, <code class="highlighter-rouge">Data Augmentation</code>을 할 때는 최소 여러 번의 <code class="highlighter-rouge">epoch</code>를 돌게 만들자.</li>
+      <li>어떤 변형 옵션이 도움이 되는지 확인할 때는 이미지 사이즈를 줄이고 배치 사이즈를 늘려 빨리 실험해보자.</li>
+      <li>평가할 때는 원본 이미지에 대해서 <code class="highlighter-rouge">predict</code>가 이루어져야 하기 때문에 <code class="highlighter-rouge">idg_val = ImageDataGenerator()</code>를 따로 지정해주는 것이다.</li>
+      <li><code class="highlighter-rouge">ImageDataGenerator()</code>를 커스터마이징하여 값을 바꿀 수도 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h4 id="flow_from_dataframe-옵션"><code class="highlighter-rouge">flow_from_dataframe</code> 옵션</h4>
+<ul>
+  <li><code class="highlighter-rouge">target_size</code>
+    <ul>
+      <li>이미지 사이즈를 키우게 되면 정보 손실이 덜 하므로 그만큼 점수가 좋아진다.</li>
+      <li>원본 이미지의 사이즈가 클 경우 target_size를 이에 비슷하게 맞추는 것이 이상적이지만, 그만큼 학습 속도가 느려지게 된다. 또한 메모리 문제로 인해 target_size를 늘리면 batch_size를 줄여야 한다.</li>
+      <li>원본 이미지가 작은 경우 사이즈를 키웠다고 해서 더 성능이 좋아지는 것은 아니다.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">batch_size</code>
+    <ul>
+      <li>batch_size 역시 모델 성능(점수)에 영향을 준다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">ImageDataGenerator</span>
+
+<span class="n">idg_train</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">(</span><span class="n">horizontal_flip</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">idg_valid</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span>
+<span class="n">idg_test</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span>
+
+<span class="n">train_generator</span> <span class="o">=</span> <span class="n">idg_train</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="c"># df 이름</span>
+                                          <span class="n">x_col</span> <span class="o">=</span> <span class="s">'path'</span><span class="p">,</span> <span class="c"># 이미지 path</span>
+                                          <span class="n">y_col</span> <span class="o">=</span> <span class="s">'label'</span><span class="p">,</span><span class="c"># 클래스</span>
+                                          <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="c"># 기본값 32 -&gt; 처음엔 100으로 설정하여 학습 속도를 빠르게 하기도 함.</span>
+                                          <span class="n">target_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span> <span class="c"># 기본값 256</span>
+
+                                          
+<span class="n">valid_generator</span> <span class="o">=</span> <span class="n">idg_valid</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span>
+                                               <span class="n">x_col</span> <span class="o">=</span> <span class="s">'path'</span><span class="p">,</span>
+                                               <span class="n">y_col</span> <span class="o">=</span> <span class="s">'label'</span><span class="p">,</span>
+                                                <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+                                                <span class="n">target_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code>Found 20000 validated image filenames belonging to 2 classes.
+Found 5000 validated image filenames belonging to 2 classes.
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="모델링"><font color="blue">모델링</font></h2>
+
+<p><code class="highlighter-rouge">모델 선언</code> : <strong>Sequential()</strong>로 모델을 먼저 선언한다.</p>
+
+<ul>
+  <li><code class="highlighter-rouge">이미지 학습하는 층 쌓기</code>: <strong>기본적인 모델 구조를 설정한다. Conv2D함수 안에 n개의 feature map을 추출한다.</strong>
+    <ul>
+      <li>첫 layer에서는 <strong>input_shape</strong>을 설정해 주자. (256,256,3)</li>
+      <li>activation 함수를 적용하여 하나의 층이 비선형적인 학습을 할 수 있도록 한다.</li>
+      <li>하나의 <strong>Conv2D</strong> 층을 하나의 분류기라고 생각하자. 머신러닝에서 하나의 랜덤 포레스트 모델로 생각하면 쉽다.여러 개의 랜덤포레스트를 앙상블하면 학습에 도움이 되는 것처럼 여러 <strong>Conv2D</strong>층을 쌓으면 여러 특징들을 추출해낼 수 있기 때문에 학습에 도움이 된다.</li>
+      <li><strong>Conv2D</strong> 층만 쌓게 되면 중요하지 않은 배경들도 똑같이 고려하게 되므로 학습이 어려워진다.합성곱층 통과 후 가장 특징적인 값만 가져오는   <strong>MaxPool2D</strong>층을 추가해주자.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">차원 축소하기</code>
+    <ul>
+      <li><strong>Conv2D</strong> 채널을 지나서 나오는 피처맵들은 3차원 이미지 데이터들이다. <strong>Flatten()</strong>으로 3차원 데이터를 1차원으로 펼쳐준다.</li>
+      <li><strong>Flatten()</strong> : 이미지 내 지역에 대한 고려 없이 1차원으로 펼처준다. 지역적인 정보가 날아갈 수 있다.</li>
+      <li><strong>GlobalAveragePooling2D()</strong> : 지역을 고려하여 2D형태로 펼쳐준다. Flatten대신 많이 사용한다.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">Output layer 설정하기</code> : <strong>마지막 층은 학습하는 것이 아니라 각 클래스에 대한 확률값으로 값이 출력되어야 한다.</strong>
+    <ul>
+      <li>다중 분류시 <strong>softmax</strong>를 사용한다.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">최적화함수, 손실함수 정의하기</code>
+    <ul>
+      <li>모델의 정확도를 확인할 수 있도록 metrics를 설정한다.</li>
+      <li>최적화함수는 <strong>Adam</strong>, 손실함수는 <strong>categorical_crossentropy</strong>로 설정한다.</li>
+      <li><strong>adam</strong>’s default Learning Rate =  0.001</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">모델 학습시키기</code>
+    <ul>
+      <li><strong>epochs</strong> : 한번의 <code class="highlighter-rouge">epochs</code>을 반복할 때마다 전체 데이터를 <em>한번</em> 학습하게 된다. 학습을 여러번 시킬수록 점수 향상에 도움이 되지만 과대적합 문제가 발생할 수 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><code class="highlighter-rouge">모델 summary</code> : <strong>모델 구조를 출력한다.</strong></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="o">*</span> 
+
+<span class="c"># 모델 선언 </span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+
+<span class="c"># 이미지 학습하는 층을 쌓기</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPool2D</span><span class="p">())</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPool2D</span><span class="p">())</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPool2D</span><span class="p">())</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPool2D</span><span class="p">())</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPool2D</span><span class="p">())</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPool2D</span><span class="p">())</span>
+
+<span class="c"># 차원 축소</span>
+<span class="c">#model.add(Flatten())</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GlobalAveragePooling2D</span><span class="p">())</span>
+
+<span class="c"># model.add(Dropout(0.5))</span>
+<span class="c"># model.add(Dense(512, activation = 'relu'))</span>
+<span class="c"># model.add(Dense(256, activation = 'relu'))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'softmax'</span><span class="p">))</span>
+
+<span class="c"># 최적화, 손실 함수 정의하기</span>
+<span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s">'acc'</span><span class="p">],</span> <span class="n">optimizer</span><span class="o">=</span> <span class="s">'adam'</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s">'categorical_crossentropy'</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_generator</span><span class="p">,</span>
+         <span class="n">validation_data</span><span class="o">=</span><span class="n">valid_generator</span><span class="p">,</span>
+        <span class="n">epochs</span><span class="o">=</span> <span class="mi">10</span>
+         <span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20</pre></td><td class="code"><pre class="highlight"><code>Epoch 1/10
+625/625 [==============================] - 93s 149ms/step - loss: 1.3097 - acc: 0.5896 - val_loss: 0.6291 - val_acc: 0.6382
+Epoch 2/10
+625/625 [==============================] - 93s 149ms/step - loss: 0.5652 - acc: 0.7053 - val_loss: 0.5327 - val_acc: 0.7402
+Epoch 3/10
+625/625 [==============================] - 95s 153ms/step - loss: 0.4760 - acc: 0.7775 - val_loss: 0.4140 - val_acc: 0.8166
+Epoch 4/10
+625/625 [==============================] - 93s 149ms/step - loss: 0.4070 - acc: 0.8147 - val_loss: 0.3493 - val_acc: 0.8484
+Epoch 5/10
+625/625 [==============================] - 93s 148ms/step - loss: 0.3471 - acc: 0.8486 - val_loss: 0.4356 - val_acc: 0.8134
+Epoch 6/10
+625/625 [==============================] - 93s 149ms/step - loss: 0.3118 - acc: 0.8680 - val_loss: 0.3170 - val_acc: 0.8708
+Epoch 7/10
+625/625 [==============================] - 93s 148ms/step - loss: 0.2792 - acc: 0.8821 - val_loss: 0.2858 - val_acc: 0.8822
+Epoch 8/10
+625/625 [==============================] - 94s 151ms/step - loss: 0.2515 - acc: 0.8939 - val_loss: 0.2577 - val_acc: 0.8920
+Epoch 9/10
+625/625 [==============================] - 93s 149ms/step - loss: 0.2362 - acc: 0.9018 - val_loss: 0.2665 - val_acc: 0.8920
+Epoch 10/10
+625/625 [==============================] - 94s 150ms/step - loss: 0.2168 - acc: 0.9097 - val_loss: 0.2565 - val_acc: 0.8932
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<ul>
+  <li>모델 Summary</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36</pre></td><td class="code"><pre class="highlight"><code>Model: "sequential_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_6 (Conv2D)            (None, 254, 254, 16)      448       
+_________________________________________________________________
+max_pooling2d_6 (MaxPooling2 (None, 127, 127, 16)      0         
+_________________________________________________________________
+conv2d_7 (Conv2D)            (None, 125, 125, 32)      4640      
+_________________________________________________________________
+max_pooling2d_7 (MaxPooling2 (None, 62, 62, 32)        0         
+_________________________________________________________________
+conv2d_8 (Conv2D)            (None, 60, 60, 64)        18496     
+_________________________________________________________________
+max_pooling2d_8 (MaxPooling2 (None, 30, 30, 64)        0         
+_________________________________________________________________
+conv2d_9 (Conv2D)            (None, 28, 28, 128)       73856     
+_________________________________________________________________
+max_pooling2d_9 (MaxPooling2 (None, 14, 14, 128)       0         
+_________________________________________________________________
+conv2d_10 (Conv2D)           (None, 12, 12, 256)       295168    
+_________________________________________________________________
+max_pooling2d_10 (MaxPooling (None, 6, 6, 256)         0         
+_________________________________________________________________
+conv2d_11 (Conv2D)           (None, 4, 4, 512)         1180160   
+_________________________________________________________________
+max_pooling2d_11 (MaxPooling (None, 2, 2, 512)         0         
+_________________________________________________________________
+global_average_pooling2d_1 ( (None, 512)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 2)                 1026      
+=================================================================
+Total params: 1,573,794
+Trainable params: 1,573,794
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="전이학습transfer-learning"><font color="blue">전이학습(Transfer Learning)</font></h2>
+
+<h3 id="imagenet-등의-빅데이터로-학습된-모델을-가져와-쓰기"><strong><em>Imagenet</em></strong> 등의 빅데이터로 학습된 모델을 가져와 쓰기</h3>
+
+<p>Pretrained Model : <code class="highlighter-rouge">EfficientNet</code></p>
+<ul>
+  <li>
+    <p>작년에 나온 모델로, 이미지 분류 대회에서 압도적으로 쓰인다. B0 ~ B7까지 버전이 있고, B2 이상으로 갈수록 모델이 많이 무거워진다.</p>
+  </li>
+  <li><code class="highlighter-rouge">pretrained model</code> 사용시 알아야할 3가지 필수 옵션
+    <ol>
+      <li><code class="highlighter-rouge">include_top</code> : 마지막 출력층(top)을 포함할 것인지 여부 결정. <strong>False</strong>로 설정한 후 문제 상황에 맞게 분류기를 바꿀 수 있다.</li>
+      <li><code class="highlighter-rouge">weights</code> : <strong>imagenet</strong>으로 설정 시, Imagenet을 통해 학습된 가중치를 사용하게 된다.
+        <ul>
+          <li>학습된 가중치를 사용했을 때 장점
+            <ol>
+              <li>대부분의 분류 문제에서 별다른 하이퍼파라미터 튜닝 없이 정확도가 8~90%가 나온다.</li>
+              <li>사진들끼리 공유하고 있는 특징(배경, 직선, 명암, 색체 등)이 있기 때문에 <code class="highlighter-rouge">imagenet</code>의 클래스에 없는 이미지에 대해서도 곧잘 분류한다.</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+      <li><code class="highlighter-rouge">pooling</code> : <strong>avg</strong> 설정 시 분류층 직전에 Global average pooling을 적용한다.
+        <ul>
+          <li>이미지 분류 문제에서는 대부분 classifier 전에 gap를 사용한다. 앞서 <code class="highlighter-rouge">모델링</code>파트에서 소개했듯이 지역적 정보를 가져오기 때문이다.</li>
+          <li>이미지 분류가 아닌 detection, segmentation, 음성 데이터 처리, 혹은 text mining 등의 경우 Flatten을 사용 시 모델의 성능이 잘 나오기도 한다. 딥러닝에서 정답은 없다. 많이 시도해봐야 한다.</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li><code class="highlighter-rouge">freeze</code>
+    <ul>
+      <li><code class="highlighter-rouge">freeze</code>시킴으로써 층을 선택적으로 학습을 시킬 수 있다.</li>
+      <li>데이터가 적으면 pretrained model의 feature extract 층은 얼리고 classifer 층만 학습시키기도 한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+<p><br /></p>
+
+<h2 id="callbacks-옵션"><font color="blue">Callbacks 옵션</font></h2>
+
+<h3 id="여러가지-기법들로-모델-성능-높이기">여러가지 기법들로 모델 성능 높이기</h3>
+
+<ul>
+  <li><code class="highlighter-rouge">EarlyStopping</code>
+    <ul>
+      <li>조기 종료 옵션이다.
+        <ul>
+          <li><code class="highlighter-rouge">patience</code> : default로 val_loss를 monitor한다. 하이퍼파라미터로 설정한 양의 정수만큼 val_loss가 떨어지는 것을 참고 지켜보게 된다.
+            <ul>
+              <li>만약 val_loss가 0.4 -&gt; 0.45 -&gt; 0.42로 높아졌을 때, 두 경우 모두에서 patience가 누적된다. 두 값 모두 0.4보다 높기 때문이다. 즉, 최적의 순간보다 val_loss가 n번 <strong><em>연속</em></strong> 좋아지지 않으면 멈춘다.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">ModelCheckpoint</code>
+    <ul>
+      <li>모델 최적의 가중치를 저장하는 옵션이다.</li>
+      <li>EarlyStopping을 사용했을 경우, 10번째가 최적일 시 13번째까지 학습하고 마지막 13번째의 가중치가 남아있게 된다. 체크포인트를 통해 10번째의 가중치를 가져올 수 있게 된다.</li>
+      <li><code class="highlighter-rouge">model.load_weights()</code> 옵션으로 저장된 모델을 불러오는 것을 잊지 말자.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">ReduceLROnPlateau</code>
+    <ul>
+      <li>Learning rate가 컸을 때, 최적점 주변을 멤돌거나 지나쳐서 성능이 오히려 안좋아질 수 있다.</li>
+      <li>Learning rate(학습 보폭)를 조정하여 최적점에 도달하는데 도움을 줄 수 있다.</li>
+      <li>학습이 멈추기 전 작동해야하므로 항상 EarlyStopping의 <code class="highlighter-rouge">patience</code> 값 보단 작게 해야 한다.</li>
+      <li><code class="highlighter-rouge">factor</code> 하이퍼파라미터의 기본값 : 0.1</li>
+      <li><code class="highlighter-rouge">min_lr</code> 하이퍼파라미터의 기본값 : 0</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span> <span class="nn">tensorflow.keras.applications.efficientnet</span> <span class="kn">import</span> <span class="n">EfficientNetB1</span> 
+<span class="kn">from</span> <span class="nn">tensorflow.keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">ReduceLROnPlateau</span>
+
+<span class="c"># transfer learning</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span> <span class="c"># 항상 모델 선언 다시 하고 학습할 것</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EfficientNetB1</span><span class="p">(</span><span class="n">include_top</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="s">'imagenet'</span><span class="p">,</span> <span class="n">pooling</span> <span class="o">=</span> <span class="s">'avg'</span><span class="p">))</span> 
+
+<span class="c"># classifier</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'softmax'</span><span class="p">))</span> 
+
+
+<span class="c"># 최적화 함수, 손실 함수 정의하기</span>
+<span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s">'acc'</span><span class="p">],</span> <span class="n">optimizer</span><span class="o">=</span> <span class="s">'adam'</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s">'categorical_crossentropy'</span><span class="p">)</span>
+
+
+<span class="c"># callbacks 설정하기</span>
+<span class="n">es</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  
+                   <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="s">"best.h5"</span><span class="p">,</span> <span class="c">#h5:가중치 저장 확장자</span>
+                    <span class="n">save_best_only</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> 
+                    <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">rlp</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">patience</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># 모델 학습하기</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_generator</span><span class="p">,</span>
+         <span class="n">validation_data</span>  <span class="o">=</span> <span class="n">valid_generator</span><span class="p">,</span>
+         <span class="n">epochs</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+         <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">es</span><span class="p">,</span> <span class="n">mc</span><span class="p">,</span> <span class="n">rlp</span><span class="p">],)</span> 
+
+<span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s">'best.h5'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18</pre></td><td class="code"><pre class="highlight"><code>Downloading data from https://storage.googleapis.com/keras-applications/efficientnetb1_notop.h5
+27025408/27018416 [==============================] - 0s 0us/step
+Epoch 1/100
+625/625 [==============================] - ETA: 0s - loss: 0.0914 - acc: 0.9660
+Epoch 00001: val_loss improved from inf to 0.06357, saving model to best.h5
+625/625 [==============================] - 276s 442ms/step - loss: 0.0914 - acc: 0.9660 - val_loss: 0.0636 - val_acc: 0.9768
+Epoch 2/100
+625/625 [==============================] - ETA: 0s - loss: 0.0578 - acc: 0.9794
+Epoch 00002: val_loss did not improve from 0.06357
+625/625 [==============================] - 272s 435ms/step - loss: 0.0578 - acc: 0.9794 - val_loss: 0.1416 - val_acc: 0.9416
+Epoch 3/100
+625/625 [==============================] - ETA: 0s - loss: 0.0433 - acc: 0.9841
+Epoch 00003: val_loss did not improve from 0.06357
+
+Epoch 00003: ReduceLROnPlateau reducing learning rate to 0.00010000000474974513.
+625/625 [==============================] - 273s 437ms/step - loss: 0.0433 - acc: 0.9841 - val_loss: 0.0679 - val_acc: 0.9750
+Epoch 4/100
+598/625 [===========================&gt;..] - ETA: 10s - loss: 0.0200 - acc: 0.9933
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+<p><br /></p>
+
+<h2 id="제출하기"><font color="blue">제출하기</font></h2>
+<ul>
+  <li>Test셋 예측 후 제출하기
+    <ul>
+      <li>Train셋과 마찬가지로 test_generator 만들어준다.</li>
+      <li>Test셋에는 레이블이 없으므로, <code class="highlighter-rouge">y_col = None</code>, <code class="highlighter-rouge">class_mode = None</code> 옵션 넣어줘야 한다.</li>
+      <li>학습 시에는 데이터가 섞여도 되지만, predict할 때는 index가 섞일 수 있으니 <code class="highlighter-rouge">shuffle = False</code> 옵션을 넣어준다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9</pre></td><td class="code"><pre class="highlight"><code><span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">"path"</span> <span class="p">:</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">"test/*"</span><span class="p">)})</span>
+
+
+<span class="n">test_generator</span> <span class="o">=</span> <span class="n">idg_test</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span><span class="n">test</span><span class="p">,</span>
+                                               <span class="n">x_col</span> <span class="o">=</span> <span class="s">'path'</span><span class="p">,</span>
+                                               <span class="n">y_col</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                                              <span class="n">class_mode</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                              <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                              <span class="n">target_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_generator</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">result</span> 
+</code></pre></td></tr></tbody></table></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">verbose = 1</code> : 모델 예측 진행 상황을 볼 수 있다.</li>
+  <li>result의 값을 출력해보면 클래스가 2개이므로 확률값 2개가 나온다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_generator</span><span class="o">.</span><span class="n">class_indices</span> 
+</code></pre></td></tr></tbody></table></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">train_generator.class_indices</code> 로 각 클래스의 변환값을 알 수 있다.</li>
+  <li>보통 0(False), 1(True)값이므로 이진 분류 대회에서는 1의 확률값을 제출한다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"/kaggle/input/dogs-vs-cats-redux-kernels-edition/sample_submission.csv"</span><span class="p">)</span>
+<span class="n">sub</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> 
+<span class="n">sub</span><span class="p">[</span><span class="s">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="s">'path'</span><span class="p">]</span>
+<span class="n">sub</span><span class="p">[</span><span class="s">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub</span><span class="p">[</span><span class="s">'id'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">"/"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sub</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">lable</code>이 <code class="highlighter-rouge">id</code>와 매핑되도록 바꿔줘야한다.현재 모델은 <code class="highlighter-rouge">test['path']</code>의 순서대로 예측값을 계산했는데, <code class="highlighter-rouge">sub['id']</code>는 index가 0부터이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">"sub.csv"</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> 
+</code></pre></td></tr></tbody></table></div></div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            
+            <a href="/tag/#/Deep%20Learning" rel="tag"># Deep Learning</a>
+          
+            
+            <a href="/tag/#/Classification" rel="tag"># Classification</a>
+          
+            
+            <a href="/tag/#/Computer%20Vision" rel="tag"># Computer Vision</a>
+          
+            
+            <a href="/tag/#/Tensorflow" rel="tag"># Tensorflow</a>
+          
+        </div>
+      
+
+      
+      
+      
+      
+      
+
+      
+      
+        <div class="post-nav" id="post-nav-id">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/classification/2021/01/06/plantseedlings/" rel="next" title="Plant Seedlings Classification(Classification)">
+                <i class="fa fa-chevron-left"></i> Plant Seedlings Classification(Classification)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/classification/2020/12/23/ComputerVision/" rel="prev" title="Dacon Computer Vision(Classification)">
+                Dacon Computer Vision(Classification) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+      
+
+      
+    </footer>
+  </article>
+
+  <div class="post-spread">
+    
+  </div>
+</div>
+
+
+
+<head>
+    <!-- Begin section for dataframe table formatting -->
+    <style type="text/css">
+    table.dataframe {
+        width: 100%;
+        height: 240px;
+        display: block;
+        overflow: auto;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+    }
+    table.dataframe th {
+      font-weight: bold;
+      padding: 4px;
+    }
+    table.dataframe td {
+      padding: 4px;
+    }
+    table.dataframe tr:hover {
+      background: #b8d1f3; 
+    }
+    </style>
+    <!-- End section for dataframe table formatting -->
+  </head>
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        
+        
+        
+
+
+
+
+
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            목차
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            흝어보기
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/assets/images/profile.jpg"
+               alt="Seung Hyun Lee" />
+          <p class="site-author-name" itemprop="name">Seung Hyun Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">포스트</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">카테고리</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">태그</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://github.com/sseunghyuns" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/%EC%8A%B9%ED%98%84-%EC%9D%B4-6b2a371a6/" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.rocketpunch.com/@kannasta9621" target="_blank" title="RoketPunch">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  RoketPunch
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+            
+              <div class="post-toc-content">
+    <ol class=nav>
+      <li class="nav-item nav-level-1"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-준비-및-확인"> <span class="nav-number">1.1</span> <span class="nav-text">데이터 준비 및 확인</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-분류-대회에서-"> <span class="nav-number">1.1.1</span> <span class="nav-text">이미지 분류 대회에서 …</strong</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-분류-베이스-라인-잡기"> <span class="nav-number">1.1.2</span> <span class="nav-text">이미지 분류 베이스 라인 잡기</strong</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-데이터-확인-"> <span class="nav-number">1.2</span> <span class="nav-text"> 데이터 확인 </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지-경로-클래스를-칼럼으로-갖는-데이터프레임-만들기"> <span class="nav-number">1.3</span> <span class="nav-text">이미지 경로, 클래스를 칼럼으로 갖는 데이터프레임 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-valid-셋-만들기"> <span class="nav-number">1.4</span> <span class="nav-text">Train, Valid 셋 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#keras의-imagedatagenerator-사용하여-데이터-전처리"> <span class="nav-number">1.5</span> <span class="nav-text">keras의 ImageDataGenerator 사용하여 데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#data-augmentation"> <span class="nav-number">1.5.1</span> <span class="nav-text">Data Augmentation</code</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#flow_from_dataframe-옵션"> <span class="nav-number">1.5.2</span> <span class="nav-text">flow_from_dataframe 옵션</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델링"> <span class="nav-number">1.6</span> <span class="nav-text">모델링</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#전이학습transfer-learning"> <span class="nav-number">1.7</span> <span class="nav-text">전이학습(Transfer Learning)</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#imagenet-등의-빅데이터로-학습된-모델을-가져와-쓰기"> <span class="nav-number">1.7.1</span> <span class="nav-text">Imagenet 등의 빅데이터로 학습된 모델을 가져와 쓰기</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#callbacks-옵션"> <span class="nav-number">1.8</span> <span class="nav-text">Callbacks 옵션</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#여러가지-기법들로-모델-성능-높이기"> <span class="nav-number">1.8.1</span> <span class="nav-text">여러가지 기법들로 모델 성능 높이기</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#제출하기"> <span class="nav-number">1.9</span> <span class="nav-text">제출하기</font</span> </a> </li> </ol> </li>
+    </ol>
+  </div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Seung Hyun Lee</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://jekyllrb.com">Jekyll</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/simpleyyt/jekyll-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/assets/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/assets/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/assets/js/src/post-details.js?v=5.1.1"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+  
+
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
+

@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://localhost:4000/foo/2013/12/25/tags/</loc>
-<lastmod>2013-12-25T08:29:53+09:00</lastmod>
+<loc>http://localhost:4000/classification/2020/12/23/ComputerVision/</loc>
+<lastmod>2020-12-23T01:04:00+09:00</lastmod>
 </url>
 <url>
-<loc>http://localhost:4000/foo/bar/baz/2013/12/25/categories/</loc>
-<lastmod>2013-12-25T08:30:09+09:00</lastmod>
+<loc>http://localhost:4000/classification/2021/01/01/dogvscat/</loc>
+<lastmod>2021-01-01T21:01:00+09:00</lastmod>
 </url>
 <url>
-<loc>http://localhost:4000/tutorial/2017/07/20/next-tutorial/</loc>
-<lastmod>2017-07-20T00:00:00+09:00</lastmod>
+<loc>http://localhost:4000/classification/2021/01/06/plantseedlings/</loc>
+<lastmod>2021-01-06T23:43:00+09:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/classification/2021/01/14/statefarm/</loc>
+<lastmod>2021-01-14T22:15:00+09:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/classification/2021/01/21/invasive/</loc>
+<lastmod>2021-01-21T18:59:00+09:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/classification/2021/01/24/bowl/</loc>
+<lastmod>2021-01-24T15:00:00+09:00</lastmod>
 </url>
 <url>
 <loc>http://localhost:4000/</loc>
