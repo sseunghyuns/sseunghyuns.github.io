@@ -435,7 +435,7 @@
 
 
 
-  <h1 id="대회-소개"><font color="darkblue">대회 소개</font></h1>
+  <h2 id="대회-소개"><font color="darkblue">대회 소개</font></h2>
 <p><strong>개와 고양이 이미지를 분류하는 대회</strong></p>
 
 <h3 id="dogs-vs-cats-redux-kernels-edition">Dogs vs. Cats Redux: Kernels Edition</h3>
@@ -453,7 +453,6 @@
 <p>We are excited to bring back the infamous Dogs vs. Cats classification problem as a playground competition with kernels enabled. Although modern techniques may make light of this once-difficult problem, it is through practice of new techniques on old datasets that we will make light of machine learning’s future challenges.</p>
 
 <hr />
-<p><br /></p>
 
 <h2 id="데이터-준비-및-확인"><font color="blue">데이터 준비 및 확인</font></h2>
 
@@ -492,7 +491,6 @@
 </ul>
 
 <hr />
-<p><br /></p>
 
 <h2 id="-데이터-확인-"><font color="blue"> 데이터 확인 </font></h2>
 
@@ -511,7 +509,6 @@
 <p><img src="/assets/img/notebook/dogvscat/dogs-vs-cats_4_0.png" alt="png" /></p>
 
 <hr />
-<p><br /></p>
 
 <h2 id="이미지-경로-클래스를-칼럼으로-갖는-데이터프레임-만들기"><font color="blue">이미지 경로, 클래스를 칼럼으로 갖는 데이터프레임 만들기</font></h2>
 
@@ -605,7 +602,6 @@
 </div>
 
 <hr />
-<p><br /></p>
 
 <h2 id="train-valid-셋-만들기"><font color="blue">Train, Valid 셋 만들기</font></h2>
 
@@ -618,7 +614,6 @@
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
-<p><br /></p>
 
 <h2 id="keras의-imagedatagenerator-사용하여-데이터-전처리"><font color="blue">keras의 ImageDataGenerator 사용하여 데이터 전처리</font></h2>
 
@@ -682,7 +677,6 @@ Found 5000 validated image filenames belonging to 2 classes.
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
-<p><br /></p>
 
 <h2 id="모델링"><font color="blue">모델링</font></h2>
 
@@ -792,7 +786,6 @@ Epoch 10/10
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
-<p><br /></p>
 
 <ul>
   <li>모델 Summary</li>
@@ -840,7 +833,6 @@ _________________________________________________________________
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
-<p><br /></p>
 
 <h2 id="전이학습transfer-learning"><font color="blue">전이학습(Transfer Learning)</font></h2>
 
@@ -881,7 +873,6 @@ _________________________________________________________________
 </ul>
 
 <hr />
-<p><br /></p>
 
 <h2 id="callbacks-옵션"><font color="blue">Callbacks 옵션</font></h2>
 
@@ -978,7 +969,6 @@ Epoch 4/100
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
-<p><br /></p>
 
 <h2 id="제출하기"><font color="blue">제출하기</font></h2>
 <ul>
@@ -1029,6 +1019,8 @@ Epoch 4/100
 <ul>
   <li><code class="highlighter-rouge">lable</code>이 <code class="highlighter-rouge">id</code>와 매핑되도록 바꿔줘야한다.현재 모델은 <code class="highlighter-rouge">test['path']</code>의 순서대로 예측값을 계산했는데, <code class="highlighter-rouge">sub['id']</code>는 index가 0부터이다.</li>
 </ul>
+
+<hr />
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">"sub.csv"</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> 
 </code></pre></td></tr></tbody></table></div></div>
@@ -1208,7 +1200,7 @@ Epoch 4/100
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">포스트</span>
               </a>
             </div>
@@ -1219,7 +1211,7 @@ Epoch 4/100
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">카테고리</span>
               </a>
             </div>
@@ -1230,7 +1222,7 @@ Epoch 4/100
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">태그</span>
               </a>
             </div>
@@ -1312,7 +1304,7 @@ Epoch 4/100
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-1"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-준비-및-확인"> <span class="nav-number">1.1</span> <span class="nav-text">데이터 준비 및 확인</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-분류-대회에서-"> <span class="nav-number">1.1.1</span> <span class="nav-text">이미지 분류 대회에서 …</strong</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-분류-베이스-라인-잡기"> <span class="nav-number">1.1.2</span> <span class="nav-text">이미지 분류 베이스 라인 잡기</strong</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-데이터-확인-"> <span class="nav-number">1.2</span> <span class="nav-text"> 데이터 확인 </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지-경로-클래스를-칼럼으로-갖는-데이터프레임-만들기"> <span class="nav-number">1.3</span> <span class="nav-text">이미지 경로, 클래스를 칼럼으로 갖는 데이터프레임 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-valid-셋-만들기"> <span class="nav-number">1.4</span> <span class="nav-text">Train, Valid 셋 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#keras의-imagedatagenerator-사용하여-데이터-전처리"> <span class="nav-number">1.5</span> <span class="nav-text">keras의 ImageDataGenerator 사용하여 데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#data-augmentation"> <span class="nav-number">1.5.1</span> <span class="nav-text">Data Augmentation</code</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#flow_from_dataframe-옵션"> <span class="nav-number">1.5.2</span> <span class="nav-text">flow_from_dataframe 옵션</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델링"> <span class="nav-number">1.6</span> <span class="nav-text">모델링</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#전이학습transfer-learning"> <span class="nav-number">1.7</span> <span class="nav-text">전이학습(Transfer Learning)</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#imagenet-등의-빅데이터로-학습된-모델을-가져와-쓰기"> <span class="nav-number">1.7.1</span> <span class="nav-text">Imagenet 등의 빅데이터로 학습된 모델을 가져와 쓰기</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#callbacks-옵션"> <span class="nav-number">1.8</span> <span class="nav-text">Callbacks 옵션</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#여러가지-기법들로-모델-성능-높이기"> <span class="nav-number">1.8.1</span> <span class="nav-text">여러가지 기법들로 모델 성능 높이기</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#제출하기"> <span class="nav-number">1.9</span> <span class="nav-text">제출하기</font</span> </a> </li> </ol> </li>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#dogs-vs-cats-redux-kernels-edition"> <span class="nav-number">1.1</span> <span class="nav-text">Dogs vs. Cats Redux: Kernels Edition</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-준비-및-확인"> <span class="nav-number">2</span> <span class="nav-text">데이터 준비 및 확인</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-분류-대회에서-"> <span class="nav-number">2.1</span> <span class="nav-text">이미지 분류 대회에서 …</strong</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-분류-베이스-라인-잡기"> <span class="nav-number">2.2</span> <span class="nav-text">이미지 분류 베이스 라인 잡기</strong</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-데이터-확인-"> <span class="nav-number">3</span> <span class="nav-text"> 데이터 확인 </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지-경로-클래스를-칼럼으로-갖는-데이터프레임-만들기"> <span class="nav-number">4</span> <span class="nav-text">이미지 경로, 클래스를 칼럼으로 갖는 데이터프레임 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-valid-셋-만들기"> <span class="nav-number">5</span> <span class="nav-text">Train, Valid 셋 만들기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#keras의-imagedatagenerator-사용하여-데이터-전처리"> <span class="nav-number">6</span> <span class="nav-text">keras의 ImageDataGenerator 사용하여 데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#data-augmentation"> <span class="nav-number">6.1</span> <span class="nav-text">Data Augmentation</code</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#flow_from_dataframe-옵션"> <span class="nav-number">6.2</span> <span class="nav-text">flow_from_dataframe 옵션</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델링"> <span class="nav-number">7</span> <span class="nav-text">모델링</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#전이학습transfer-learning"> <span class="nav-number">8</span> <span class="nav-text">전이학습(Transfer Learning)</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#imagenet-등의-빅데이터로-학습된-모델을-가져와-쓰기"> <span class="nav-number">8.1</span> <span class="nav-text">Imagenet 등의 빅데이터로 학습된 모델을 가져와 쓰기</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#callbacks-옵션"> <span class="nav-number">9</span> <span class="nav-text">Callbacks 옵션</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#여러가지-기법들로-모델-성능-높이기"> <span class="nav-number">9.1</span> <span class="nav-text">여러가지 기법들로 모델 성능 높이기</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#제출하기"> <span class="nav-number">10</span> <span class="nav-text">제출하기</font</span> </a> </li>
     </ol>
   </div>
             

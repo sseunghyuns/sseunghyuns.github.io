@@ -1,0 +1,2287 @@
+
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/assets/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/assets/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Deep Learning,CNN,Computer Vision,Tensorflow,Segmentation,U-net," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="대회 소개 지표면의 소금 영역 검출하기">
+<meta name="keywords" content="Deep Learning, CNN, Computer Vision, Tensorflow, Segmentation, U-net">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TGS Salt Identification Challenge(Segmentation)">
+<meta property="og:url" content="http://localhost:4000/segmentation/2021/02/15/tgs_salt/">
+<meta property="og:site_name" content="Seung Hyun's Blog">
+<meta property="og:description" content="대회 소개 지표면의 소금 영역 검출하기">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="/assets/img/notebook/tgs_salt/tgs_salt_5_0.png">
+<meta property="og:image" content="/assets/img/notebook/tgs_salt/tgs_salt_8_0.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TGS Salt Identification Challenge(Segmentation)">
+<meta name="twitter:description" content="대회 소개 지표면의 소금 영역 검출하기">
+<meta name="twitter:image" content="/assets/img/notebook/tgs_salt/tgs_salt_5_0.png">
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '작성자'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://localhost:4000/"/>
+
+
+
+
+
+  <title>TGS Salt Identification Challenge(Segmentation) | Seung Hyun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="ko">
+
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Seung Hyun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">이승현의 깃허브 블로그</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            홈
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            카테고리
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            아카이브
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            태그
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            검색
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="" spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+<div id="posts" class="posts-expand">
+  
+  
+
+  
+
+  
+  
+  
+
+  <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/segmentation/2021/02/15/tgs_salt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Seunghyun Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/assets/images/profile.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Seung Hyun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+          
+          
+            TGS Salt Identification Challenge(Segmentation)
+          
+        </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">작성일</span>
+              
+              <time title="" itemprop="dateCreated datePublished" datetime="2021-02-15T21:24:00+09:00">
+                2021-02-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/Segmentation" itemprop="url" rel="index">
+                    <span itemprop="name">Segmentation</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 id="대회-소개"><font color="darkblue">대회 소개</font></h2>
+<p><strong>지표면의 소금 영역 검출하기</strong></p>
+
+<h3 id="tgs-salt-identification-challenge">TGS Salt Identification Challenge</h3>
+<p><strong>Segment salt deposits beneath the Earth’s surface</strong><br />
+<a href="https://www.kaggle.com/c/tgs-salt-identification-challenge/overview">https://www.kaggle.com/c/tgs-salt-identification-challenge/overview</a></p>
+
+<hr />
+
+<p><strong><em>Description</em></strong></p>
+
+<p>Several areas of Earth with large accumulations of oil and gas also have huge deposits of salt below the surface.</p>
+
+<p>But unfortunately, knowing where large salt deposits are precisely is very difficult. Professional seismic imaging still requires expert human interpretation of salt bodies. This leads to very subjective, highly variable renderings. More alarmingly, it leads to potentially dangerous situations for oil and gas company drillers.</p>
+
+<p>To create the most accurate seismic images and 3D renderings, TGS (the world’s leading geoscience data company) is hoping Kaggle’s machine learning community will be able to build an algorithm that automatically and accurately identifies if a subsurface target is salt or not.</p>
+
+<hr />
+
+<h2 id="패키기-불러오기"><font color="blue">패키기 불러오기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span> 
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm_notebook</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">load_img</span><span class="p">,</span> <span class="n">img_to_array</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">resize</span>
+
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">Conv2DTranspose</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">ReduceLROnPlateau</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">for</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s">'/kaggle/input'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7</pre></td><td class="code"><pre class="highlight"><code>/kaggle/input/tgs-salt-identification-challenge/depths.csv
+/kaggle/input/tgs-salt-identification-challenge/sample_submission.csv
+/kaggle/input/tgs-salt-identification-challenge/train.zip
+/kaggle/input/tgs-salt-identification-challenge/competition_data.zip
+/kaggle/input/tgs-salt-identification-challenge/test.zip
+/kaggle/input/tgs-salt-identification-challenge/train.csv
+/kaggle/input/tgs-salt-identification-challenge/flamingo.zip
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="데이터-불러오기"><font color="blue">데이터 불러오기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s">'../input/tgs-salt-identification-challenge/train.zip'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">z</span> <span class="p">:</span> 
+    <span class="n">z</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s">'train'</span><span class="p">)</span>
+    
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s">'../input/tgs-salt-identification-challenge/test.zip'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">z</span> <span class="p">:</span> 
+    <span class="n">z</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s">'test'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'../input/tgs-salt-identification-challenge/train.csv'</span><span class="p">)</span>
+<span class="n">depth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'../input/tgs-salt-identification-challenge/depths.csv'</span><span class="p">)</span>
+<span class="n">train</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>rle_mask</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>575d24d81d</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>a266a2a9df</td>
+      <td>5051 5151</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>75efad62c1</td>
+      <td>9 93 109 94 210 94 310 95 411 95 511 96 612 96...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>34e51dba6a</td>
+      <td>48 54 149 54 251 53 353 52 455 51 557 50 659 4...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4875705fb0</td>
+      <td>1111 1 1212 1 1313 1 1414 1 1514 2 1615 2 1716...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>3995</th>
+      <td>9cbd5ddba4</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3996</th>
+      <td>caa039b231</td>
+      <td>2398 7 2499 11 2600 16 2700 22 2801 26 2901 29...</td>
+    </tr>
+    <tr>
+      <th>3997</th>
+      <td>1306fcee4c</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3998</th>
+      <td>48d81e93d9</td>
+      <td>2828 1 2927 3 3026 5 3126 6 3225 8 3324 10 342...</td>
+    </tr>
+    <tr>
+      <th>3999</th>
+      <td>edf1e6ac00</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>4000 rows × 2 columns</p>
+</div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="n">images</span><span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">'./train/images/*'</span><span class="p">)</span>
+<span class="n">masks</span><span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">'./train/masks/*'</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/tgs_salt/tgs_salt_5_0.png" alt="png" /></p>
+
+<hr />
+
+<h2 id="이미지원본-및-마스크-확인하기"><font color="blue">이미지(원본 및 마스크) 확인하기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">images_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">'images'</span> <span class="p">:</span> <span class="n">images</span><span class="p">,</span>
+                         <span class="s">'masks'</span> <span class="p">:</span> <span class="n">masks</span><span class="p">})</span>
+<span class="n">images_df</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>images</th>
+      <th>masks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>./train/images/46f402dcd5.png</td>
+      <td>./train/masks/46f402dcd5.png</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>./train/images/a56e87840f.png</td>
+      <td>./train/masks/a56e87840f.png</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>./train/images/2af3c055b2.png</td>
+      <td>./train/masks/2af3c055b2.png</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>./train/images/7c61d788af.png</td>
+      <td>./train/masks/7c61d788af.png</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>./train/images/ef654c1b73.png</td>
+      <td>./train/masks/ef654c1b73.png</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>3995</th>
+      <td>./train/images/14152a6731.png</td>
+      <td>./train/masks/14152a6731.png</td>
+    </tr>
+    <tr>
+      <th>3996</th>
+      <td>./train/images/418b7878a8.png</td>
+      <td>./train/masks/418b7878a8.png</td>
+    </tr>
+    <tr>
+      <th>3997</th>
+      <td>./train/images/106e4043ba.png</td>
+      <td>./train/masks/106e4043ba.png</td>
+    </tr>
+    <tr>
+      <th>3998</th>
+      <td>./train/images/bce104494c.png</td>
+      <td>./train/masks/bce104494c.png</td>
+    </tr>
+    <tr>
+      <th>3999</th>
+      <td>./train/images/27a240a570.png</td>
+      <td>./train/masks/27a240a570.png</td>
+    </tr>
+  </tbody>
+</table>
+<p>4000 rows × 2 columns</p>
+</div>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15</pre></td><td class="code"><pre class="highlight"><code><span class="n">fig</span> <span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">images_df</span><span class="p">))</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">images_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">))</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">images_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">))</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">))</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="n">index</span><span class="o">//</span><span class="mi">5</span> <span class="p">,</span> <span class="n">index</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">index</span><span class="o">//</span><span class="mi">5</span> <span class="p">,</span> <span class="n">index</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">f</span><span class="s">'Image {index}'</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">index</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span>  <span class="n">index</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+    
+    <span class="n">axes</span><span class="p">[</span><span class="n">index</span><span class="o">//</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span> <span class="p">,</span> <span class="n">index</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">index</span><span class="o">//</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span> <span class="p">,</span> <span class="n">index</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">f</span><span class="s">'Mask {index}'</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">index</span><span class="o">//</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>  <span class="n">index</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>    
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/tgs_salt/tgs_salt_8_0.png" alt="png" /></p>
+
+<hr />
+
+<h2 id="데이터-전처리"><font color="blue">데이터 전처리</font></h2>
+
+<ul>
+  <li><code class="highlighter-rouge">segmentation</code> 대회의 정답값은 예전 <code class="highlighter-rouge">classification</code> 대회처럼 클라스 값이 아니라 이미지이다.</li>
+  <li>Input image에서 소금인 영역을 찾아내야 한다.</li>
+  <li>
+    <p>따라서 예전처럼 <code class="highlighter-rouge">ImageDataGenerator</code>로 데이터를 처리하기 까다롭기 때문에 직접 데이터셋을 <code class="highlighter-rouge">customizing</code> 해보자.</p>
+  </li>
+  <li><code class="highlighter-rouge">segmentation</code> 에서는 <code class="highlighter-rouge">UNet</code> 모델을 가장 많이 사용한다.
+    <ul>
+      <li>모델을 직접 쌓아보면 알겠지만 이미지의 사이즈가 2의 거듭제곱 형태이면 편하다.</li>
+      <li>U 형태로 feature extraction이 이루어지고, 밑으로 갈수록 이미지의 크기는 작아지지만 채널 수가 늘어나는 특징이 있다.</li>
+      <li>이진분류, 다중분류 등에 사용된다.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="train-dataset-전처리하기"><font color="green">Train Dataset 전처리하기</font></h3>
+
+<ul>
+  <li>
+    <p>대부분 <code class="highlighter-rouge">ImageDataGenerator</code>로 이미지 전처리가 가능하지만, 몇몇 대회에선 이미지 형태에 따라 전처리를 직접 해야하는 경우가 있다. 어떤한 데이터 형태든 다룰 수 있도록 직접 전처리 하는 방법들을 익혀두자.</p>
+  </li>
+  <li>
+    <p>먼저 데이터를 담을 빈 그릇을 만든다.</p>
+    <ul>
+      <li>빈 그릇을 만들 때 너비, 높이 뿐만 아니라 채널을 잊지 말고 설정해주자.</li>
+      <li>이미지의 RGB 픽셀 값들을 보면 모두 같음을 알수 있다. 학습 속도 향상을 위해 하나의 채널만 사용하자.</li>
+      <li>image 데이터 타입은 가장 효율적으로 정보를 담을 수 있는 <code class="highlighter-rouge">dtype = np.uint8</code>으로 설정한다.
+        <ul>
+          <li>양수만 표현 가능하다.</li>
+          <li>2^8 개수 만큼 표현 가능하다.(0 ~ 255)</li>
+        </ul>
+      </li>
+      <li>y 데이터 타입은 <code class="highlighter-rouge">dtype = np.bool</code>로 설정한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="c"># All the values are same</span>
+<span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]))[:,:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]))[:,:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]))[:,:,</span><span class="mi">2</span><span class="p">]</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7</pre></td><td class="code"><pre class="highlight"><code>array([[206, 193, 193, ..., 121, 134, 134],
+       [222, 207, 208, ..., 116, 137, 106],
+       [221, 201, 199, ..., 125, 146,  89],
+       ...,
+       [106,  61,  35, ...,  68,  88,  90],
+       [ 86,  70,  61, ...,  85, 112,  91],
+       [ 85,  94,  89, ..., 110, 125,  95]], dtype=uint8)
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h4 id="빈-그릇-만들기"><font color="purple">빈 그릇 만들기</font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4000</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4000</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">bool</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h4 id="이미지-데이터-담기"><font color="purple">이미지 데이터 담기</font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">images</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="mi">4000</span><span class="p">):</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">img_to_array</span><span class="p">(</span><span class="n">image</span><span class="p">)[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="c"># 한 채널값만 사용하기</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>  <span class="c"># (101,101,1) -&gt; (128,128,1)</span>
+    <span class="n">train</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h4 id="mask-데이터-담기"><font color="purple">Mask 데이터 담기</font></h4>
+
+<ul>
+  <li>Mask 데이터는 True, False 형태로 픽셀값이 채워져야 한다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">masks</span><span class="p">),</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">4000</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">img_to_array</span><span class="p">(</span><span class="n">mask</span><span class="p">)[:,:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="train-valid-나누기"><font color="blue">Train, Valid 나누기</font></h2>
+
+<ul>
+  <li><code class="highlighter-rouge">segmentation</code>은 회귀 문제의 느낌이 있다.</li>
+  <li>이미지마다 소금이 들어있는 정도가 다를 수 있으므로, 회귀에서 <code class="highlighter-rouge">y</code>의 비율을 맞추려면 어떻게 해야할까.
+    <ul>
+      <li>소금의 비율 구간을 나눈다.</li>
+      <li>구간별로 추출하면 안정적인 평가 셋이 될 것이다.</li>
+      <li>지금은 우선 <code class="highlighter-rouge">train_test_split</code>으로 일괄적으로 나누자.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">train</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span> 
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="u-net-모델-구축하기"><font color="blue">U-net 모델 구축하기</font></h2>
+
+<ul>
+  <li>Classification 문제에선 주로 <code class="highlighter-rouge"><span class="k">model</span> <span class="p">=</span> <span class="n">Sequential</span><span class="p">()</span></code> 을 사용한 비교적 단순한 모델 구조를 쌓았다.</li>
+  <li>
+    <p>함수를 이용하여 층들을 병렬로 쌓을 수 있는 방법을 적용하자. <code class="highlighter-rouge">Functional API</code> 라고도 부른다.</p>
+  </li>
+  <li>U-net 모델 구조의 특징
+    <ul>
+      <li>출력값의 크기는 Input의 크기와 같다.
+        <ul>
+          <li>이미지 분류 문제에서는 이미지의 크기가 작아지다가 Dense층을 거쳐 확률값으로 나가는 형태인데, Segmentation 문제에서는 input과 output이 똑같은 크기를 갖는다.</li>
+        </ul>
+      </li>
+      <li>각각의 픽셀값이 [0,1] 사이로 출력 되어야 한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="가장-단순한-u-net-구조"><font color="green">가장 단순한 U-net 구조</font></h3>
+
+<ul>
+  <li>UNet에서는 padding 옵션 넣어 이미지의 크기가 줄어드는 것을 방지한다. 기본값인 <code class="highlighter-rouge">valid</code>이면 이미지 크기가 작아진다.</li>
+  <li>0~1 사이로 값이 나가야하므로 출력층에서 <code class="highlighter-rouge">sigmoid</code>를 적용한다.</li>
+  <li>모델을 선언할 때 <code class="highlighter-rouge">input</code>, <code class="highlighter-rouge">output</code>을 명시해준다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="n">inp</span> <span class="o">=</span> <span class="n">Input</span><span class="p">((</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">cnn1</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">inp</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">cnn1</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span> 
+
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14</pre></td><td class="code"><pre class="highlight"><code>Model: "functional_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         [(None, 128, 128, 1)]     0         
+_________________________________________________________________
+conv2d (Conv2D)              (None, 128, 128, 16)      160       
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 128, 128, 1)       17        
+=================================================================
+Total params: 177
+Trainable params: 177
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="u-net-구조-응용하기"><font color="green">U-net 구조 응용하기</font></h3>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">Conv2DTranspose()</code> 층은 줄어든 이미지를 다시 키우기 위한 연산 작업이다. <strong>비선형 학습</strong>이 이루어지지 않기 때문에 <code class="highlighter-rouge">activation</code>함수를 설정해주지 않는다.</p>
+  </li>
+  <li><code class="highlighter-rouge">concatenate</code> 를 통해 사이즈가 같은 층끼리 합쳐준다. 기본적으로 <code class="highlighter-rouge">axis=-1</code>로 설정되어 있어 마지막 축을 기준으로 합쳐진다.</li>
+  <li>아직은 U-net 구조를 깊게 쌓지 않아서 모델의 성능이 높게 나오진 않는다. 다른 하이퍼파라미터 최적화를 끝낸 후, 모델을 더 깊게 쌓아보자.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21</pre></td><td class="code"><pre class="highlight"><code><span class="n">inp</span> <span class="o">=</span> <span class="n">Input</span><span class="p">((</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">cnn1</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">inp</span><span class="p">)</span>  <span class="c"># 128</span>
+
+<span class="n">poo1</span> <span class="o">=</span> <span class="n">MaxPooling2D</span><span class="p">()(</span><span class="n">cnn1</span><span class="p">)</span> <span class="c"># 64</span>
+
+<span class="n">cnn_m</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">poo1</span><span class="p">)</span> <span class="c"># 64</span>
+
+<span class="c"># 층 키우기</span>
+<span class="n">ct1</span> <span class="o">=</span> <span class="n">Conv2DTranspose</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))(</span><span class="n">cnn_m</span><span class="p">)</span> 
+
+<span class="c"># concat</span>
+<span class="n">cc1</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">ct1</span><span class="p">,</span> <span class="n">cnn1</span><span class="p">])</span> <span class="c"># 16+16 = 32 채널</span>
+
+<span class="c"># 학습</span>
+<span class="n">cc1_a</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc1</span><span class="p">)</span>
+
+<span class="n">out</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">cc1_a</span><span class="p">)</span> 
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25</pre></td><td class="code"><pre class="highlight"><code>Model: "functional_3"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_2 (InputLayer)            [(None, 128, 128, 1) 0                                            
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, 128, 128, 16) 160         input_2[0][0]                    
+__________________________________________________________________________________________________
+max_pooling2d (MaxPooling2D)    (None, 64, 64, 16)   0           conv2d_2[0][0]                   
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, 64, 64, 32)   4640        max_pooling2d[0][0]              
+__________________________________________________________________________________________________
+conv2d_transpose (Conv2DTranspo (None, 128, 128, 16) 4624        conv2d_3[0][0]                   
+__________________________________________________________________________________________________
+concatenate (Concatenate)       (None, 128, 128, 32) 0           conv2d_transpose[0][0]           
+                                                                 conv2d_2[0][0]                   
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, 128, 128, 16) 4624        concatenate[0][0]                
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, 128, 128, 1)  17          conv2d_4[0][0]                   
+==================================================================================================
+Total params: 14,065
+Trainable params: 14,065
+Non-trainable params: 0
+__________________________________________________________________________________________________
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">checkpoint</span> <span class="o">=</span> <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="s">'best.h5'</span><span class="p">,</span><span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">reduce_lr</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s">'acc'</span><span class="p">],</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="s">'adam'</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="s">'binary_crossentropy'</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_valid</span><span class="p">,</span><span class="n">y_valid</span><span class="p">),</span> <span class="n">epochs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">early_stop</span><span class="p">,</span> <span class="n">reduce_lr</span><span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s">'best.h5'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20</pre></td><td class="code"><pre class="highlight"><code>Epoch 1/5
+113/113 [==============================] - ETA: 0s - loss: 0.4007 - acc: 0.8342
+Epoch 00001: val_loss did not improve from 0.33124
+113/113 [==============================] - 2s 17ms/step - loss: 0.4007 - acc: 0.8342 - val_loss: 0.3787 - val_acc: 0.8486
+Epoch 2/5
+111/113 [============================&gt;.] - ETA: 0s - loss: 0.3800 - acc: 0.8483
+Epoch 00002: val_loss did not improve from 0.33124
+113/113 [==============================] - 2s 17ms/step - loss: 0.3811 - acc: 0.8476 - val_loss: 0.3752 - val_acc: 0.8534
+Epoch 3/5
+113/113 [==============================] - ETA: 0s - loss: 0.3917 - acc: 0.8393
+Epoch 00003: val_loss did not improve from 0.33124
+113/113 [==============================] - 2s 16ms/step - loss: 0.3917 - acc: 0.8393 - val_loss: 0.3645 - val_acc: 0.8548
+Epoch 4/5
+113/113 [==============================] - ETA: 0s - loss: 0.3846 - acc: 0.8432
+Epoch 00004: val_loss did not improve from 0.33124
+113/113 [==============================] - 2s 16ms/step - loss: 0.3846 - acc: 0.8432 - val_loss: 0.3670 - val_acc: 0.8559
+Epoch 5/5
+111/113 [============================&gt;.] - ETA: 0s - loss: 0.3893 - acc: 0.8416
+Epoch 00005: val_loss did not improve from 0.33124
+113/113 [==============================] - 2s 16ms/step - loss: 0.3899 - acc: 0.8411 - val_loss: 0.3896 - val_acc: 0.8506
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="validation-data를-mean-iou로-평가하기"><font color="blue">Validation Data를 Mean IOU로 평가하기</font></h2>
+
+<ul>
+  <li>대회 점수를 올리기 위해 다음의 과정을 거치게 된다.
+    <ul>
+      <li>(1) 현재의 모델을 최적화하기</li>
+      <li>(2) 모델의 구조를 복잡하게 하기</li>
+    </ul>
+  </li>
+  <li>
+    <p>먼저 주어진 모델을 최적화한 다음 모델 구조를 복잡하게 해야 최소한의 노력, 시간으로 효율적으로 모델 성능을 높일 수 있다.</p>
+  </li>
+  <li>Test 데이터셋을 예측하기 전, 이 대회의 평가 지표인 <code class="highlighter-rouge">Mean IOU</code>로 모델의 성능을 최적화 해보자.</li>
+</ul>
+
+<hr />
+
+<h3 id="validation-dataset-크기-조정하기"><font color="green">Validation Dataset 크기 조정하기</font></h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_valid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">y_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code>13/13 [==============================] - 0s 6ms/step
+(400, 128, 128, 1) (400, 128, 128, 1)
+</code></pre></td></tr></tbody></table></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">Mean IOU</code> 채점 방식 역시 101x101 기준으로 이루어지기 때문에, 이와 같은 조건으로 설정해야 한다.</li>
+  <li>result_valid 및 y_valid의 크기를 바꿔주자.</li>
+</ul>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">result_valid</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">y_valid</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">result_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>(400, 128, 128) (400, 128, 128)
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">,(</span><span class="mi">101</span><span class="p">,</span><span class="mi">101</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result_valid</span><span class="p">])</span>
+<span class="n">y_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">,(</span><span class="mi">101</span><span class="p">,</span><span class="mi">101</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y_valid</span><span class="p">])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">result_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>(400, 101, 101) (400, 101, 101)
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="mean-iou-계산하기"><font color="green">Mean IOU 계산하기</font></h3>
+
+<ul>
+  <li>
+    <p>validation dataset을 이용해 어떤 <code class="highlighter-rouge">threshold</code> 값이 높은 mean IOU 값을 갖는지 확인하자. 적절한 <code class="highlighter-rouge">threshold</code>를 찾아 Test Dataset 예측에 적용한다.</p>
+  </li>
+  <li><code class="highlighter-rouge">threshold</code> 값을 높게 잡으면 보수적으로 예측하게 되어 실제 환자를 건강하다고 예측하는 경우가 발생한다.</li>
+  <li>
+    <p>따라서 의료계에서는 보통 <code class="highlighter-rouge">threshold</code>을 낮게 잡는다.</p>
+  </li>
+  <li><code class="highlighter-rouge">np.linspace(0,1,num)</code> 함수를 이용하여 0~1 사이를 num개의 간격으로 나누자.</li>
+</ul>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60<br/>61<br/>62</pre></td><td class="code"><pre class="highlight"><code><span class="c"># mean IOU 함수 정의</span>
+<span class="k">def</span> <span class="nf">iou_metric</span><span class="p">(</span><span class="n">y_true_in</span><span class="p">,</span> <span class="n">y_pred_in</span><span class="p">,</span> <span class="n">print_table</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">y_true_in</span> <span class="c"># 실제 정답값</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">y_pred_in</span> <span class="c"># 예측값</span>
+    
+    <span class="n">true_objects</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># 소금 / not 소금  </span>
+    <span class="n">pred_objects</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">intersection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="n">true_objects</span><span class="p">,</span> <span class="n">pred_objects</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="c"># 정답값과 비교</span>
+
+    <span class="c"># Compute areas (needed for finding the union between all objects)</span>
+    <span class="n">area_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">true_objects</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">area_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">pred_objects</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">area_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">area_true</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">area_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">area_pred</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># Compute union</span>
+    <span class="n">union</span> <span class="o">=</span> <span class="n">area_true</span> <span class="o">+</span> <span class="n">area_pred</span> <span class="o">-</span> <span class="n">intersection</span>
+
+    <span class="c"># Exclude background from the analysis</span>
+    <span class="n">intersection</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">union</span> <span class="o">=</span> <span class="n">union</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">union</span><span class="p">[</span><span class="n">union</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-9</span>
+
+    <span class="c"># Compute the intersection over union</span>
+    <span class="n">iou</span> <span class="o">=</span> <span class="n">intersection</span> <span class="o">/</span> <span class="n">union</span>
+
+    <span class="c"># Precision helper function</span>
+    <span class="k">def</span> <span class="nf">precision_at</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="n">iou</span><span class="p">):</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">iou</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+        <span class="n">true_positives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>   <span class="c"># Correct objects</span>
+        <span class="n">false_positives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c"># Missed objects</span>
+        <span class="n">false_negatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c"># Extra objects</span>
+        <span class="n">tp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">true_positives</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">false_positives</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">false_negatives</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fn</span>
+
+    <span class="c"># Loop over IoU thresholds</span>
+    <span class="n">prec</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">print_table</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Thresh</span><span class="se">\t</span><span class="s">TP</span><span class="se">\t</span><span class="s">FP</span><span class="se">\t</span><span class="s">FN</span><span class="se">\t</span><span class="s">Prec."</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">):</span>
+        <span class="n">tp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fn</span> <span class="o">=</span> <span class="n">precision_at</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">iou</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">print_table</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"{:1.3f}</span><span class="se">\t</span><span class="s">{}</span><span class="se">\t</span><span class="s">{}</span><span class="se">\t</span><span class="s">{}</span><span class="se">\t</span><span class="s">{:1.3f}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+        <span class="n">prec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">print_table</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"AP</span><span class="se">\t</span><span class="s">-</span><span class="se">\t</span><span class="s">-</span><span class="se">\t</span><span class="s">-</span><span class="se">\t</span><span class="s">{:1.3f}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">prec</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">prec</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">iou_metric_batch</span><span class="p">(</span><span class="n">y_true_in</span><span class="p">,</span> <span class="n">y_pred_in</span><span class="p">):</span> <span class="c"># 0 또는 1로 들어감</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">y_true_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">iou_metric</span><span class="p">(</span><span class="n">y_true_in</span><span class="p">[</span><span class="n">batch</span><span class="p">],</span> <span class="n">y_pred_in</span><span class="p">[</span><span class="n">batch</span><span class="p">])</span>
+        <span class="n">metric</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">thresholds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10</pre></td><td class="code"><pre class="highlight"><code>array([0.        , 0.02040816, 0.04081633, 0.06122449, 0.08163265,
+       0.10204082, 0.12244898, 0.14285714, 0.16326531, 0.18367347,
+       0.20408163, 0.2244898 , 0.24489796, 0.26530612, 0.28571429,
+       0.30612245, 0.32653061, 0.34693878, 0.36734694, 0.3877551 ,
+       0.40816327, 0.42857143, 0.44897959, 0.46938776, 0.48979592,
+       0.51020408, 0.53061224, 0.55102041, 0.57142857, 0.59183673,
+       0.6122449 , 0.63265306, 0.65306122, 0.67346939, 0.69387755,
+       0.71428571, 0.73469388, 0.75510204, 0.7755102 , 0.79591837,
+       0.81632653, 0.83673469, 0.85714286, 0.87755102, 0.89795918,
+       0.91836735, 0.93877551, 0.95918367, 0.97959184, 1.        ])
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">ious</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iou_metric_batch</span><span class="p">(</span><span class="n">y_valid</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">result_valid</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)])</span>
+<span class="n">ious</span>
+</code></pre></td></tr></tbody></table></div></div>
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8</pre></td><td class="code"><pre class="highlight"><code>array([0.5275 , 0.40525, 0.3755 , 0.33625, 0.30225, 0.2725 , 0.2475 ,
+       0.2265 , 0.2185 , 0.2155 , 0.215  , 0.21725, 0.218  , 0.2195 ,
+       0.218  , 0.22275, 0.2265 , 0.229  , 0.2315 , 0.2345 , 0.23775,
+       0.25225, 0.2585 , 0.26075, 0.26475, 0.26525, 0.2745 , 0.274  ,
+       0.27925, 0.28275, 0.29575, 0.29825, 0.31325, 0.31525, 0.3225 ,
+       0.32225, 0.33975, 0.33775, 0.345  , 0.351  , 0.345  , 0.35225,
+       0.35625, 0.36325, 0.381  , 0.39375, 0.399  , 0.4115 , 0.45875,
+       0.5275 ])
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="test-data-예측하기"><font color="blue">Test data 예측하기</font></h2>
+<ul>
+  <li>Train data를 구축했던 것처럼 Test data 역시 같은 방식으로 전처리 해주자.</li>
+  <li><code class="highlighter-rouge">model.predict()</code> 후 원래 이미지 크기인 <code class="highlighter-rouge">101x101</code>로 resize 해줘야 한다.</li>
+  <li>또한 <code class="highlighter-rouge">np.squeeze()</code>를 사용하여 마지막 차원을 제거해준다. 이미지의 차원도 다시 맞춰줘야 한다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9</pre></td><td class="code"><pre class="highlight"><code><span class="n">test_image</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">'./test/*/*'</span><span class="p">)</span>
+
+<span class="n">test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">test_image</span><span class="p">),</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span> <span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">test_image</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">test_image</span><span class="p">)):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">img_to_array</span><span class="p">(</span><span class="n">img</span><span class="p">)[:,:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">test</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+</code></pre></td></tr></tbody></table></div></div>
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">result</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26</pre></td><td class="code"><pre class="highlight"><code>(18000, 128, 128, 1)
+
+
+
+
+
+array([[[[2.60078728e-01],
+         [3.29250753e-01],
+         [5.30278683e-01],
+         ...,
+         [1.12744577e-01],
+         [3.22315812e-01],
+         [8.85543376e-02]],
+
+        [[4.51777399e-01],
+         [6.17203057e-01],
+         [6.75710499e-01],
+         ...,
+
+        [[1.50929749e-01],
+         [2.73675825e-02],
+         [6.20411597e-02],
+         ...,
+         [1.17766663e-01],
+         [2.22633988e-01],
+         [1.56619608e-01]]]], dtype=float32)
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tnrange</span>
+<span class="n">result_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tnrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)):</span>
+    <span class="n">resized_img</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]),(</span><span class="mi">101</span><span class="p">,</span><span class="mi">101</span><span class="p">))</span> 
+    <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resized_img</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="submission-완료하기"><font color="blue">Submission 완료하기</font></h2>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">segmentation</code> 대회에서는 보통 각 픽셀별로 확률값 자체를 제출하지 않는다. 지금 이 대회만 보더라도 이미지 하나에 101x101 = 10201개의 픽셀이 존자하고, 총 18000개의 테스트 이미지로 183618000 개의 확률값이 나오게 된다. 이 값들을 그대로 재출 시 엄청난 양의 연산이 채점에 필요하게 될 것이므로, kaggle 측에서는 보통 대회와는 조금 다른 제출 방식을 요구하고 있다.</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">run-length encoding</code> 로 픽셀 값들을 바꿔준 뒤 제출을 해야 자신의 점수를 제대로 확인할 수 있다.</p>
+    <ul>
+      <li><strong>(1)</strong> 기본적으로 <code class="highlighter-rouge">0.5</code>보다 확률값이 높으면 1, 아니면 0으로 바꿔주자.
+        <ul>
+          <li><code class="highlighter-rouge">0.5</code> 역시 하이퍼파라미터로, 최적의 값을 찾아줘야 한다.</li>
+        </ul>
+      </li>
+      <li><strong>(2)</strong> 픽셀 값들을 <code class="highlighter-rouge">run-length encoding</code>로 바꿔준다. 1의 시작점과 시작점부터 <strong>run-length</strong>의 값이 한 쌍이 된다.
+        <ul>
+          <li>예를 들어, 000111001111 의 픽셀 값은 <code class="highlighter-rouge">3 3 8 4</code>로 표현된다.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="-run-length-encoding-함수"><font color="green"> Run-Length Encoding 함수</font></h3>
+
+<ul>
+  <li>run-length encoding 함수를 정의하고, 추출된 예측값을 dictionary 형태로 저장한다.</li>
+  <li>dictionary로 저장시, key값은 test image의 주소, value 값은 run-length 인코딩된 값이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">rle_encode</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="s">'''
+    im: numpy array, 1 - mask(소금), 0 - background(소금X)
+    Returns run length as string formated
+    '''</span>
+    <span class="n">pixels</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span> <span class="o">=</span> <span class="s">'F'</span><span class="p">,</span> <span class="p">)</span>                  <span class="c"># 101 X 101 Flatten in column-major (Fortran- style) order</span>
+    <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pixels</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>         <span class="c"># 양 끝 zero padding</span>
+    <span class="n">runs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pixels</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">pixels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">runs</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">runs</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>                             <span class="c"># [1::2] : index 1 부터 끝까지 두 칸 간격으로</span>
+    
+    <span class="k">return</span> <span class="s">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">)</span>               <span class="c"># 띄어쓰기 기준으로 나눔</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span> <span class="p">:</span> <span class="n">rle_encode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">result_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>  <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_notebook</span><span class="p">(</span><span class="n">test_image</span><span class="p">))}</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result_dict</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code>{'./test/images/ca0030c4ed.png': '46 7 103 1 106 1 149 6 204 1 207 1 249 6 324 6 352 1 424 2 3314 3 3416 1 4225 6 5793 4 5892 9 5992 11 6094 13 6196 8 6259 1 6298 1 6300 3 6505 7 6606 6', 
+.
+.
+.
+'./test/images/d809054e30.png': '6315 1 6416 1 6517 1 10099 1 10200 1', './test/images/4f7b28dcba.png': '8055 1 8155 3 8257 1'}
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="최종-제출"><font color="green">최종 제출</font></h3>
+
+<ul>
+  <li>기존의 제출 형식(칼럼 이름, 각 칼럼에 들어가는 값)을 확인하자.</li>
+  <li>Dictionary 형태로 만들어둔 result 값을 제출 형식에 맞게 변형한다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'/kaggle/input/tgs-salt-identification-challenge/sample_submission.csv'</span><span class="p">)</span>
+<span class="n">sub</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>rle_mask</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>155410d6fa</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>78b32781d1</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>63db2a476a</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>17bfcdb967</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>7ea0fd3c88</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>17995</th>
+      <td>c78063e0a6</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>17996</th>
+      <td>bfcdcd2720</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>17997</th>
+      <td>07c3553ef7</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>17998</th>
+      <td>9c2e45bf79</td>
+      <td>1 1</td>
+    </tr>
+    <tr>
+      <th>17999</th>
+      <td>41d0f0703c</td>
+      <td>1 1</td>
+    </tr>
+  </tbody>
+</table>
+<p>18000 rows × 2 columns</p>
+</div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">result_dict</span><span class="p">,</span><span class="n">orient</span> <span class="o">=</span> <span class="s">'index'</span><span class="p">)</span> <span class="c"># if the keys should be rows, pass 'index'</span>
+<span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s">'index'</span><span class="p">:</span> <span class="s">'id'</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="s">'rle_mask'</span><span class="p">})</span> <span class="c"># rename column names</span>
+<span class="n">sub_df</span><span class="p">[</span><span class="s">'id'</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sub_df</span><span class="p">[</span><span class="s">'id'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sub_df</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>rle_mask</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ca0030c4ed</td>
+      <td>46 7 103 1 106 1 149 6 204 1 207 1 249 6 324 6...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>e8bec3476b</td>
+      <td>103 1 1432 1 2539 2 2738 5 2747 2 2843 8 2945 ...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4d5bd7f272</td>
+      <td>1 1 3 91 102 95 203 93 304 91 405 91 506 89 60...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>f6b8b2edef</td>
+      <td>1 1 3 97 102 909 1012 100 1113 100 1214 100 13...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>b4916183a5</td>
+      <td>75 17 176 17 277 17 378 17 478 19 579 20 674 1...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>17995</th>
+      <td>aa0a7a440e</td>
+      <td>17 8 27 37 67 9 106 1 114 49 167 4 194 2 201 2...</td>
+    </tr>
+    <tr>
+      <th>17996</th>
+      <td>95eb72bdc1</td>
+      <td>1 1 3 28 102 29 203 4 304 2 405 3 506 3 607 3 ...</td>
+    </tr>
+    <tr>
+      <th>17997</th>
+      <td>a58f7bf642</td>
+      <td>78 3 88 3 95 1 187 4 288 3 389 1 2724 2 2827 2...</td>
+    </tr>
+    <tr>
+      <th>17998</th>
+      <td>d809054e30</td>
+      <td>6315 1 6416 1 6517 1 10099 1 10200 1</td>
+    </tr>
+    <tr>
+      <th>17999</th>
+      <td>4f7b28dcba</td>
+      <td>8055 1 8155 3 8257 1</td>
+    </tr>
+  </tbody>
+</table>
+<p>18000 rows × 2 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">sub_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'sub_segmentation.csv'</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            
+            <a href="/tag/#/Deep%20Learning" rel="tag"># Deep Learning</a>
+          
+            
+            <a href="/tag/#/CNN" rel="tag"># CNN</a>
+          
+            
+            <a href="/tag/#/Computer%20Vision" rel="tag"># Computer Vision</a>
+          
+            
+            <a href="/tag/#/Tensorflow" rel="tag"># Tensorflow</a>
+          
+            
+            <a href="/tag/#/Segmentation" rel="tag"># Segmentation</a>
+          
+            
+            <a href="/tag/#/U-net" rel="tag"># U-net</a>
+          
+        </div>
+      
+
+      
+      
+      
+      
+      
+
+      
+      
+        <div class="post-nav" id="post-nav-id">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/classification/2021/01/24/bowl/" rel="prev" title="National Data Science Bowl(Classification)">
+                National Data Science Bowl(Classification) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+      
+
+      
+    </footer>
+  </article>
+
+  <div class="post-spread">
+    
+  </div>
+</div>
+
+
+
+<head>
+    <!-- Begin section for dataframe table formatting -->
+    <style type="text/css">
+    table.dataframe {
+        width: 100%;
+        height: 240px;
+        display: block;
+        overflow: auto;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+    }
+    table.dataframe th {
+      font-weight: bold;
+      padding: 4px;
+    }
+    table.dataframe td {
+      padding: 4px;
+    }
+    table.dataframe tr:hover {
+      background: #b8d1f3; 
+    }
+    </style>
+    <!-- End section for dataframe table formatting -->
+  </head>
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        
+        
+        
+
+
+
+
+
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            목차
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            흝어보기
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/assets/images/profile.jpg"
+               alt="Seunghyun Lee" />
+          <p class="site-author-name" itemprop="name">Seunghyun Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">포스트</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">카테고리</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">태그</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://github.com/sseunghyuns" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/%EC%8A%B9%ED%98%84-%EC%9D%B4-6b2a371a6/" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.rocketpunch.com/@kannasta9621" target="_blank" title="RoketPunch">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  RoketPunch
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+            
+              <div class="post-toc-content">
+    <ol class=nav>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#tgs-salt-identification-challenge"> <span class="nav-number">1.1</span> <span class="nav-text">TGS Salt Identification Challenge</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키기-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키기 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">3</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지원본-및-마스크-확인하기"> <span class="nav-number">4</span> <span class="nav-text">이미지(원본 및 마스크) 확인하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-전처리"> <span class="nav-number">5</span> <span class="nav-text">데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#train-dataset-전처리하기"> <span class="nav-number">5.1</span> <span class="nav-text">Train Dataset 전처리하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#빈-그릇-만들기"> <span class="nav-number">5.1.1</span> <span class="nav-text">빈 그릇 만들기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-데이터-담기"> <span class="nav-number">5.1.2</span> <span class="nav-text">이미지 데이터 담기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#mask-데이터-담기"> <span class="nav-number">5.1.3</span> <span class="nav-text">Mask 데이터 담기</font</span> </a> </li> </ol> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-valid-나누기"> <span class="nav-number">6</span> <span class="nav-text">Train, Valid 나누기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#u-net-모델-구축하기"> <span class="nav-number">7</span> <span class="nav-text">U-net 모델 구축하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#가장-단순한-u-net-구조"> <span class="nav-number">7.1</span> <span class="nav-text">가장 단순한 U-net 구조</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#u-net-구조-응용하기"> <span class="nav-number">7.2</span> <span class="nav-text">U-net 구조 응용하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#validation-data를-mean-iou로-평가하기"> <span class="nav-number">8</span> <span class="nav-text">Validation Data를 Mean IOU로 평가하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#validation-dataset-크기-조정하기"> <span class="nav-number">8.1</span> <span class="nav-text">Validation Dataset 크기 조정하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#mean-iou-계산하기"> <span class="nav-number">8.2</span> <span class="nav-text">Mean IOU 계산하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#test-data-예측하기"> <span class="nav-number">9</span> <span class="nav-text">Test data 예측하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#submission-완료하기"> <span class="nav-number">10</span> <span class="nav-text">Submission 완료하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-run-length-encoding-함수"> <span class="nav-number">10.1</span> <span class="nav-text"> Run-Length Encoding 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#최종-제출"> <span class="nav-number">10.2</span> <span class="nav-text">최종 제출</font</span> </a> </li> </ol> </li>
+    </ol>
+  </div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Seunghyun Lee</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://jekyllrb.com">Jekyll</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/simpleyyt/jekyll-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/assets/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/assets/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/assets/js/src/post-details.js?v=5.1.1"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+  
+
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
+
