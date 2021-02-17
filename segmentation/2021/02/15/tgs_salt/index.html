@@ -119,6 +119,7 @@
 <meta property="og:locale" content="ko">
 <meta property="og:image" content="/assets/img/notebook/tgs_salt/tgs_salt_5_0.png">
 <meta property="og:image" content="/assets/img/notebook/tgs_salt/tgs_salt_8_0.png">
+<meta property="og:image" content="/assets/img/notebook/tgs_salt/segmentation_41_1.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TGS Salt Identification Challenge(Segmentation)">
 <meta name="twitter:description" content="대회 소개 지표면의 소금 영역 검출하기">
@@ -892,52 +893,128 @@ _________________________________________________________________
   <li>아직은 U-net 구조를 깊게 쌓지 않아서 모델의 성능이 높게 나오진 않는다. 다른 하이퍼파라미터 최적화를 끝낸 후, 모델을 더 깊게 쌓아보자.</li>
 </ul>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21</pre></td><td class="code"><pre class="highlight"><code><span class="n">inp</span> <span class="o">=</span> <span class="n">Input</span><span class="p">((</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48</pre></td><td class="code"><pre class="highlight"><code><span class="n">inp</span> <span class="o">=</span> <span class="n">Input</span><span class="p">((</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 
-<span class="n">cnn1</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">inp</span><span class="p">)</span>  <span class="c"># 128</span>
+<span class="n">cnn0</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">inp</span><span class="p">)</span>
+<span class="n">cnn0</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cnn0</span><span class="p">)</span>
+<span class="n">pool0</span> <span class="o">=</span> <span class="n">MaxPooling2D</span><span class="p">()(</span><span class="n">cnn0</span><span class="p">)</span> 
 
-<span class="n">poo1</span> <span class="o">=</span> <span class="n">MaxPooling2D</span><span class="p">()(</span><span class="n">cnn1</span><span class="p">)</span> <span class="c"># 64</span>
+<span class="n">cnn1</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">pool0</span><span class="p">)</span>
+<span class="n">cnn1</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cnn1</span><span class="p">)</span>
+<span class="n">pool1</span> <span class="o">=</span> <span class="n">MaxPooling2D</span><span class="p">()(</span><span class="n">cnn1</span><span class="p">)</span> 
 
-<span class="n">cnn_m</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">poo1</span><span class="p">)</span> <span class="c"># 64</span>
+<span class="n">cnn2</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">pool1</span><span class="p">)</span>
+<span class="n">cnn2</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cnn2</span><span class="p">)</span>
+<span class="n">pool2</span> <span class="o">=</span> <span class="n">MaxPooling2D</span><span class="p">()(</span><span class="n">cnn2</span><span class="p">)</span>
 
-<span class="c"># 층 키우기</span>
-<span class="n">ct1</span> <span class="o">=</span> <span class="n">Conv2DTranspose</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))(</span><span class="n">cnn_m</span><span class="p">)</span> 
+<span class="n">cnn3</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">pool2</span><span class="p">)</span>
+<span class="n">cnn3</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cnn3</span><span class="p">)</span>
+<span class="n">pool3</span> <span class="o">=</span> <span class="n">MaxPooling2D</span><span class="p">()(</span><span class="n">cnn3</span><span class="p">)</span>
 
-<span class="c"># concat</span>
-<span class="n">cc1</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">ct1</span><span class="p">,</span> <span class="n">cnn1</span><span class="p">])</span> <span class="c"># 16+16 = 32 채널</span>
+<span class="n">cnn_m</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">pool3</span><span class="p">)</span>
 
-<span class="c"># 학습</span>
-<span class="n">cc1_a</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc1</span><span class="p">)</span>
 
-<span class="n">out</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">cc1_a</span><span class="p">)</span> 
+<span class="c"># 이미지 크기 키우기</span>
+<span class="n">ct3</span> <span class="o">=</span> <span class="n">Conv2DTranspose</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))(</span><span class="n">cnn_m</span><span class="p">)</span>
+<span class="n">cc3</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">ct3</span><span class="p">,</span> <span class="n">cnn3</span><span class="p">])</span>
+<span class="n">cc3_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc3</span><span class="p">)</span>
+<span class="n">cc3_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc3_up</span><span class="p">)</span>
+
+<span class="n">ct2</span> <span class="o">=</span> <span class="n">Conv2DTranspose</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))(</span><span class="n">cc3_up</span><span class="p">)</span> 
+<span class="n">cc2</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">ct2</span><span class="p">,</span> <span class="n">cnn2</span><span class="p">])</span>
+<span class="n">cc2_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc2</span><span class="p">)</span> 
+<span class="n">cc2_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc2_up</span><span class="p">)</span>
+
+
+<span class="n">ct1</span> <span class="o">=</span> <span class="n">Conv2DTranspose</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))(</span><span class="n">cc2_up</span><span class="p">)</span>
+<span class="n">cc1</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">ct1</span><span class="p">,</span> <span class="n">cnn1</span><span class="p">])</span> 
+<span class="n">cc1_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc1</span><span class="p">)</span> 
+<span class="n">cc1_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc1_up</span><span class="p">)</span>
+
+<span class="n">ct0</span> <span class="o">=</span> <span class="n">Conv2DTranspose</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))(</span><span class="n">cc1_up</span><span class="p">)</span>
+<span class="n">cc0</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">ct0</span><span class="p">,</span> <span class="n">cnn0</span><span class="p">])</span> 
+<span class="n">cc0_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc0</span><span class="p">)</span> 
+<span class="n">cc0_up</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s">'same'</span><span class="p">)(</span><span class="n">cc0_up</span><span class="p">)</span>
+
+<span class="n">out</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">cc0_up</span><span class="p">)</span> 
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="c"># val_loss = 0.1921 </span>
 </code></pre></td></tr></tbody></table></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25</pre></td><td class="code"><pre class="highlight"><code>Model: "functional_3"
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60<br/>61<br/>62<br/>63<br/>64<br/>65<br/>66<br/>67<br/>68<br/>69<br/>70<br/>71<br/>72<br/>73<br/>74</pre></td><td class="code"><pre class="highlight"><code>Model: "functional_5"
 __________________________________________________________________________________________________
 Layer (type)                    Output Shape         Param #     Connected to                     
 ==================================================================================================
-input_2 (InputLayer)            [(None, 128, 128, 1) 0                                            
+input_3 (InputLayer)            [(None, 128, 128, 1) 0                                            
 __________________________________________________________________________________________________
-conv2d_2 (Conv2D)               (None, 128, 128, 16) 160         input_2[0][0]                    
+conv2d_20 (Conv2D)              (None, 128, 128, 8)  80          input_3[0][0]                    
 __________________________________________________________________________________________________
-max_pooling2d (MaxPooling2D)    (None, 64, 64, 16)   0           conv2d_2[0][0]                   
+conv2d_21 (Conv2D)              (None, 128, 128, 8)  584         conv2d_20[0][0]                  
 __________________________________________________________________________________________________
-conv2d_3 (Conv2D)               (None, 64, 64, 32)   4640        max_pooling2d[0][0]              
+max_pooling2d_4 (MaxPooling2D)  (None, 64, 64, 8)    0           conv2d_21[0][0]                  
 __________________________________________________________________________________________________
-conv2d_transpose (Conv2DTranspo (None, 128, 128, 16) 4624        conv2d_3[0][0]                   
+conv2d_22 (Conv2D)              (None, 64, 64, 16)   1168        max_pooling2d_4[0][0]            
 __________________________________________________________________________________________________
-concatenate (Concatenate)       (None, 128, 128, 32) 0           conv2d_transpose[0][0]           
-                                                                 conv2d_2[0][0]                   
+conv2d_23 (Conv2D)              (None, 64, 64, 16)   2320        conv2d_22[0][0]                  
 __________________________________________________________________________________________________
-conv2d_4 (Conv2D)               (None, 128, 128, 16) 4624        concatenate[0][0]                
+max_pooling2d_5 (MaxPooling2D)  (None, 32, 32, 16)   0           conv2d_23[0][0]                  
 __________________________________________________________________________________________________
-conv2d_5 (Conv2D)               (None, 128, 128, 1)  17          conv2d_4[0][0]                   
+conv2d_24 (Conv2D)              (None, 32, 32, 32)   4640        max_pooling2d_5[0][0]            
+__________________________________________________________________________________________________
+conv2d_25 (Conv2D)              (None, 32, 32, 32)   9248        conv2d_24[0][0]                  
+__________________________________________________________________________________________________
+max_pooling2d_6 (MaxPooling2D)  (None, 16, 16, 32)   0           conv2d_25[0][0]                  
+__________________________________________________________________________________________________
+conv2d_26 (Conv2D)              (None, 16, 16, 64)   18496       max_pooling2d_6[0][0]            
+__________________________________________________________________________________________________
+conv2d_27 (Conv2D)              (None, 16, 16, 64)   36928       conv2d_26[0][0]                  
+__________________________________________________________________________________________________
+max_pooling2d_7 (MaxPooling2D)  (None, 8, 8, 64)     0           conv2d_27[0][0]                  
+__________________________________________________________________________________________________
+conv2d_28 (Conv2D)              (None, 8, 8, 128)    73856       max_pooling2d_7[0][0]            
+__________________________________________________________________________________________________
+conv2d_transpose_4 (Conv2DTrans (None, 16, 16, 64)   73792       conv2d_28[0][0]                  
+__________________________________________________________________________________________________
+concatenate_4 (Concatenate)     (None, 16, 16, 128)  0           conv2d_transpose_4[0][0]         
+                                                                 conv2d_27[0][0]                  
+__________________________________________________________________________________________________
+conv2d_29 (Conv2D)              (None, 16, 16, 64)   73792       concatenate_4[0][0]              
+__________________________________________________________________________________________________
+conv2d_30 (Conv2D)              (None, 16, 16, 64)   36928       conv2d_29[0][0]                  
+__________________________________________________________________________________________________
+conv2d_transpose_5 (Conv2DTrans (None, 32, 32, 32)   18464       conv2d_30[0][0]                  
+__________________________________________________________________________________________________
+concatenate_5 (Concatenate)     (None, 32, 32, 64)   0           conv2d_transpose_5[0][0]         
+                                                                 conv2d_25[0][0]                  
+__________________________________________________________________________________________________
+conv2d_31 (Conv2D)              (None, 32, 32, 32)   18464       concatenate_5[0][0]              
+__________________________________________________________________________________________________
+conv2d_32 (Conv2D)              (None, 32, 32, 32)   9248        conv2d_31[0][0]                  
+__________________________________________________________________________________________________
+conv2d_transpose_6 (Conv2DTrans (None, 64, 64, 16)   4624        conv2d_32[0][0]                  
+__________________________________________________________________________________________________
+concatenate_6 (Concatenate)     (None, 64, 64, 32)   0           conv2d_transpose_6[0][0]         
+                                                                 conv2d_23[0][0]                  
+__________________________________________________________________________________________________
+conv2d_33 (Conv2D)              (None, 64, 64, 16)   4624        concatenate_6[0][0]              
+__________________________________________________________________________________________________
+conv2d_34 (Conv2D)              (None, 64, 64, 16)   2320        conv2d_33[0][0]                  
+__________________________________________________________________________________________________
+conv2d_transpose_7 (Conv2DTrans (None, 128, 128, 8)  1160        conv2d_34[0][0]                  
+__________________________________________________________________________________________________
+concatenate_7 (Concatenate)     (None, 128, 128, 16) 0           conv2d_transpose_7[0][0]         
+                                                                 conv2d_21[0][0]                  
+__________________________________________________________________________________________________
+conv2d_35 (Conv2D)              (None, 128, 128, 8)  1160        concatenate_7[0][0]              
+__________________________________________________________________________________________________
+conv2d_36 (Conv2D)              (None, 128, 128, 8)  584         conv2d_35[0][0]                  
+__________________________________________________________________________________________________
+conv2d_37 (Conv2D)              (None, 128, 128, 1)  9           conv2d_36[0][0]                  
 ==================================================================================================
-Total params: 14,065
-Trainable params: 14,065
+Total params: 392,489
+Trainable params: 392,489
 Non-trainable params: 0
 __________________________________________________________________________________________________
 </code></pre></td></tr></tbody></table></div></div>
@@ -945,37 +1022,37 @@ ________________________________________________________________________________
 <hr />
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">checkpoint</span> <span class="o">=</span> <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="s">'best.h5'</span><span class="p">,</span><span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
-<span class="n">early_stop</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">reduce_lr</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">reduce_lr</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s">'acc'</span><span class="p">],</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="s">'adam'</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="s">'binary_crossentropy'</span><span class="p">)</span>
 
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_valid</span><span class="p">,</span><span class="n">y_valid</span><span class="p">),</span> <span class="n">epochs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">early_stop</span><span class="p">,</span> <span class="n">reduce_lr</span><span class="p">])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_valid</span><span class="p">,</span><span class="n">y_valid</span><span class="p">),</span> <span class="n">epochs</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">early_stop</span><span class="p">,</span> <span class="n">reduce_lr</span><span class="p">])</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s">'best.h5'</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20</pre></td><td class="code"><pre class="highlight"><code>Epoch 1/5
-113/113 [==============================] - ETA: 0s - loss: 0.4007 - acc: 0.8342
-Epoch 00001: val_loss did not improve from 0.33124
-113/113 [==============================] - 2s 17ms/step - loss: 0.4007 - acc: 0.8342 - val_loss: 0.3787 - val_acc: 0.8486
+112/113 [============================&gt;.] - ETA: 0s - loss: 0.1644 - acc: 0.9396
+Epoch 00001: val_loss improved from 0.23510 to 0.22475, saving model to best.h5
+113/113 [==============================] - 4s 31ms/step - loss: 0.1641 - acc: 0.9398 - val_loss: 0.2247 - val_acc: 0.9083
 Epoch 2/5
-111/113 [============================&gt;.] - ETA: 0s - loss: 0.3800 - acc: 0.8483
-Epoch 00002: val_loss did not improve from 0.33124
-113/113 [==============================] - 2s 17ms/step - loss: 0.3811 - acc: 0.8476 - val_loss: 0.3752 - val_acc: 0.8534
+112/113 [============================&gt;.] - ETA: 0s - loss: 0.1596 - acc: 0.9423
+Epoch 00002: val_loss did not improve from 0.22475
+113/113 [==============================] - 3s 27ms/step - loss: 0.1594 - acc: 0.9424 - val_loss: 0.2567 - val_acc: 0.9115
 Epoch 3/5
-113/113 [==============================] - ETA: 0s - loss: 0.3917 - acc: 0.8393
-Epoch 00003: val_loss did not improve from 0.33124
-113/113 [==============================] - 2s 16ms/step - loss: 0.3917 - acc: 0.8393 - val_loss: 0.3645 - val_acc: 0.8548
+111/113 [============================&gt;.] - ETA: 0s - loss: 0.1501 - acc: 0.9450
+Epoch 00003: val_loss did not improve from 0.22475
+113/113 [==============================] - 3s 27ms/step - loss: 0.1493 - acc: 0.9452 - val_loss: 0.2593 - val_acc: 0.9141
 Epoch 4/5
-113/113 [==============================] - ETA: 0s - loss: 0.3846 - acc: 0.8432
-Epoch 00004: val_loss did not improve from 0.33124
-113/113 [==============================] - 2s 16ms/step - loss: 0.3846 - acc: 0.8432 - val_loss: 0.3670 - val_acc: 0.8559
+112/113 [============================&gt;.] - ETA: 0s - loss: 0.1490 - acc: 0.9443
+Epoch 00004: val_loss did not improve from 0.22475
+113/113 [==============================] - 3s 27ms/step - loss: 0.1491 - acc: 0.9443 - val_loss: 0.2426 - val_acc: 0.9143
 Epoch 5/5
-111/113 [============================&gt;.] - ETA: 0s - loss: 0.3893 - acc: 0.8416
-Epoch 00005: val_loss did not improve from 0.33124
-113/113 [==============================] - 2s 16ms/step - loss: 0.3899 - acc: 0.8411 - val_loss: 0.3896 - val_acc: 0.8506
+113/113 [==============================] - ETA: 0s - loss: 0.1384 - acc: 0.9486
+Epoch 00005: val_loss did not improve from 0.22475
+113/113 [==============================] - 3s 27ms/step - loss: 0.1384 - acc: 0.9486 - val_loss: 0.2346 - val_acc: 0.9168
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
@@ -1138,15 +1215,64 @@ Epoch 00005: val_loss did not improve from 0.33124
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">ious</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iou_metric_batch</span><span class="p">(</span><span class="n">y_valid</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">result_valid</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)])</span>
 <span class="n">ious</span>
 </code></pre></td></tr></tbody></table></div></div>
-<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8</pre></td><td class="code"><pre class="highlight"><code>array([0.5275 , 0.40525, 0.3755 , 0.33625, 0.30225, 0.2725 , 0.2475 ,
-       0.2265 , 0.2185 , 0.2155 , 0.215  , 0.21725, 0.218  , 0.2195 ,
-       0.218  , 0.22275, 0.2265 , 0.229  , 0.2315 , 0.2345 , 0.23775,
-       0.25225, 0.2585 , 0.26075, 0.26475, 0.26525, 0.2745 , 0.274  ,
-       0.27925, 0.28275, 0.29575, 0.29825, 0.31325, 0.31525, 0.3225 ,
-       0.32225, 0.33975, 0.33775, 0.345  , 0.351  , 0.345  , 0.35225,
-       0.35625, 0.36325, 0.381  , 0.39375, 0.399  , 0.4115 , 0.45875,
-       0.5275 ])
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8</pre></td><td class="code"><pre class="highlight"><code>array([0.515  , 0.40925, 0.414  , 0.421  , 0.43075, 0.41725, 0.4325 ,
+       0.44375, 0.47325, 0.48925, 0.50425, 0.5195 , 0.5385 , 0.54375,
+       0.55425, 0.56025, 0.58175, 0.596  , 0.60225, 0.62125, 0.62525,
+       0.6425 , 0.644  , 0.64875, 0.65225, 0.6535 , 0.6555 , 0.66   ,
+       0.667  , 0.66575, 0.66425, 0.67575, 0.679  , 0.68125, 0.67875,
+       0.67575, 0.67825, 0.67675, 0.6765 , 0.67675, 0.6725 , 0.6655 ,
+       0.6605 , 0.662  , 0.65125, 0.64975, 0.62825, 0.5985 , 0.567  ,
+       0.52125])
 </code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="최적의-threshold-값-찾기"><font color="green">최적의 threshold 값 찾기</font></h3>
+
+<ul>
+  <li>threshold 별로 계산된 IOU 값을 시각화해보자.</li>
+  <li>최적의 threshold 값을 <code class="highlighter-rouge">threshold_best</code>에 저장하여 test data 예측에 사용한다.</li>
+  <li>실제 제출 점수와 최적의 IOU 값이 비슷해야 모델이 안정적으로 학습된 것이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">threshold_best_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">ious</span><span class="p">)</span>
+<span class="n">threshold_best_index</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>33
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">iou_best</span> <span class="o">=</span> <span class="n">ious</span><span class="p">[</span><span class="n">threshold_best_index</span><span class="p">]</span>
+<span class="n">iou_best</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>0.68125
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">threshold_best</span> <span class="o">=</span> <span class="n">thresholds</span><span class="p">[</span><span class="n">threshold_best_index</span><span class="p">]</span>
+<span class="n">threshold_best</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>0.673469387755102
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">ious</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">threshold_best</span><span class="p">,</span> <span class="n">iou_best</span><span class="p">,</span> <span class="s">'xr'</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s">'best threshold'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'threshold'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'iou'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>Text(0, 0.5, 'iou')
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/tgs_salt/segmentation_41_1.png" alt="png" /></p>
 
 <hr />
 
@@ -1261,7 +1387,7 @@ array([[[[2.60078728e-01],
 
 <p><br /></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span> <span class="p">:</span> <span class="n">rle_encode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">result_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>  <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_notebook</span><span class="p">(</span><span class="n">test_image</span><span class="p">))}</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span> <span class="p">:</span> <span class="n">rle_encode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">result_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold_best</span><span class="p">))</span>  <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm_notebook</span><span class="p">(</span><span class="n">test_image</span><span class="p">))}</span>
 <span class="k">print</span><span class="p">(</span><span class="n">result_dict</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 <div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code>{'./test/images/ca0030c4ed.png': '46 7 103 1 106 1 149 6 204 1 207 1 249 6 324 6 352 1 424 2 3314 3 3416 1 4225 6 5793 4 5892 9 5992 11 6094 13 6196 8 6259 1 6298 1 6300 3 6505 7 6606 6', 
@@ -1661,7 +1787,7 @@ array([[[[2.60078728e-01],
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">태그</span>
               </a>
             </div>
@@ -1743,7 +1869,7 @@ array([[[[2.60078728e-01],
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#tgs-salt-identification-challenge"> <span class="nav-number">1.1</span> <span class="nav-text">TGS Salt Identification Challenge</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키기-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키기 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">3</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지원본-및-마스크-확인하기"> <span class="nav-number">4</span> <span class="nav-text">이미지(원본 및 마스크) 확인하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-전처리"> <span class="nav-number">5</span> <span class="nav-text">데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#train-dataset-전처리하기"> <span class="nav-number">5.1</span> <span class="nav-text">Train Dataset 전처리하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#빈-그릇-만들기"> <span class="nav-number">5.1.1</span> <span class="nav-text">빈 그릇 만들기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-데이터-담기"> <span class="nav-number">5.1.2</span> <span class="nav-text">이미지 데이터 담기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#mask-데이터-담기"> <span class="nav-number">5.1.3</span> <span class="nav-text">Mask 데이터 담기</font</span> </a> </li> </ol> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-valid-나누기"> <span class="nav-number">6</span> <span class="nav-text">Train, Valid 나누기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#u-net-모델-구축하기"> <span class="nav-number">7</span> <span class="nav-text">U-net 모델 구축하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#가장-단순한-u-net-구조"> <span class="nav-number">7.1</span> <span class="nav-text">가장 단순한 U-net 구조</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#u-net-구조-응용하기"> <span class="nav-number">7.2</span> <span class="nav-text">U-net 구조 응용하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#validation-data를-mean-iou로-평가하기"> <span class="nav-number">8</span> <span class="nav-text">Validation Data를 Mean IOU로 평가하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#validation-dataset-크기-조정하기"> <span class="nav-number">8.1</span> <span class="nav-text">Validation Dataset 크기 조정하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#mean-iou-계산하기"> <span class="nav-number">8.2</span> <span class="nav-text">Mean IOU 계산하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#test-data-예측하기"> <span class="nav-number">9</span> <span class="nav-text">Test data 예측하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#submission-완료하기"> <span class="nav-number">10</span> <span class="nav-text">Submission 완료하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-run-length-encoding-함수"> <span class="nav-number">10.1</span> <span class="nav-text"> Run-Length Encoding 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#최종-제출"> <span class="nav-number">10.2</span> <span class="nav-text">최종 제출</font</span> </a> </li> </ol> </li>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#tgs-salt-identification-challenge"> <span class="nav-number">1.1</span> <span class="nav-text">TGS Salt Identification Challenge</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키기-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키기 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">3</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지원본-및-마스크-확인하기"> <span class="nav-number">4</span> <span class="nav-text">이미지(원본 및 마스크) 확인하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-전처리"> <span class="nav-number">5</span> <span class="nav-text">데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#train-dataset-전처리하기"> <span class="nav-number">5.1</span> <span class="nav-text">Train Dataset 전처리하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#빈-그릇-만들기"> <span class="nav-number">5.1.1</span> <span class="nav-text">빈 그릇 만들기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지-데이터-담기"> <span class="nav-number">5.1.2</span> <span class="nav-text">이미지 데이터 담기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#mask-데이터-담기"> <span class="nav-number">5.1.3</span> <span class="nav-text">Mask 데이터 담기</font</span> </a> </li> </ol> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#train-valid-나누기"> <span class="nav-number">6</span> <span class="nav-text">Train, Valid 나누기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#u-net-모델-구축하기"> <span class="nav-number">7</span> <span class="nav-text">U-net 모델 구축하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#가장-단순한-u-net-구조"> <span class="nav-number">7.1</span> <span class="nav-text">가장 단순한 U-net 구조</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#u-net-구조-응용하기"> <span class="nav-number">7.2</span> <span class="nav-text">U-net 구조 응용하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#validation-data를-mean-iou로-평가하기"> <span class="nav-number">8</span> <span class="nav-text">Validation Data를 Mean IOU로 평가하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#validation-dataset-크기-조정하기"> <span class="nav-number">8.1</span> <span class="nav-text">Validation Dataset 크기 조정하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#mean-iou-계산하기"> <span class="nav-number">8.2</span> <span class="nav-text">Mean IOU 계산하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#최적의-threshold-값-찾기"> <span class="nav-number">8.3</span> <span class="nav-text">최적의 threshold 값 찾기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#test-data-예측하기"> <span class="nav-number">9</span> <span class="nav-text">Test data 예측하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#submission-완료하기"> <span class="nav-number">10</span> <span class="nav-text">Submission 완료하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-run-length-encoding-함수"> <span class="nav-number">10.1</span> <span class="nav-text"> Run-Length Encoding 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#최종-제출"> <span class="nav-number">10.2</span> <span class="nav-text">최종 제출</font</span> </a> </li> </ol> </li>
     </ol>
   </div>
             
