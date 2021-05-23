@@ -83,7 +83,7 @@
 <link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Deep Learning,CNN,Computer Vision,Pytorch,Detection,Faster RCNN," />
+  <meta name="keywords" content="Deep Learning,CNN,Computer Vision,Pytorch,Detection,Faster RCNN,StratifyKFold,Ensemble," />
 
 
 
@@ -109,21 +109,21 @@
 
 
 
-<meta name="description" content="대회 소개 밀이삭 영역 탐지하기(Train 코드) 모델 학습에 사용되는 코드입니다.">
-<meta name="keywords" content="Deep Learning, CNN, Computer Vision, Pytorch, Detection, Faster RCNN">
+<meta name="description" content="대회 소개 밀이삭 영역 탐지하기">
+<meta name="keywords" content="Deep Learning, CNN, Computer Vision, Pytorch, Detection, Faster RCNN, StratifyKFold, Ensemble">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Global Wheat Detection(1) Train 코드">
-<meta property="og:url" content="http://localhost:4000/detection/2021/03/14/wheat-train/">
+<meta property="og:title" content="Global Wheat Detection(Object Detection)">
+<meta property="og:url" content="http://localhost:4000/detection/2021/03/14/wheat-detection-train/">
 <meta property="og:site_name" content="Seung Hyun's Blog">
-<meta property="og:description" content="대회 소개 밀이삭 영역 탐지하기(Train 코드) 모델 학습에 사용되는 코드입니다.">
+<meta property="og:description" content="대회 소개 밀이삭 영역 탐지하기">
 <meta property="og:locale" content="ko">
 <meta property="og:image" content="/assets/img/notebook/wheat_train/wheat_inference_29_1.png">
 <meta property="og:image" content="/assets/img/notebook/wheat_train/wheat-detection-train_6_1.png">
 <meta property="og:image" content="/assets/img/notebook/wheat_train/wheat-detection-train_17_1.png">
 <meta property="og:image" content="/assets/img/notebook/wheat_train/wheat-detection-train_19_0.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Global Wheat Detection(1) Train 코드">
-<meta name="twitter:description" content="대회 소개 밀이삭 영역 탐지하기(Train 코드) 모델 학습에 사용되는 코드입니다.">
+<meta name="twitter:title" content="Global Wheat Detection(Object Detection)">
+<meta name="twitter:description" content="대회 소개 밀이삭 영역 탐지하기">
 <meta name="twitter:image" content="/assets/img/notebook/wheat_train/wheat_inference_29_1.png">
 
 
@@ -157,7 +157,7 @@
 
 
 
-  <title>Global Wheat Detection(1) Train 코드 | Seung Hyun's Blog</title>
+  <title>Global Wheat Detection(Object Detection) | Seung Hyun's Blog</title>
   
 
 
@@ -329,7 +329,7 @@
   
 
   <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://localhost:4000/detection/2021/03/14/wheat-train/">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/detection/2021/03/14/wheat-detection-train/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Seunghyun Lee">
@@ -349,7 +349,7 @@
           <h1 class="post-title" itemprop="name headline">
           
           
-            Global Wheat Detection(1) Train 코드
+            Global Wheat Detection(Object Detection)
           
         </h1>
         
@@ -440,20 +440,23 @@
 
   <h2 id="대회-소개"><center><font color="darkblue">대회 소개</font></center></h2>
 <p><img src="/assets/img/notebook/wheat_train/wheat_inference_29_1.png" alt="png" /></p>
-<center>밀이삭 영역 탐지하기(Train 코드)</center>
-<center>모델 학습에 사용되는 코드입니다.</center>
+<center>밀이삭 영역 탐지하기</center>
 
 <hr />
 
 <h3 id="global-wheat-detection">Global Wheat Detection</h3>
-<p><strong>Can you help identify wheat heads using image analysis?</strong> <br />
-<a href="https://www.kaggle.com/c/global-wheat-detection/overview">https://www.kaggle.com/c/global-wheat-detection/overview</a></p>
+<p><strong>Can you help identify wheat heads using image analysis?</strong></p>
+
+<p>You are attempting to predict bounding boxes around each wheat head in images that have them. If there are no wheat heads, you must predict no bounding boxes.</p>
+
+<p>캐글 주소 : <a href="https://www.kaggle.com/c/global-wheat-detection/overview">https://www.kaggle.com/c/global-wheat-detection/overview</a>  <br />
+데이터셋에 대한 논문 : <a href="https://arxiv.org/abs/2005.02162">https://arxiv.org/abs/2005.02162</a></p>
 
 <hr />
 
 <h2 id="패키지-불러오기"><font color="blue">패키지 불러오기</font></h2>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span> 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
@@ -466,43 +469,25 @@
 <span class="kn">import</span> <span class="nn">torchvision</span>
 <span class="kn">from</span> <span class="nn">torchvision.models.detection.faster_rcnn</span> <span class="kn">import</span> <span class="n">FastRCNNPredictor</span>
 
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">StratifiedKFold</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
 <span class="kn">from</span> <span class="nn">albumentations.pytorch.transforms</span> <span class="kn">import</span> <span class="n">ToTensorV2</span>
-<span class="kn">import</span> <span class="nn">albumentations</span> <span class="k">as</span> <span class="n">al</span>
+<span class="kn">import</span> <span class="nn">albumentations</span> <span class="k">as</span> <span class="n">A</span>
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
 
 <h2 id="하이퍼파라미터-설정"><font color="blue">하이퍼파라미터 설정</font></h2>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7</pre></td><td class="code"><pre class="highlight"><code><span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"TRAIN"</span> <span class="p">:</span> <span class="s">'/kaggle/input/global-wheat-detection/train/'</span><span class="p">,</span>
     <span class="s">"DEVICE"</span> <span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">),</span>
     <span class="s">"BATCH_SIZE"</span> <span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-    <span class="s">"NUM_EPOCHS"</span> <span class="p">:</span> <span class="mi">20</span>
+    <span class="s">"NUM_EPOCHS"</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s">"NUM_FOLDS"</span> <span class="p">:</span> <span class="mi">5</span>
 <span class="p">}</span>
 </code></pre></td></tr></tbody></table></div></div>
-
-<hr />
-
-<h2 id="detection-대회-코드-관리"><font color="blue">Detection 대회 코드 관리</font></h2>
-
-<ul>
-  <li><code class="highlighter-rouge">Detection</code> 대회에서는 코드 관리를 효율적으로 하기 위해 최소한 두 개의 코드 파일이 필요하다.
-    <ul>
-      <li>
-        <ol>
-          <li><strong>학습 코드(train)</strong></li>
-        </ol>
-      </li>
-      <li>
-        <ol>
-          <li><strong>예측 코드(inference)</strong></li>
-        </ol>
-      </li>
-    </ul>
-  </li>
-  <li>이처럼 일반적인 <code class="highlighter-rouge">Classification</code>보다 복잡한 <code class="highlighter-rouge">Detection</code>에서는 코드 관리를 위해 <code class="highlighter-rouge">모듈화</code>할 필요가 있다.</li>
-</ul>
 
 <hr />
 
@@ -522,11 +507,6 @@
 <ul>
   <li>이미지의 크기가 (1024,1024)로 매우 크다.</li>
   <li><code class="highlighter-rouge">int32</code>, <code class="highlighter-rouge">float32</code> 로 이미지 데이터 타입을 바꿔서 메모리 소모량을 최소화하자.</li>
-</ul>
-
-<hr />
-
-<ul>
   <li>float32 보다 float16으로 하면 안되는가
     <ul>
       <li>모델 학습 시 <code class="highlighter-rouge">gradient update</code>할 때, 소수점 아래 미세한 차이가 결과적으로 큰 차이를 가져온다.</li>
@@ -673,8 +653,6 @@ float64 : 0.4304672100000001
 </table>
 </div>
 
-<hr />
-
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">train</span><span class="o">.</span><span class="n">dtypes</span>
 </code></pre></td></tr></tbody></table></div></div>
 
@@ -724,7 +702,7 @@ unique length : 3373
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>&lt;matplotlib.image.AxesImage at 0x7fda4c3b9710&gt;
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>&lt;matplotlib.image.AxesImage at 0x7f0d019dfc10&gt;
 </code></pre></td></tr></tbody></table></div></div>
 
 <p><img src="/assets/img/notebook/wheat_train/wheat-detection-train_17_1.png" alt="png" /></p>
@@ -755,6 +733,899 @@ unique length : 3373
 </code></pre></td></tr></tbody></table></div></div>
 
 <p><img src="/assets/img/notebook/wheat_train/wheat-detection-train_19_0.png" alt="png" /></p>
+
+<hr />
+
+<h3 id="교차-검증을-위해-train-valid-데이터셋-나누기"><font color="green">교차 검증을 위해 Train, Valid 데이터셋 나누기</font></h3>
+
+<ul>
+  <li>현재 이미지마다 바운딩박스의 개수가 모두 다르다.</li>
+  <li>먼저 바운딩박스 개수에 대한 정보를 추가하자. 또한, 현재 데이터에는 <code class="highlighter-rouge">source</code> 칼럼에 벼 종류에 대한 정보가 있다. 참고로 벼 종류의 유니크한 개수는 7이다. 이러한 벼 종류 역시 골고루 나눠지게 해야 한다.</li>
+  <li>바운딩박스의 개수 및 벼 종류에 따라 구간을 나눠서 카테고리를 나눠보자.</li>
+  <li>예를 들어 0-15개의 바운딩 박스를 갖는 이미지는 a 클래스, 16-30개의 바운딩박스를 갖는 이미지는 b 클래스 …</li>
+</ul>
+
+<h4 id="1-image_id-데이터-가져오기"><font color="orange">1. image_id 데이터 가져오기</font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">df_folds</span> <span class="o">=</span> <span class="n">train</span><span class="p">[[</span><span class="s">'image_id'</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">df_folds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>image_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>b6ab77fd7</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>b6ab77fd7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>b6ab77fd7</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>b6ab77fd7</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>b6ab77fd7</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>147788</th>
+      <td>5e0747034</td>
+    </tr>
+    <tr>
+      <th>147789</th>
+      <td>5e0747034</td>
+    </tr>
+    <tr>
+      <th>147790</th>
+      <td>5e0747034</td>
+    </tr>
+    <tr>
+      <th>147791</th>
+      <td>5e0747034</td>
+    </tr>
+    <tr>
+      <th>147792</th>
+      <td>5e0747034</td>
+    </tr>
+  </tbody>
+</table>
+<p>147793 rows × 1 columns</p>
+</div>
+
+<hr />
+
+<h4 id="2-image_id-별로-bounding-box-개수-count하기"><font color="orange">2. image_id 별로 bounding box 개수 count하기</font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">df_folds</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="s">'bbox_count'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> 
+<span class="n">df_folds</span> <span class="o">=</span> <span class="n">df_folds</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'image_id'</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">df_folds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>bbox_count</th>
+    </tr>
+    <tr>
+      <th>image_id</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>00333207f</th>
+      <td>55</td>
+    </tr>
+    <tr>
+      <th>005b0d8bb</th>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>006a994f7</th>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>00764ad5d</th>
+      <td>41</td>
+    </tr>
+    <tr>
+      <th>00b5fefed</th>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>ffb445410</th>
+      <td>57</td>
+    </tr>
+    <tr>
+      <th>ffbf75e5b</th>
+      <td>52</td>
+    </tr>
+    <tr>
+      <th>ffbfe7cc0</th>
+      <td>34</td>
+    </tr>
+    <tr>
+      <th>ffc870198</th>
+      <td>41</td>
+    </tr>
+    <tr>
+      <th>ffdf83e42</th>
+      <td>39</td>
+    </tr>
+  </tbody>
+</table>
+<p>3373 rows × 1 columns</p>
+</div>
+
+<hr />
+
+<h4 id="3-source-정보-추가하기"><font color="orange">3. source 정보 추가하기</font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 벼(source) 역시 교차검증 나눌 때 클래스별로 나누기</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"Unique Number of Source : {train['source'].nunique()}"</span><span class="p">)</span>
+<span class="n">df_folds</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s">'source'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train</span><span class="p">[[</span><span class="s">'image_id'</span><span class="p">,</span><span class="s">'source'</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'image_id'</span><span class="p">)</span><span class="o">.</span><span class="nb">min</span><span class="p">()[</span><span class="s">"source"</span><span class="p">]</span>
+<span class="n">df_folds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>Unique Number of Source : 7
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>bbox_count</th>
+      <th>source</th>
+    </tr>
+    <tr>
+      <th>image_id</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>00333207f</th>
+      <td>55</td>
+      <td>arvalis_1</td>
+    </tr>
+    <tr>
+      <th>005b0d8bb</th>
+      <td>20</td>
+      <td>usask_1</td>
+    </tr>
+    <tr>
+      <th>006a994f7</th>
+      <td>25</td>
+      <td>inrae_1</td>
+    </tr>
+    <tr>
+      <th>00764ad5d</th>
+      <td>41</td>
+      <td>inrae_1</td>
+    </tr>
+    <tr>
+      <th>00b5fefed</th>
+      <td>25</td>
+      <td>arvalis_3</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>ffb445410</th>
+      <td>57</td>
+      <td>rres_1</td>
+    </tr>
+    <tr>
+      <th>ffbf75e5b</th>
+      <td>52</td>
+      <td>arvalis_1</td>
+    </tr>
+    <tr>
+      <th>ffbfe7cc0</th>
+      <td>34</td>
+      <td>arvalis_1</td>
+    </tr>
+    <tr>
+      <th>ffc870198</th>
+      <td>41</td>
+      <td>usask_1</td>
+    </tr>
+    <tr>
+      <th>ffdf83e42</th>
+      <td>39</td>
+      <td>arvalis_1</td>
+    </tr>
+  </tbody>
+</table>
+<p>3373 rows × 2 columns</p>
+</div>
+
+<hr />
+
+<h4 id="4-bbox_count-source-정보를-합친-stratify_group-칼럼-만들기"><font color="orange">4. bbox_count, source 정보를 합친 stratify_group 칼럼 만들기</font></h4>
+
+<ul>
+  <li>bounding box의 개수의 범위 정보와 source 정보가 담겨져 있는 stratify_group 칼럼 생성한다.</li>
+  <li>stratify_group은 source 종류와 바운딩박스 개수를 15로 나누었을 때의 나머지에 대한 정보가 들어간다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">df_folds</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="s">'stratify_group'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">char</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">df_folds</span><span class="p">[</span><span class="s">'source'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span> 
+                                               <span class="n">df_folds</span><span class="p">[</span><span class="s">'bbox_count'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">f</span><span class="s">'_{x//15}'</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">df_folds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>bbox_count</th>
+      <th>source</th>
+      <th>stratify_group</th>
+    </tr>
+    <tr>
+      <th>image_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>00333207f</th>
+      <td>55</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_3</td>
+    </tr>
+    <tr>
+      <th>005b0d8bb</th>
+      <td>20</td>
+      <td>usask_1</td>
+      <td>usask_1_1</td>
+    </tr>
+    <tr>
+      <th>006a994f7</th>
+      <td>25</td>
+      <td>inrae_1</td>
+      <td>inrae_1_1</td>
+    </tr>
+    <tr>
+      <th>00764ad5d</th>
+      <td>41</td>
+      <td>inrae_1</td>
+      <td>inrae_1_2</td>
+    </tr>
+    <tr>
+      <th>00b5fefed</th>
+      <td>25</td>
+      <td>arvalis_3</td>
+      <td>arvalis_3_1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>ffb445410</th>
+      <td>57</td>
+      <td>rres_1</td>
+      <td>rres_1_3</td>
+    </tr>
+    <tr>
+      <th>ffbf75e5b</th>
+      <td>52</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_3</td>
+    </tr>
+    <tr>
+      <th>ffbfe7cc0</th>
+      <td>34</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_2</td>
+    </tr>
+    <tr>
+      <th>ffc870198</th>
+      <td>41</td>
+      <td>usask_1</td>
+      <td>usask_1_2</td>
+    </tr>
+    <tr>
+      <th>ffdf83e42</th>
+      <td>39</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_2</td>
+    </tr>
+  </tbody>
+</table>
+<p>3373 rows × 3 columns</p>
+</div>
+
+<hr />
+
+<h4 id="5-stratify_group의-개수-파악하기"><font color="orange">5. stratify_group의 개수 파악하기</font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="c"># bbox 개수 및 source 별 개수</span>
+<span class="n">df_folds</span><span class="p">[</span><span class="s">'stratify_group'</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35</pre></td><td class="code"><pre class="highlight"><code>arvalis_1_2    495
+ethz_1_4       364
+arvalis_1_3    346
+ethz_1_5       214
+rres_1_3       172
+arvalis_2_1    171
+arvalis_3_1    160
+arvalis_3_0    154
+rres_1_2       145
+ethz_1_3       141
+inrae_1_1      127
+arvalis_1_1    115
+arvalis_3_3    104
+arvalis_3_2     94
+usask_1_1       93
+usask_1_2       81
+rres_1_4        75
+arvalis_1_4     70
+arvalis_3_4     40
+rres_1_1        39
+inrae_1_0       31
+arvalis_2_0     26
+arvalis_1_5     23
+ethz_1_6        18
+inrae_1_2       18
+usask_1_3       15
+usask_1_0       11
+ethz_1_2         8
+arvalis_3_5      7
+arvalis_2_2      7
+arvalis_1_6      5
+ethz_1_7         2
+arvalis_1_0      1
+rres_1_5         1
+Name: stratify_group, dtype: int64
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h4 id="6-fold-칼럼을-추가하여-데이터-나누기"><font color="orange">6. fold 칼럼을 추가하여 데이터 나누기</font></h4>
+
+<ul>
+  <li>먼저 fold의 기본값을 0으로 설정하고, StratifiedKFold을 이용하여 <code class="highlighter-rouge">stratify_group</code> 기준으로 0~4의 값으로 나눠준다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">df_folds</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s">'fold'</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">df_folds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>bbox_count</th>
+      <th>source</th>
+      <th>stratify_group</th>
+      <th>fold</th>
+    </tr>
+    <tr>
+      <th>image_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>00333207f</th>
+      <td>55</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>005b0d8bb</th>
+      <td>20</td>
+      <td>usask_1</td>
+      <td>usask_1_1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>006a994f7</th>
+      <td>25</td>
+      <td>inrae_1</td>
+      <td>inrae_1_1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>00764ad5d</th>
+      <td>41</td>
+      <td>inrae_1</td>
+      <td>inrae_1_2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>00b5fefed</th>
+      <td>25</td>
+      <td>arvalis_3</td>
+      <td>arvalis_3_1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>ffb445410</th>
+      <td>57</td>
+      <td>rres_1</td>
+      <td>rres_1_3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>ffbf75e5b</th>
+      <td>52</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>ffbfe7cc0</th>
+      <td>34</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>ffc870198</th>
+      <td>41</td>
+      <td>usask_1</td>
+      <td>usask_1_2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>ffdf83e42</th>
+      <td>39</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_2</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>3373 rows × 4 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9</pre></td><td class="code"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">StratifiedKFold</span>
+
+<span class="n">skf</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c"># 그룹 나누기</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">train_index</span><span class="p">,</span> <span class="n">valid_index</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">skf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_folds</span><span class="p">,</span><span class="n">df_folds</span><span class="p">[</span><span class="s">'stratify_group'</span><span class="p">])):</span>
+    <span class="n">df_folds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_folds</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">valid_index</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="s">'fold'</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> 
+<span class="n">df_folds</span> <span class="o">=</span> <span class="n">df_folds</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">df_folds</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>image_id</th>
+      <th>bbox_count</th>
+      <th>source</th>
+      <th>stratify_group</th>
+      <th>fold</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>00333207f</td>
+      <td>55</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>005b0d8bb</td>
+      <td>20</td>
+      <td>usask_1</td>
+      <td>usask_1_1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>006a994f7</td>
+      <td>25</td>
+      <td>inrae_1</td>
+      <td>inrae_1_1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>00764ad5d</td>
+      <td>41</td>
+      <td>inrae_1</td>
+      <td>inrae_1_2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>00b5fefed</td>
+      <td>25</td>
+      <td>arvalis_3</td>
+      <td>arvalis_3_1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>3368</th>
+      <td>ffb445410</td>
+      <td>57</td>
+      <td>rres_1</td>
+      <td>rres_1_3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3369</th>
+      <td>ffbf75e5b</td>
+      <td>52</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3370</th>
+      <td>ffbfe7cc0</td>
+      <td>34</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_2</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>3371</th>
+      <td>ffc870198</td>
+      <td>41</td>
+      <td>usask_1</td>
+      <td>usask_1_2</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>3372</th>
+      <td>ffdf83e42</td>
+      <td>39</td>
+      <td>arvalis_1</td>
+      <td>arvalis_1_2</td>
+      <td>4</td>
+    </tr>
+  </tbody>
+</table>
+<p>3373 rows × 5 columns</p>
+</div>
+
+<hr />
+
+<h4 id="7-fold별로-stratify_group의-개수-파악하기"><font color="orange">7. fold별로 stratify_group의 개수 파악하기</font></h4>
+
+<ul>
+  <li>fold 별로 잘 나누어졌는지 확인한다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"*"</span><span class="o">*</span><span class="mi">30</span><span class="p">,</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"FOLD : {i}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">df_folds</span><span class="p">[</span><span class="n">df_folds</span><span class="p">[</span><span class="s">"fold"</span><span class="p">]</span><span class="o">==</span><span class="n">i</span><span class="p">][</span><span class="s">'stratify_group'</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(),</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60<br/>61<br/>62<br/>63<br/>64<br/>65<br/>66<br/>67<br/>68<br/>69<br/>70<br/>71<br/>72<br/>73<br/>74<br/>75<br/>76<br/>77<br/>78<br/>79<br/>80<br/>81<br/>82<br/>83<br/>84<br/>85<br/>86<br/>87<br/>88<br/>89<br/>90<br/>91<br/>92<br/>93<br/>94<br/>95<br/>96<br/>97<br/>98<br/>99<br/>100<br/>101<br/>102<br/>103<br/>104<br/>105<br/>106<br/>107<br/>108<br/>109<br/>110<br/>111<br/>112<br/>113<br/>114<br/>115<br/>116<br/>117<br/>118<br/>119<br/>120<br/>121<br/>122<br/>123<br/>124<br/>125<br/>126<br/>127<br/>128<br/>129<br/>130<br/>131<br/>132<br/>133<br/>134<br/>135<br/>136<br/>137<br/>138<br/>139<br/>140<br/>141<br/>142<br/>143<br/>144<br/>145<br/>146<br/>147<br/>148<br/>149<br/>150<br/>151<br/>152<br/>153<br/>154<br/>155<br/>156<br/>157<br/>158<br/>159<br/>160<br/>161<br/>162<br/>163<br/>164<br/>165<br/>166<br/>167<br/>168<br/>169<br/>170<br/>171<br/>172<br/>173<br/>174<br/>175<br/>176<br/>177<br/>178<br/>179<br/>180<br/>181<br/>182<br/>183<br/>184<br/>185<br/>186<br/>187<br/>188</pre></td><td class="code"><pre class="highlight"><code>****************************** 
+
+FOLD : 0
+
+arvalis_1_2    99
+ethz_1_4       72
+arvalis_1_3    70
+ethz_1_5       43
+rres_1_3       35
+arvalis_2_1    34
+arvalis_3_1    32
+arvalis_3_0    31
+rres_1_2       29
+ethz_1_3       28
+inrae_1_1      26
+arvalis_1_1    23
+arvalis_3_3    21
+usask_1_1      18
+arvalis_3_2    18
+usask_1_2      16
+rres_1_4       15
+arvalis_1_4    14
+arvalis_3_4     8
+rres_1_1        8
+inrae_1_0       7
+arvalis_2_0     6
+ethz_1_6        4
+arvalis_1_5     4
+inrae_1_2       3
+usask_1_3       3
+usask_1_0       2
+ethz_1_2        2
+arvalis_3_5     1
+arvalis_1_0     1
+arvalis_1_6     1
+arvalis_2_2     1
+Name: stratify_group, dtype: int64 
+
+****************************** 
+
+FOLD : 1
+
+arvalis_1_2    99
+ethz_1_4       73
+arvalis_1_3    69
+ethz_1_5       43
+arvalis_2_1    35
+rres_1_3       34
+arvalis_3_1    32
+arvalis_3_0    31
+rres_1_2       29
+ethz_1_3       28
+inrae_1_1      25
+arvalis_1_1    23
+arvalis_3_3    20
+usask_1_1      19
+arvalis_3_2    19
+usask_1_2      16
+rres_1_4       15
+arvalis_1_4    14
+arvalis_3_4     8
+rres_1_1        8
+inrae_1_0       6
+arvalis_2_0     5
+arvalis_1_5     5
+ethz_1_6        4
+inrae_1_2       4
+usask_1_3       3
+usask_1_0       2
+arvalis_3_5     2
+ethz_1_2        1
+arvalis_1_6     1
+arvalis_2_2     1
+rres_1_5        1
+Name: stratify_group, dtype: int64 
+
+****************************** 
+
+FOLD : 2
+
+arvalis_1_2    99
+ethz_1_4       73
+arvalis_1_3    69
+ethz_1_5       42
+rres_1_3       34
+arvalis_2_1    34
+arvalis_3_1    32
+arvalis_3_0    31
+rres_1_2       29
+ethz_1_3       28
+inrae_1_1      25
+arvalis_1_1    23
+arvalis_3_3    21
+usask_1_1      19
+arvalis_3_2    19
+usask_1_2      16
+rres_1_4       15
+arvalis_1_4    14
+arvalis_3_4     8
+rres_1_1        8
+inrae_1_0       6
+arvalis_2_0     5
+arvalis_1_5     5
+ethz_1_6        4
+inrae_1_2       4
+usask_1_0       3
+usask_1_3       3
+arvalis_3_5     2
+arvalis_2_2     2
+ethz_1_2        1
+arvalis_1_6     1
+Name: stratify_group, dtype: int64 
+
+****************************** 
+
+FOLD : 3
+
+arvalis_1_2    99
+ethz_1_4       73
+arvalis_1_3    69
+ethz_1_5       43
+rres_1_3       34
+arvalis_2_1    34
+arvalis_3_1    32
+arvalis_3_0    30
+rres_1_2       29
+ethz_1_3       28
+inrae_1_1      25
+arvalis_1_1    23
+arvalis_3_3    21
+usask_1_1      19
+arvalis_3_2    19
+usask_1_2      17
+rres_1_4       15
+arvalis_1_4    14
+arvalis_3_4     8
+rres_1_1        7
+inrae_1_0       6
+arvalis_2_0     5
+arvalis_1_5     5
+inrae_1_2       4
+ethz_1_6        3
+usask_1_3       3
+arvalis_2_2     2
+usask_1_0       2
+ethz_1_2        2
+arvalis_3_5     1
+arvalis_1_6     1
+ethz_1_7        1
+Name: stratify_group, dtype: int64 
+
+****************************** 
+
+FOLD : 4
+
+arvalis_1_2    99
+ethz_1_4       73
+arvalis_1_3    69
+ethz_1_5       43
+rres_1_3       35
+arvalis_2_1    34
+arvalis_3_1    32
+arvalis_3_0    31
+rres_1_2       29
+ethz_1_3       29
+inrae_1_1      26
+arvalis_1_1    23
+arvalis_3_3    21
+arvalis_3_2    19
+usask_1_1      18
+usask_1_2      16
+rres_1_4       15
+arvalis_1_4    14
+arvalis_3_4     8
+rres_1_1        8
+inrae_1_0       6
+arvalis_2_0     5
+arvalis_1_5     4
+ethz_1_6        3
+usask_1_3       3
+inrae_1_2       3
+usask_1_0       2
+ethz_1_2        2
+arvalis_3_5     1
+ethz_1_7        1
+arvalis_1_6     1
+arvalis_2_2     1
+Name: stratify_group, dtype: int64 
+</code></pre></td></tr></tbody></table></div></div>
 
 <hr />
 
@@ -810,8 +1681,6 @@ unique length : 3373
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_ids</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
-
-<hr />
 
 <h4 id="bounding-box를-tensor로-만들-때-주의해야할-점"><font color="purple">Bounding Box를 Tensor로 만들 때 주의해야할 점</font></h4>
 
@@ -877,14 +1746,20 @@ Shape : torch.Size([3, 3])
 <ul>
   <li><code class="highlighter-rouge">format = pascal_voc</code>:어느 데이터셋에 대한 bbox 내용을 가져올 것인지</li>
   <li><code class="highlighter-rouge">label_fields</code> : 우리가 만든 labels</li>
-  <li>albumentations 참고 : <a href="https://albumentations.ai/docs/examples/example_bboxes">https://albumentations.ai/docs/examples/example_bboxes</a></li>
+  <li>albumentations 참고 : <a href="https://albumentations.ai/docs/examples/example_bboxes/">https://albumentations.ai/docs/examples/example_bboxes/</a></li>
 </ul>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_transform</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">al</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
-        <span class="n">al</span><span class="o">.</span><span class="n">Flip</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_train_transform</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">Flip</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span>
         <span class="n">ToTensorV2</span><span class="p">()</span>
-    <span class="p">],</span> <span class="n">bbox_params</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">BboxParams</span><span class="p">(</span><span class="n">format</span> <span class="o">=</span> <span class="s">'pascal_voc'</span><span class="p">,</span> <span class="n">label_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'labels'</span><span class="p">])</span>
+    <span class="p">],</span> <span class="n">bbox_params</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">BboxParams</span><span class="p">(</span><span class="n">format</span> <span class="o">=</span> <span class="s">'pascal_voc'</span><span class="p">,</span> <span class="n">label_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'labels'</span><span class="p">])</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_valid_transform</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+        <span class="n">ToTensorV2</span><span class="p">()</span>
+    <span class="p">],</span> <span class="n">bbox_params</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">BboxParams</span><span class="p">(</span><span class="n">format</span> <span class="o">=</span> <span class="s">'pascal_voc'</span><span class="p">,</span> <span class="n">label_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'labels'</span><span class="p">])</span>
     <span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
@@ -903,9 +1778,7 @@ Shape : torch.Size([3, 3])
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">batch</span><span class="p">))</span>
 </code></pre></td></tr></tbody></table></div></div>
 
-<hr />
-
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">WheatDataset</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s">"TRAIN"</span><span class="p">],</span> <span class="n">transforms</span> <span class="o">=</span> <span class="n">get_transform</span><span class="p">())</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">WheatDataset</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s">"TRAIN"</span><span class="p">],</span> <span class="n">transforms</span> <span class="o">=</span> <span class="n">get_train_transform</span><span class="p">())</span>
 <span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s">"BATCH_SIZE"</span><span class="p">],</span> <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">collate_fn</span> <span class="o">=</span> <span class="n">collate_fn</span><span class="p">,</span> <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
@@ -918,11 +1791,7 @@ Shape : torch.Size([3, 3])
 <ul>
   <li>모델은 <code class="highlighter-rouge">fasterrcnn_resnet50_fpn</code>을 사용한다.
     <ul>
-      <li>fpn : feature pyramid network로, 기존 모델 구조에서 보다 발전된 형태이다.
-        <ul>
-          <li>참고 : <a href="https://eehoeskrap.tistory.com/300">https://eehoeskrap.tistory.com/300</a></li>
-        </ul>
-      </li>
+      <li>fpn : feature pyramid network로, 기존 모델 구조에서 보다 발전된 형태이다. 참고 : https://eehoeskrap.tistory.com/300</li>
       <li>Backbone은 <code class="highlighter-rouge">resnet50</code>을 사용한다.</li>
     </ul>
   </li>
@@ -930,12 +1799,12 @@ Shape : torch.Size([3, 3])
     <ul>
       <li><code class="highlighter-rouge">Dropout</code> : 모델이 train 데이터셋을 통해 중요한 노드(요소)들을 집중적으로 학습하다 보니, test셋과 같은 새로운 데이터가 왔을 때 예측을 잘 하지 못하는 경우가 발생한다. train셋에 과적합 되었기 때문이다. 이를 개선하기 위해 <code class="highlighter-rouge">Dropout</code>옵션을 정해주는 것이다. 또한 매번 다른 노드들로 학습을 하다 보니, 앙상블의 효과도 얻을 수 있다.
         <ul>
-          <li>만약 Dropout(0.3)이면, 0.8만큼의 임의의 노드를 사용하지 않는다는 의미이다.</li>
+          <li>만약 Dropout(0.3)이면, 0.3만큼의 임의의 노드를 사용하지 않는다는 의미이다.</li>
           <li>이 때 0이 되지 않은 0.7에 해당하는 값은 (1/0.7) 만큼 scale이 된다. 따라서 (1/0.7 = 1.4286…)이 되는 것이다.</li>
         </ul>
       </li>
       <li><code class="highlighter-rouge">BatchNorm</code> : 배치로 들어오는 데이터에 규제를 넣어주는 것이다. 학습 속도 및 학습 성능에 영향을 준다.</li>
-      <li>참고 블로그 : <a href="https://gaussian37.github.io/dl-pytorch-snippets">https://gaussian37.github.io/dl-pytorch-snippets</a></li>
+      <li>참고 블로그 : <a href="https://gaussian37.github.io/dl-pytorch-snippets/">https://gaussian37.github.io/dl-pytorch-snippets/</a></li>
     </ul>
   </li>
 </ul>
@@ -1029,8 +1898,11 @@ Shape : torch.Size([3, 3])
   </li>
 </ul>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 방법 1</span>
-<span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span> <span class="o">=</span> <span class="n">FastRCNNPredictor</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<hr />
+
+<h4 id="-방법-1-"><font color="orange"> 방법 1 </font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span> <span class="o">=</span> <span class="n">FastRCNNPredictor</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span>
 </code></pre></td></tr></tbody></table></div></div>
@@ -1043,8 +1915,9 @@ Shape : torch.Size([3, 3])
 
 <hr />
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 방법 2</span>
-<span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span><span class="o">.</span><span class="n">cls_score</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<h4 id="-방법-2-"><font color="orange"> 방법 2 </font></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span><span class="o">.</span><span class="n">cls_score</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span><span class="o">.</span><span class="n">bbox_pred</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span>
@@ -1143,54 +2016,35 @@ Shape : torch.Size([3, 3])
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">]</span>
-<span class="n">params</span>
+<span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:]</span>
 </code></pre></td></tr></tbody></table></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46</pre></td><td class="code"><pre class="highlight"><code>[Parameter containing:
- tensor([[[[ 0.0199]],
- 
-          [[ 0.0048]],
- 
-          [[-0.0053]],
- 
-          ...,
- 
-          [[ 0.0168]],
- 
-          [[-0.0298]],
- 
-          [[ 0.0058]]],
- 
- 
-         [[[ 0.0026]],
- 
-          [[-0.0012]],
- 
-          [[-0.0586]],
- 
-          ...,
- 
-
- Parameter containing:
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27</pre></td><td class="code"><pre class="highlight"><code>[Parameter containing:
  tensor([ 0.0086,  0.0309,  0.0581,  ..., -0.0181,  0.0325,  0.0189],
         device='cuda:0', requires_grad=True),
  Parameter containing:
- tensor([[ 0.0297, -0.0208,  0.0098,  ..., -0.0201, -0.0042,  0.0137],
-         [-0.0057,  0.0026, -0.0181,  ...,  0.0020, -0.0225, -0.0092]],
-        device='cuda:0', requires_grad=True),
+ tensor([[-7.6312e-03,  2.0107e-02,  1.4423e-02,  ...,  6.0976e-05,
+           3.0176e-02,  2.4542e-02],
+         [ 1.1975e-02,  3.7853e-03,  1.3403e-02,  ..., -2.7104e-02,
+          -2.0492e-02, -1.9000e-02]], device='cuda:0', requires_grad=True),
  Parameter containing:
- tensor([-0.0183,  0.0090], device='cuda:0', requires_grad=True),
+ tensor([0.0195, 0.0138], device='cuda:0', requires_grad=True),
  Parameter containing:
- tensor([[-0.0308,  0.0286,  0.0026,  ...,  0.0074, -0.0105,  0.0230],
-         [ 0.0029, -0.0009, -0.0268,  ..., -0.0121, -0.0191,  0.0062],
-         [ 0.0001, -0.0124,  0.0241,  ..., -0.0147,  0.0066, -0.0096],
+ tensor([[-1.7756e-02,  1.4171e-03,  1.5141e-02,  ...,  2.7508e-02,
+          -1.1840e-02, -1.3901e-02],
+         [-1.7905e-02, -1.7732e-02, -1.7152e-02,  ...,  7.7827e-03,
+           1.2814e-02, -1.0298e-02],
+         [-2.6198e-02,  2.3477e-05, -2.5067e-03,  ..., -2.8354e-02,
+          -6.5023e-03,  1.1452e-02],
          ...,
-         [-0.0096,  0.0182, -0.0138,  ..., -0.0091, -0.0034,  0.0105],
-         [ 0.0171,  0.0105,  0.0138,  ..., -0.0151, -0.0048,  0.0080],
-         [ 0.0047, -0.0089, -0.0266,  ..., -0.0002,  0.0091, -0.0020]],
-        device='cuda:0', requires_grad=True),
+         [-2.0409e-02,  1.9236e-02,  6.2685e-03,  ...,  2.4985e-02,
+          -2.8892e-02, -2.0194e-03],
+         [-5.7999e-03, -1.4193e-02,  8.6269e-03,  ..., -2.1297e-02,
+           1.7533e-03, -1.9947e-02],
+         [-2.9891e-03, -2.0081e-02,  2.4276e-03,  ...,  1.5759e-02,
+          -1.5163e-02,  2.7659e-02]], device='cuda:0', requires_grad=True),
  Parameter containing:
- tensor([-0.0133,  0.0203, -0.0245, -0.0130, -0.0253, -0.0146,  0.0048, -0.0186],
+ tensor([-0.0081,  0.0307,  0.0157, -0.0003, -0.0152, -0.0005,  0.0208, -0.0266],
         device='cuda:0', requires_grad=True)]
 </code></pre></td></tr></tbody></table></div></div>
 
@@ -1199,12 +2053,11 @@ Shape : torch.Size([3, 3])
 <h3 id="optimizer-설정"><font color="green">Optimizer 설정</font></h3>
 
 <ul>
-  <li><code class="highlighter-rouge">AdamW</code> 등 Detection 문제에서 평균적으로 더 좋은 성능을 보이는 옵티마이저가 있지만, 전처리 방법 등이 달라지므로 지금은 <code class="highlighter-rouge">Adam</code>을 사용해보자.</li>
+  <li><code class="highlighter-rouge">AdamW</code> 등 Detection 문제에서 평균적으로 더 좋은 성능을 보이는 옵티마이저가 있지만, 지금은 <code class="highlighter-rouge">Adam</code>을 사용해보자.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
-
 <hr />
 
 <h3 id="averager-클래스-설정"><font color="green">Averager 클래스 설정</font></h3>
@@ -1240,54 +2093,167 @@ Shape : torch.Size([3, 3])
 
 <hr />
 
-<h3 id="모델-학습하기"><font color="green">모델 학습하기</font></h3>
+<h3 id="validation-함수"><font color="green">Validation 함수</font></h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41</pre></td><td class="code"><pre class="highlight"><code><span class="n">iterations</span> <span class="o">=</span> <span class="mi">1</span>
+<ul>
+  <li>pytorch의 <code class="highlighter-rouge">faster-rcnn</code> 모델을 사용할 시, model.eval()은 loss가 아닌 예측 바운딩박스 좌표값들을 돌려준다. 우선은 <code class="highlighter-rouge">with torch.no_grad()</code>만 적용하여 validation loss를 계산해보자.</li>
+</ul>
 
-<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"NUM_EPOCHS"</span><span class="p">]):</span>
-    
-    <span class="n">loss_hist</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-    
-    <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">image_ids</span> <span class="ow">in</span> <span class="n">train_loader</span><span class="p">:</span>
-        
-        <span class="c"># Data to GPU</span>
-        <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">images</span><span class="p">)</span>
-        <span class="n">targets</span> <span class="o">=</span> <span class="p">[{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
-        
-        <span class="c"># Label classification, BoundingBox Regression의 Loss 값이 Ditcionary 형태로 나온다.</span>
-        <span class="n">loss_dict</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
-        
-        <span class="c"># Dict 형태의 loss_dict에서 .values()로 key:values에서 values를 가져온다.</span>
-        <span class="n">losses</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">loss_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        
-        <span class="c"># losses를 print해보면 tensor()로 감싸져 있다. .item()으로 숫자만 가져오자.</span>
-        <span class="n">loss_value</span> <span class="o">=</span> <span class="n">losses</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        
-        <span class="c"># loss_hist에 loss_value를 저장한다.</span>
-        <span class="n">loss_hist</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">loss_value</span><span class="p">)</span>
-        
-        <span class="c"># optimizer 업데이트 시 항상 나오는 삼총사</span>
-        
-        <span class="c"># 1. 기울기 0으로 초기화</span>
-        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-        <span class="c"># 2. 역전파</span>
-        <span class="n">losses</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-        <span class="c"># 3. 업데이트</span>
-        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-        
-        <span class="c"># 10번마다 loss값 출력</span>
-        <span class="k">if</span> <span class="n">iterations</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"{iterations} iterations ... Loss : {loss_value}"</span><span class="p">)</span>
-        
-        <span class="n">iterations</span> <span class="o">+=</span><span class="mi">1</span>
-        
-    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"{epoch+1} epochs ... Loss : {loss_hist.value}"</span><span class="p">)</span>
-        
+<p>참고 : <a href="https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn">https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15</pre></td><td class="code"><pre class="highlight"><code><span class="c"># validation function</span>
+<span class="k">def</span> <span class="nf">validation</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_loader</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="n">valid_loss</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">image_ids</span> <span class="ow">in</span> <span class="n">valid_loader</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">images</span><span class="p">)</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="p">[{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+
+        <span class="n">val_loss_dict</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="n">val_losses</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">val_loss_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">valid_loss</span> <span class="o">+=</span> <span class="n">val_losses</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+
+    <span class="k">return</span> <span class="n">valid_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_loader</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code>100 iterations ... Loss : 1.656331266455832
-200 iterations ... Loss : 1.6436962310921421
-300 iterations ... Loss : 1.2544700579428234
+<hr />
+
+<h3 id="모델-학습하기"><font color="green">모델 학습하기</font></h3>
+
+<ul>
+  <li>모델은 5번의 교차검증으로 훈련한다.</li>
+</ul>
+
+<h3 id="단일-모델-훈련-코드"><font color="orange">단일 모델 훈련 코드</font></h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">valid_loader</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_step</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"NUM_EPOCHS"</span><span class="p">]):</span>
+
+        <span class="n">loss_hist</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">image_ids</span> <span class="ow">in</span> <span class="n">train_loader</span><span class="p">:</span>
+
+            <span class="c"># Data to GPU</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">images</span><span class="p">)</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="p">[{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+            <span class="n">steps</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c"># Label classification, BoundingBox Regression의 Loss 값이 Ditcionary 형태로 나온다.</span>
+            <span class="n">loss_dict</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+            <span class="c"># Dict 형태의 loss_dict에서 .values()로 key:values에서 values를 가져온다.</span>
+            <span class="n">losses</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">loss_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="c"># losses를 print해보면 tensor()로 감싸져 있다. .item()으로 숫자만 가져오자.</span>
+            <span class="n">loss_value</span> <span class="o">=</span> <span class="n">losses</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="c"># loss_hist에 loss_value를 저장한다.</span>
+            <span class="n">loss_hist</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">loss_value</span><span class="p">)</span>
+
+            <span class="c"># optimizer 업데이트 시 항상 나오는 삼총사</span>
+
+            <span class="c"># 1. 기울기 0으로 초기화</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="c"># 2. 역전파</span>
+            <span class="n">losses</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="c"># 3. 업데이트</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="c"># 10번마다 loss값 출력</span>
+            <span class="k">if</span> <span class="n">iterations</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"{iterations} iterations ... Loss : {loss_value}"</span><span class="p">)</span>
+
+            <span class="n">iterations</span> <span class="o">+=</span><span class="mi">1</span>
+            
+            <span class="k">if</span> <span class="n">steps</span> <span class="o">%</span> <span class="n">total_step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">valid_loss</span> <span class="o">=</span> <span class="n">validation</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_loader</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> 
+                
+                <span class="k">print</span><span class="p">(</span><span class="s">"Epoch: {}/{}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">args</span><span class="p">[</span><span class="s">'NUM_EPOCHS'</span><span class="p">]),</span>
+                     <span class="s">"Training Loss: {:.6f}.."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loss_hist</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                     <span class="s">"Valid Loss: {:.6f}.."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">valid_loss</span><span class="p">))</span>
+                
+                <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="교차검증-훈련"><font color="orange">교차검증 훈련</font></h3>
+
+<ul>
+  <li>5번의 교차 검증을 진행한다. 아래 출력창을 보면 로스값이 떨어지는 것을 확인할 수 있다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_fold</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">df_folds</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s">'image_id'</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">'left'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train_folds</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">fold</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"NUM_FOLDS"</span><span class="p">]):</span>
+
+        <span class="c"># Model &amp; Optimizer</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">detection</span><span class="o">.</span><span class="n">fasterrcnn_resnet50_fpn</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span><span class="o">.</span><span class="n">cls_score</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span><span class="o">.</span><span class="n">bbox_pred</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">]</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+        <span class="n">train_</span> <span class="o">=</span> <span class="n">train_fold</span><span class="p">[</span><span class="n">train_fold</span><span class="p">[</span><span class="s">"fold"</span><span class="p">]</span><span class="o">!=</span><span class="n">fold</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">valid_</span> <span class="o">=</span> <span class="n">train_fold</span><span class="p">[</span><span class="n">train_fold</span><span class="p">[</span><span class="s">"fold"</span><span class="p">]</span><span class="o">==</span><span class="n">fold</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c"># Train Loader &amp; Valid Loader</span>
+        <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">WheatDataset</span><span class="p">(</span><span class="n">train_</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s">"TRAIN"</span><span class="p">],</span> <span class="n">transforms</span> <span class="o">=</span> <span class="n">get_train_transform</span><span class="p">())</span>
+        <span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span>
+                                  <span class="n">batch_size</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s">"BATCH_SIZE"</span><span class="p">],</span> 
+                                  <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                  <span class="n">collate_fn</span> <span class="o">=</span> <span class="n">collate_fn</span><span class="p">,</span>
+                                  <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">WheatDataset</span><span class="p">(</span><span class="n">valid_</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s">"TRAIN"</span><span class="p">],</span> <span class="n">transforms</span> <span class="o">=</span> <span class="n">get_valid_transform</span><span class="p">())</span>
+        <span class="n">valid_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span>
+                                  <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+                                  <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                                  <span class="n">collate_fn</span> <span class="o">=</span> <span class="n">collate_fn</span><span class="p">,</span>
+                                  <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"</span><span class="se">\n</span><span class="s">{fold+1}/{args['NUM_FOLDS']} Cross Validation Training Starts ...</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">train_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">valid_loader</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"</span><span class="se">\n</span><span class="s">{fold+1}/{args['NUM_FOLDS']} Cross Validation Training Ends ...</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">f</span><span class="s">"fold{fold}_model.pth"</span><span class="p">)</span>
+    <span class="k">return</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_folds</span><span class="p">(</span><span class="n">train_fold</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22</pre></td><td class="code"><pre class="highlight"><code>1/5 Cross Validation Training Starts ...
+
+100 iterations ... Loss : 1.7992744816770365
+200 iterations ... Loss : 1.3215401355936756
+300 iterations ... Loss : 1.2728456529162266
+Epoch: 1/20..  Training Loss: 1.705802.. Valid Loss: 1.148290..
+400 iterations ... Loss : 1.1416268536681002
+500 iterations ... Loss : 0.9909895147586031
+600 iterations ... Loss : 1.0571585424735501
+Epoch: 2/20..  Training Loss: 1.031144.. Valid Loss: 1.045934..
+700 iterations ... Loss : 1.0805089997351918
+800 iterations ... Loss : 0.9486090712623582
+900 iterations ... Loss : 0.8159377695012606
+1000 iterations ... Loss : 0.9475474243279667
+Epoch: 3/20..  Training Loss: 0.931789.. Valid Loss: 0.931303..
+1100 iterations ... Loss : 0.903436008694743
+1200 iterations ... Loss : 0.8769005698768707
+1300 iterations ... Loss : 0.7356736096027937
+Epoch: 4/20..  Training Loss: 0.882577.. Valid Loss: 0.892810..
+1400 iterations ... Loss : 0.841289657854777
+1500 iterations ... Loss : 0.828545476986028
+1600 iterations ... Loss : 0.8009961004305629
 </code></pre></td></tr></tbody></table></div></div>
 
 <hr />
@@ -1312,22 +2278,19 @@ Shape : torch.Size([3, 3])
   <li>사용할 방법을 코드로 구현해서 적용하면 된다.</li>
 </ul>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s">"best_model.pth"</span><span class="p">)</span>
-</code></pre></td></tr></tbody></table></div></div>
-
 <hr />
 
 <h2 id="마무리"><font color="blue">마무리</font></h2>
 
 <ul>
   <li><code class="highlighter-rouge">Object Detection - 이진 분류 대회</code>에 대한 기본적인 Base line 코드를 공부해봤다.</li>
-  <li>아직 Train, Valid 셋을 나누고 학습하기, 모델 성능을 높이기 위한 여러가지 기법들을 적용하지 않았다.</li>
+  <li>교차검증을 위해 Train, Valid 셋을 나눌 때, <code class="highlighter-rouge">stratify_group</code>을 만들었는데, 이는 최대한 데이터 분포를 고르게 하여 특정 fold에서 모델이 과적합 되지 않게 하기 위함이었다.</li>
   <li>모델 성능을 더 높이기 위한 여러 방법들을(하이퍼 파라미터 조정, 데이터 전처리, 모델 바꿔서 학습해보기 등) 더 공부해보고 적용해보자.</li>
   <li>
-    <p>저장한 모델로 test 셋 예측 및 제출하기까지의 방법은 Inference 글을 참고하면 된다.<br />
-<a href="https://sseunghyuns.github.io/detection/2021/03/14/wheat_inference/#">https://sseunghyuns.github.io/detection/2021/03/14/wheat_inference/#</a></p>
+    <p>저장한 모델로 test 셋 예측 및 제출하기까지의 방법은 <code class="highlighter-rouge">Weighted Boxes Fusion</code> 글을 참고하면 된다.</p>
   </li>
-  <li>Pre-trained <code class="highlighter-rouge">faster-rcnn</code> 모델을 사용한 리더보드 점수는 private : <strong>0.5397</strong>, public : <strong>0.6525</strong> 이다.
+  <li>Test데이터 추론에는 Pre-trained <code class="highlighter-rouge">faster-rcnn</code> 모델을 5번의 교차검증으로 훈련한 후, <code class="highlighter-rouge">weighted boxes fusion</code>방법을 적용했다.</li>
+  <li>리더보드 점수는 private : <strong>0.5870</strong>, public : <strong>0.6735</strong>
     <ul>
       <li><strong>참고</strong> : 리더보드상 1위 private : 0.6897, 1위 public : 0.7746</li>
     </ul>
@@ -1335,6 +2298,16 @@ Shape : torch.Size([3, 3])
 </ul>
 
 <hr />
+
+<h2 id="참고-자료"><font color="blue">참고 자료</font></h2>
+
+<ul>
+  <li>FasterRCNN 학습 코드 참고 : <a href="https://www.kaggle.com/pestipeti/pytorch-starter-fasterrcnn-train">https://www.kaggle.com/pestipeti/pytorch-starter-fasterrcnn-train</a></li>
+  <li>albumentations 참고 : <a href="https://albumentations.ai/docs/examples/example_bboxes/">https://albumentations.ai/docs/examples/example_bboxes/</a></li>
+  <li>Dropout, BatchNorm 참고 : <a href="https://gaussian37.github.io/dl-pytorch-snippets/">https://gaussian37.github.io/dl-pytorch-snippets/</a></li>
+  <li>StratifyKFold 참고 : <a href="https://www.kaggle.com/shonenkov/wbf-approach-for-ensemble">https://www.kaggle.com/shonenkov/wbf-approach-for-ensemble</a></li>
+  <li>Pytorch FasterRCNN Validation 참고 : <a href="https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn">https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn</a></li>
+</ul>
 
 
       
@@ -1383,6 +2356,12 @@ Shape : torch.Size([3, 3])
             
             <a href="/tag/#/Faster%20RCNN" rel="tag"># Faster RCNN</a>
           
+            
+            <a href="/tag/#/StratifyKFold" rel="tag"># StratifyKFold</a>
+          
+            
+            <a href="/tag/#/Ensemble" rel="tag"># Ensemble</a>
+          
         </div>
       
 
@@ -1397,8 +2376,8 @@ Shape : torch.Size([3, 3])
         <div class="post-nav" id="post-nav-id">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/detection/2021/04/17/vinbigdata-train/" rel="next" title="VinBigData Chest X-ray(Object Detection)">
-                <i class="fa fa-chevron-left"></i> VinBigData Chest X-ray(Object Detection)
+              <a href="/detection/2021/03/29/wheatdetection-wbf-inference/" rel="next" title="Weighted Boxes Fusion(Detection)">
+                <i class="fa fa-chevron-left"></i> Weighted Boxes Fusion(Detection)
               </a>
             
           </div>
@@ -1407,8 +2386,8 @@ Shape : torch.Size([3, 3])
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/detection/2021/03/14/wheat_inference/" rel="prev" title="Global Wheat Detection(2) Inference 코드">
-                Global Wheat Detection(2) Inference 코드 <i class="fa fa-chevron-right"></i>
+              <a href="/segmentation/2021/02/15/tgs_salt/" rel="prev" title="TGS Salt Identification Challenge(Segmentation)">
+                TGS Salt Identification Challenge(Segmentation) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -1539,7 +2518,7 @@ Shape : torch.Size([3, 3])
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">태그</span>
               </a>
             </div>
@@ -1621,7 +2600,7 @@ Shape : torch.Size([3, 3])
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</center</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#global-wheat-detection"> <span class="nav-number">1.1</span> <span class="nav-text">Global Wheat Detection</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키지-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키지 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#하이퍼파라미터-설정"> <span class="nav-number">3</span> <span class="nav-text">하이퍼파라미터 설정</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#detection-대회-코드-관리"> <span class="nav-number">4</span> <span class="nav-text">Detection 대회 코드 관리</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지-확인하기"> <span class="nav-number">5</span> <span class="nav-text">이미지 확인하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-전처리"> <span class="nav-number">6</span> <span class="nav-text">데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#데이터셋-만들기불러오기"> <span class="nav-number">6.1</span> <span class="nav-text">데이터셋 만들기(불러오기)</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#데이터셋-살펴보기"> <span class="nav-number">6.1.1</span> <span class="nav-text">데이터셋 살펴보기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지에-bounding-box-그려보기"> <span class="nav-number">6.1.2</span> <span class="nav-text">이미지에 Bounding Box 그려보기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#1-이미지에-하나의-bounding-box-그려보기"> <span class="nav-number">6.1.3</span> <span class="nav-text">1. 이미지에 하나의 bounding box 그려보기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#2-한-이미지에-해당하는-모든-bounding-box-그려보기"> <span class="nav-number">6.1.4</span> <span class="nav-text">2. 한 이미지에 해당하는 모든 bounding box 그려보기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#데이터-로더-만들기"> <span class="nav-number">6.2</span> <span class="nav-text">데이터 로더 만들기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#bounding-box를-tensor로-만들-때-주의해야할-점"> <span class="nav-number">6.2.1</span> <span class="nav-text">Bounding Box를 Tensor로 만들 때 주의해야할 점</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#transforms-함수-만들기"> <span class="nav-number">6.3</span> <span class="nav-text">transforms 함수 만들기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#stack-관련-에러-날-경우"> <span class="nav-number">6.4</span> <span class="nav-text">"Stack" 관련 에러 날 경우</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#학습하기"> <span class="nav-number">7</span> <span class="nav-text">학습하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-불러오기"> <span class="nav-number">7.1</span> <span class="nav-text">모델 불러오기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-out_features-바꿔주기"> <span class="nav-number">7.2</span> <span class="nav-text">모델 out_features 바꿔주기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#업데이트할-parameters-설정"> <span class="nav-number">7.3</span> <span class="nav-text">업데이트할 Parameters 설정</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#optimizer-설정"> <span class="nav-number">7.4</span> <span class="nav-text">Optimizer 설정</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#averager-클래스-설정"> <span class="nav-number">7.5</span> <span class="nav-text">Averager 클래스 설정</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-학습하기"> <span class="nav-number">7.6</span> <span class="nav-text">모델 학습하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-저장하기"> <span class="nav-number">7.7</span> <span class="nav-text">모델 저장하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#마무리"> <span class="nav-number">8</span> <span class="nav-text">마무리</font</span> </a> </li>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</center</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#global-wheat-detection"> <span class="nav-number">1.1</span> <span class="nav-text">Global Wheat Detection</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키지-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키지 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#하이퍼파라미터-설정"> <span class="nav-number">3</span> <span class="nav-text">하이퍼파라미터 설정</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#이미지-확인하기"> <span class="nav-number">4</span> <span class="nav-text">이미지 확인하기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-전처리"> <span class="nav-number">5</span> <span class="nav-text">데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#데이터셋-만들기불러오기"> <span class="nav-number">5.1</span> <span class="nav-text">데이터셋 만들기(불러오기)</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#데이터셋-살펴보기"> <span class="nav-number">5.1.1</span> <span class="nav-text">데이터셋 살펴보기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#이미지에-bounding-box-그려보기"> <span class="nav-number">5.1.2</span> <span class="nav-text">이미지에 Bounding Box 그려보기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#1-이미지에-하나의-bounding-box-그려보기"> <span class="nav-number">5.1.3</span> <span class="nav-text">1. 이미지에 하나의 bounding box 그려보기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#2-한-이미지에-해당하는-모든-bounding-box-그려보기"> <span class="nav-number">5.1.4</span> <span class="nav-text">2. 한 이미지에 해당하는 모든 bounding box 그려보기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#교차-검증을-위해-train-valid-데이터셋-나누기"> <span class="nav-number">5.2</span> <span class="nav-text">교차 검증을 위해 Train, Valid 데이터셋 나누기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#1-image_id-데이터-가져오기"> <span class="nav-number">5.2.1</span> <span class="nav-text">1. image_id 데이터 가져오기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#2-image_id-별로-bounding-box-개수-count하기"> <span class="nav-number">5.2.2</span> <span class="nav-text">2. image_id 별로 bounding box 개수 count하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#3-source-정보-추가하기"> <span class="nav-number">5.2.3</span> <span class="nav-text">3. source 정보 추가하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#4-bbox_count-source-정보를-합친-stratify_group-칼럼-만들기"> <span class="nav-number">5.2.4</span> <span class="nav-text">4. bbox_count, source 정보를 합친 stratify_group 칼럼 만들기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#5-stratify_group의-개수-파악하기"> <span class="nav-number">5.2.5</span> <span class="nav-text">5. stratify_group의 개수 파악하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#6-fold-칼럼을-추가하여-데이터-나누기"> <span class="nav-number">5.2.6</span> <span class="nav-text">6. fold 칼럼을 추가하여 데이터 나누기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#7-fold별로-stratify_group의-개수-파악하기"> <span class="nav-number">5.2.7</span> <span class="nav-text">7. fold별로 stratify_group의 개수 파악하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#데이터-로더-만들기"> <span class="nav-number">5.3</span> <span class="nav-text">데이터 로더 만들기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#bounding-box를-tensor로-만들-때-주의해야할-점"> <span class="nav-number">5.3.1</span> <span class="nav-text">Bounding Box를 Tensor로 만들 때 주의해야할 점</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#transforms-함수-만들기"> <span class="nav-number">5.4</span> <span class="nav-text">transforms 함수 만들기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#stack-관련-에러-날-경우"> <span class="nav-number">5.5</span> <span class="nav-text">"Stack" 관련 에러 날 경우</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#학습하기"> <span class="nav-number">6</span> <span class="nav-text">학습하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-불러오기"> <span class="nav-number">6.1</span> <span class="nav-text">모델 불러오기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-out_features-바꿔주기"> <span class="nav-number">6.2</span> <span class="nav-text">모델 out_features 바꿔주기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-방법-1-"> <span class="nav-number">6.2.1</span> <span class="nav-text"> 방법 1 </font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-방법-2-"> <span class="nav-number">6.2.2</span> <span class="nav-text"> 방법 2 </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#업데이트할-parameters-설정"> <span class="nav-number">6.3</span> <span class="nav-text">업데이트할 Parameters 설정</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#optimizer-설정"> <span class="nav-number">6.4</span> <span class="nav-text">Optimizer 설정</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#averager-클래스-설정"> <span class="nav-number">6.5</span> <span class="nav-text">Averager 클래스 설정</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#validation-함수"> <span class="nav-number">6.6</span> <span class="nav-text">Validation 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-학습하기"> <span class="nav-number">6.7</span> <span class="nav-text">모델 학습하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#단일-모델-훈련-코드"> <span class="nav-number">6.8</span> <span class="nav-text">단일 모델 훈련 코드</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#교차검증-훈련"> <span class="nav-number">6.9</span> <span class="nav-text">교차검증 훈련</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-저장하기"> <span class="nav-number">6.10</span> <span class="nav-text">모델 저장하기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#마무리"> <span class="nav-number">7</span> <span class="nav-text">마무리</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#참고-자료"> <span class="nav-number">8</span> <span class="nav-text">참고 자료</font</span> </a> </li>
     </ol>
   </div>
             

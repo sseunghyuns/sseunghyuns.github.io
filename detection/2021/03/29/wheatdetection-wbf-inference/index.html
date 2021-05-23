@@ -1,0 +1,1884 @@
+
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/assets/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/assets/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Deep Learning,CNN,Computer Vision,Pytorch,Detection,Faster RCNN,StratifyKFold,Ensemble,Weighted Boxes Fusion,Non Maximum Suppression," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Weighted Boxes Fusion 방법 소개 밀이삭 영역 탐지 대회(Global Wheat Detection) Weighted Boxes Fusion을 사용하여 Detection 문제에서 여러 모델의 예측 결과를 앙상블할 수 있습니다.">
+<meta name="keywords" content="Deep Learning, CNN, Computer Vision, Pytorch, Detection, Faster RCNN, StratifyKFold, Ensemble, Weighted Boxes Fusion, Non Maximum Suppression">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Weighted Boxes Fusion(Detection)">
+<meta property="og:url" content="http://localhost:4000/detection/2021/03/29/wheatdetection-wbf-inference/">
+<meta property="og:site_name" content="Seung Hyun's Blog">
+<meta property="og:description" content="Weighted Boxes Fusion 방법 소개 밀이삭 영역 탐지 대회(Global Wheat Detection) Weighted Boxes Fusion을 사용하여 Detection 문제에서 여러 모델의 예측 결과를 앙상블할 수 있습니다.">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png">
+<meta property="og:image" content="/assets/img/notebook/wheatdetection-wbf-inference_files/wbf.png">
+<meta property="og:image" content="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_23_0.png">
+<meta property="og:image" content="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_25_0.png">
+<meta property="og:image" content="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Weighted Boxes Fusion(Detection)">
+<meta name="twitter:description" content="Weighted Boxes Fusion 방법 소개 밀이삭 영역 탐지 대회(Global Wheat Detection) Weighted Boxes Fusion을 사용하여 Detection 문제에서 여러 모델의 예측 결과를 앙상블할 수 있습니다.">
+<meta name="twitter:image" content="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png">
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '작성자'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://localhost:4000/"/>
+
+
+
+
+
+  <title>Weighted Boxes Fusion(Detection) | Seung Hyun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="ko">
+
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Seung Hyun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">이승현의 깃허브 블로그</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            홈
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            카테고리
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            아카이브
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            태그
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            검색
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="" spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+<div id="posts" class="posts-expand">
+  
+  
+
+  
+
+  
+  
+  
+
+  <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/detection/2021/03/29/wheatdetection-wbf-inference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Seunghyun Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/assets/images/profile.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Seung Hyun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+          
+          
+            Weighted Boxes Fusion(Detection)
+          
+        </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">작성일</span>
+              
+              <time title="" itemprop="dateCreated datePublished" datetime="2021-03-29T22:38:00+09:00">
+                2021-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/Detection" itemprop="url" rel="index">
+                    <span itemprop="name">Detection</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 id="weighted-boxes-fusion-방법-소개"><center><font color="darkblue">Weighted Boxes Fusion 방법 소개</font></center></h2>
+<p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png" alt="png" /></p>
+<center>밀이삭 영역 탐지 대회(Global Wheat Detection)</center>
+<center>Weighted Boxes Fusion을 사용하여 Detection 문제에서 여러 모델의 예측 결과를 앙상블할 수 있습니다.</center>
+
+<hr />
+
+<h2 id="wbfweighted-boxes-fusion"><font color="blue">WBF(Weighted Boxes Fusion)</font></h2>
+
+<p>WBF는 Object detection 문제에서, 여러 바운딩 박스들을 앙상블하는 방법이다. 모델은 이미지 내에 어디에(4개의 좌표값), 어떤 Class가(ex 사람/강아지/고양이), 얼마만큼의 확률(0~1)로 존재하는지 예측하게 된다. 만약 여러 모델에서 각기 다른 예측값들을 효과적으로 앙상블할 수 있다면, 모델의 성능을 더욱 높일 수 있을 것이다.</p>
+
+<p>기존 <code class="highlighter-rouge">NMS(Non Maximum Suppression)</code>과 <code class="highlighter-rouge">Soft-NMS extenstion</code>의 방법도 존재한다. <code class="highlighter-rouge">NMS</code>나 <code class="highlighter-rouge">Soft-NMS</code>는 예측값의 일부를 제거하는 방식이라면, <code class="highlighter-rouge">WBF</code>는 예측된 모든 바운딩 박스들의 정보를 사용하여 결합하는 방식이다. 아래 이미지를 보면, 빨간색 박스가 모델의 예측값이고 파란색 박스가 정답값이다. <code class="highlighter-rouge">NMS</code>는 부정확한 박스를 모두 제외하고 하나의 박스만 남겼다면, <code class="highlighter-rouge">WBF</code>는 예측된 3개의 박스의 정보를 모두 사용하여 최종 예측값을 뽑아냈다.</p>
+
+<p><code class="highlighter-rouge">WBF</code>의 알고리즘을 간단히 요약하자면, 두 박스의 IoU를 계산하여 <code class="highlighter-rouge">iou_thr</code> 임계값을 넘으면 융합이 진행되는데, 융합 시 예측된 각 박스의 <code class="highlighter-rouge">score</code>에 따라 결과가 조정되는 방식이다. 예측 박스들을 융합하는 알고리즘은 아래 참고 블로그에서 더욱 자세하게 알 수 있다.</p>
+
+<p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wbf.png" alt="png" width="500" height="500" /></p>
+
+<p>WBF 참고 블로그 : <a href="https://lv99.tistory.com/74">https://lv99.tistory.com/74</a></p>
+
+<hr />
+
+<h2 id="패키지-불러오기"><font color="blue">패키지 불러오기</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+
+<span class="kn">import</span> <span class="nn">torchvision</span>
+<span class="kn">from</span> <span class="nn">torchvision.models.detection.faster_rcnn</span> <span class="kn">import</span> <span class="n">FastRCNNPredictor</span>
+
+<span class="kn">import</span> <span class="nn">albumentations</span> <span class="k">as</span> <span class="n">A</span>
+<span class="kn">from</span> <span class="nn">albumentations.pytorch.transforms</span> <span class="kn">import</span> <span class="n">ToTensorV2</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># Weighted Boxes Fusion 라이브러리</span>
+<span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">deps</span> <span class="s">'../input/weightedboxesfusion/'</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
+<span class="kn">from</span> <span class="nn">ensemble_boxes</span> <span class="kn">import</span> <span class="o">*</span> 
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="하이퍼파라미터-설정"><font color="blue">하이퍼파라미터 설정</font></h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"TEST_DIR"</span> <span class="p">:</span> <span class="s">"/kaggle/input/global-wheat-detection/sample_submission.csv"</span><span class="p">,</span>
+    <span class="s">"TEST_IMG_DIR"</span> <span class="p">:</span> <span class="s">'../input/global-wheat-detection/test/'</span><span class="p">,</span>
+    <span class="s">"DEVICE"</span> <span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span>
+<span class="p">)}</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="데이터-전처리"><font color="blue">데이터 전처리</font></h2>
+
+<h3 id="데이터셋-만들기불러오기"><font color="green">데이터셋 만들기(불러오기)</font></h3>
+
+<ul>
+  <li><code class="highlighter-rouge">sample_submission</code>파일을 불러온다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"TEST_DIR"</span><span class="p">])</span>
+<span class="n">test</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>image_id</th>
+      <th>PredictionString</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>aac893a91</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>51f1be19e</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>f5a1f0358</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>796707dd7</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>51b3e36ab</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>348a992bb</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>cc3532ff6</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2fd875eaa</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>cb8d261a3</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>53f253011</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr />
+
+<h3 id="데이터-로더-만들기"><font color="green">데이터 로더 만들기</font></h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32</pre></td><td class="code"><pre class="highlight"><code><span class="k">class</span> <span class="nc">WheatTestDataLoader</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">image_dir</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">dataframe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_dir</span> <span class="o">=</span> <span class="n">image_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_ids</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s">'image_id'</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span> 
+        
+        <span class="c"># Dataset의 index와 연동되어 이미지 각각에 대해 접근한다.</span>
+        <span class="n">image_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> 
+        <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_dir</span> <span class="o">+</span> <span class="n">image_id</span> <span class="o">+</span> <span class="s">'.jpg'</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+        
+        <span class="c"># 메모리 소모량을 줄이기 위해 데이터타입을 float32로 바꾼다.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> 
+        
+        <span class="c"># keras에서는 이미지의 픽셀 값들을 0~1 사이로 자동적으로 표준화를 해주지만, 여기선 직접 설정해줘야 한다.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span> <span class="o">/</span> <span class="mf">255.0</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image'</span> <span class="p">:</span> <span class="n">image</span><span class="p">}</span>
+            
+            <span class="c"># ** : transforms 함수 안에 'image'라는 이름에 접근한다는 의미</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">(</span><span class="o">**</span><span class="n">sample</span><span class="p">)</span>
+            
+            <span class="n">image</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s">'image'</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">image_id</span>
+        
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_ids</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9</pre></td><td class="code"><pre class="highlight"><code><span class="c"># transforms </span>
+<span class="k">def</span> <span class="nf">get_test_transforms</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">512</span><span class="p">),</span>
+            <span class="n">ToTensorV2</span><span class="p">()])</span>
+
+<span class="c"># collate_fn</span>
+<span class="k">def</span> <span class="nf">collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">batch</span><span class="p">))</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="n">testset</span> <span class="o">=</span> <span class="n">WheatTestDataLoader</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s">"TEST_IMG_DIR"</span><span class="p">],</span> <span class="n">transforms</span><span class="o">=</span><span class="n">get_test_transforms</span><span class="p">())</span>
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">testset</span><span class="p">,</span>
+                         <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                         <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> 
+                         <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                         <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_fn</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="모델-불러와서-weighted-boxes-fusion-적용하기"><font color="blue">모델 불러와서 Weighted Boxes Fusion 적용하기</font></h2>
+
+<h3 id="모델-가중치-로드하기"><font color="green">모델 가중치 로드하기</font></h3>
+
+<ul>
+  <li>5번의 교차검증으로 학습된 5개의 모델을 불러온다. 불러오기 전, 학습했을 때의 모델 구조로 바꿔준다.</li>
+  <li>추가하고자 하는 모델 가중치가 gpu 환경에서 학습되었기 때문에, 우리의 모델 역시 gpu 환경으로 맞춰준다. 만약 cpu로 예측을 하고 싶으면, <code class="highlighter-rouge">map_location</code> 옵션을 <code class="highlighter-rouge">cpu</code>로 설정한다.</li>
+  <li>또한 데이터를 예측 시에는 <code class="highlighter-rouge">model.eval()</code>옵션을 준다. 이 옵션을 사용하면 모델 내부의 모든 layer가 evaluation 모드가 된다. Evaluation 모드에서는 <code class="highlighter-rouge">batchnorm</code>, <code class="highlighter-rouge">Dropout</code>과 같은 기능들이 사용되지 않는다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">detection</span><span class="o">.</span><span class="n">fasterrcnn_resnet50_fpn</span><span class="p">(</span><span class="n">pretrained_backbone</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">roi_heads</span><span class="o">.</span><span class="n">box_predictor</span> <span class="o">=</span> <span class="n">FastRCNNPredictor</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">]))</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span>
+    <span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">model</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_model</span><span class="p">(</span><span class="s">'../input/model/fold0_model.tar'</span><span class="p">),</span>
+          <span class="n">get_model</span><span class="p">(</span><span class="s">'../input/model/fold1_model.tar'</span><span class="p">),</span>
+          <span class="n">get_model</span><span class="p">(</span><span class="s">'../input/model/fold2_model.tar'</span><span class="p">),</span>
+          <span class="n">get_model</span><span class="p">(</span><span class="s">'../input/model/fold3_model.tar'</span><span class="p">),</span>
+          <span class="n">get_model</span><span class="p">(</span><span class="s">'../input/model/fold4_model.tar'</span><span class="p">)]</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="5개-모델의-예측-결과-저장하는-함수-정의"><font color="green">5개 모델의 예측 결과 저장하는 함수 정의</font></h3>
+
+<ul>
+  <li><code class="highlighter-rouge">make_ensemble_predictions</code> 함수는 5개의 모델의 예측값을 모두 저장하여 리스트 값으로 반환해주는 함수이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 앙상블 </span>
+<span class="k">def</span> <span class="nf">make_ensemble_predictions</span><span class="p">(</span><span class="n">images</span><span class="p">):</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"DEVICE"</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">images</span><span class="p">]</span> 
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span> 
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="weighted-boxes-fusion-함수-정의"><font color="green">Weighted Boxes Fusion 함수 정의</font></h3>
+
+<ul>
+  <li>WBF 적용할 때는, bounding box 좌표값들이 0~1 사이의 값을 가져야 한다. 아래 코드에서 좌표값들을 <code class="highlighter-rouge">(image_size-1)</code>로 나누는 이유가 바로 그것이다.</li>
+  <li><code class="highlighter-rouge">weighted_boxes_fusion</code> 함수에서, <code class="highlighter-rouge">iou_thr</code>과 <code class="highlighter-rouge">skip_box_thr</code> 하이퍼파라미터를 이해해야 한다.
+    <ul>
+      <li><code class="highlighter-rouge">iou_thr</code> : IoU(Intersection over Union) 임계값이다. 두 박스의 IoU를 계산하여, 임계값을 넘겼을 경우, <code class="highlighter-rouge">config_type='avg'</code>(디폴트 값) 방식으로 두 박스가 융합된다.</li>
+      <li><code class="highlighter-rouge">skip_box_thr</code> class에 대한 예측 확률값(scores)이 skip_box_thr 임계값을 넘길 때만 가져온다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19</pre></td><td class="code"><pre class="highlight"><code><span class="c"># WBF 적용</span>
+<span class="k">def</span> <span class="nf">run_wbf</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">image_index</span><span class="p">,</span> <span class="n">image_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">iou_thr</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">skip_box_thr</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+    
+    <span class="c"># (image_size-1)로 나누는 이유 :</span>
+    <span class="c"># WBF 적용 시 bounding box로 들어올 때, 이미지를 512로 리사이즈 했으므로 0~511사이의 값들을 갖는다. 이 값들을 0~1사이로 바뀌어야 한다.</span>
+    <span class="n">boxes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">image_index</span><span class="p">][</span><span class="s">'boxes'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">image_size</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">]</span>
+    
+    <span class="n">scores</span> <span class="o">=</span>  <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">image_index</span><span class="p">][</span><span class="s">'scores'</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">]</span> <span class="c"># scores에 접근, gpu 연산 필요 없음!</span>
+    
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">image_index</span><span class="p">][</span><span class="s">'scores'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">]</span> <span class="c"># bb가 발견된 경우, 무조건 벼(class=1)</span>
+    
+    <span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">weighted_boxes_fusion</span><span class="p">(</span><span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">iou_thr</span><span class="o">=</span><span class="n">iou_thr</span><span class="p">,</span> <span class="n">skip_box_thr</span><span class="o">=</span><span class="n">skip_box_thr</span><span class="p">,</span> <span class="n">conf_type</span><span class="o">=</span><span class="s">'avg'</span><span class="p">,)</span>
+    <span class="c"># iou_thr : IoU(Intersection over Union) 임계값이다. 두 박스의 IoU를 계산하여, 임계값을 넘겼을 경우, config_type='avg'(디폴트 값) 방식으로 두 박스가 융합된다.</span>
+    <span class="c"># skip_box_thr : class에 대한 값이 skip_box_thr 임계값을 넘길 때만 가져온다.</span>
+    
+    <span class="c"># 다시 512 사이즈로 바꿔준다.</span>
+    <span class="n">boxes</span> <span class="o">=</span> <span class="n">boxes</span> <span class="o">*</span> <span class="p">(</span><span class="n">image_size</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">labels</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="weighted-boxes-fusion-적용-결과-확인"><font color="green">Weighted Boxes Fusion 적용 결과 확인</font></h3>
+
+<h4 id="1-weighted-boxes-fusion-적용하지-않았을-때"><font color="orange">1. Weighted Boxes Fusion 적용하지 않았을 때</font></h4>
+
+<ul>
+  <li>5개의 모델이 예측한 바운딩 박스를 모두 plot 해보자. 모델 별로 색을 다르게 하여 구분할 수 있게 하자.</li>
+  <li>아래 결과 이미지를 보면, 5개 모델이 예측한 바운딩 박스들을 볼 수 있다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22</pre></td><td class="code"><pre class="highlight"><code><span class="c"># WBF 적용되지 않은 결과</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">color</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">image_ids</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_loader</span><span class="p">):</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">make_ensemble_predictions</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">f</span><span class="s">"/kaggle/input/global-wheat-detection/test/{image_ids[0]}.jpg"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">folds</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">folds</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'boxes'</span><span class="p">])):</span>
+            
+            <span class="c"># bbox 값의 범위를 이미지 사이즈(1024)에 맞춰준다.</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">folds</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'boxes'</span><span class="p">][</span><span class="n">index</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1023</span><span class="p">)</span>
+            <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">),</span> <span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">),</span> <span class="n">color</span><span class="p">[</span><span class="n">folds</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">image_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_23_0.png" alt="png" /></p>
+
+<hr />
+
+<h4 id="2-weighted-boxes-fusion-적용했을-때"><font color="orange">2. Weighted Boxes Fusion 적용했을 때</font></h4>
+
+<ul>
+  <li>WBF를 적용한 결과이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21</pre></td><td class="code"><pre class="highlight"><code><span class="c"># WBF 적용된 결과</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">image_ids</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_loader</span><span class="p">):</span>
+
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">make_ensemble_predictions</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">run_wbf</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">image_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">boxes</span> <span class="o">=</span> <span class="n">boxes</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">511</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">boxes</span><span class="p">:</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span>
+                      <span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                      <span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                      <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">image_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_25_0.png" alt="png" /></p>
+
+<hr />
+
+<h4 id="3-weighted-boxes-fusion-적용-전과-후"><font color="orange">3. Weighted Boxes Fusion 적용 전과 후</font></h4>
+
+<ul>
+  <li>왼쪽 이미지부터 원본, WBF 적용 전, WBF 적용 후의 이미지이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38</pre></td><td class="code"><pre class="highlight"><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">images</span><span class="p">,</span> <span class="n">image_ids</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">test_loader</span><span class="p">))</span>
+
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">make_ensemble_predictions</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+<span class="n">color</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">f</span><span class="s">"/kaggle/input/global-wheat-detection/test/{image_ids[0]}.jpg"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+<span class="n">img_origin</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">img_wbf</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">folds</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">folds</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'boxes'</span><span class="p">])):</span>
+
+        <span class="c"># bbox 값의 범위를 이미지 사이즈(1024)에 맞춰준다.</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">folds</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'boxes'</span><span class="p">][</span><span class="n">index</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1023</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">),</span> <span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">),</span> <span class="n">color</span><span class="p">[</span><span class="n">folds</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">run_wbf</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">image_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">boxes</span> <span class="o">=</span> <span class="p">(</span><span class="n">boxes</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1023</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">boxes</span><span class="p">:</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img_wbf</span><span class="p">,(</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]),(</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_origin</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"Origin Image"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"Before WBF(5 models prediction)"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_wbf</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">"WBF"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>(-0.5, 1023.5, 1023.5, -0.5)
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png" alt="png" /></p>
+
+<p>중간 이미지는 5개의 모델에 대한 예측값들 모두 그려진 상태이다. 모델이 각각 다른 가중치를 갖고 있기에 예측값도 조금씩 다르다. 이러한 예측값들을 모두 고려하여 WBF를 적용한 결과, 가장 오른쪽의 이미지와 같은 결과를 갖게 된다. 각 예측값의 score 값, 박스 간 IoU 값들을 기준으로 융합된 결과이다.</p>
+
+<hr />
+
+<h2 id="제출하기"><font color="blue">제출하기</font></h2>
+
+<ul>
+  <li>최근 kaggle에서는 예측값이 담긴 csv만 제출하는 것이 아니라, 부정행위를 방지하기 위해 notebook 전체를 제출하게끔 하고 있다.</li>
+  <li>notebook으로 제출하기
+    <ul>
+      <li>
+        <ol>
+          <li>오른쪽 콘솔에서 <code class="highlighter-rouge">Internet</code> 을 끈다.</li>
+        </ol>
+      </li>
+      <li>
+        <ol>
+          <li><code class="highlighter-rouge">Save Version</code> -&gt; <code class="highlighter-rouge">Advanced Settings</code> -&gt; <code class="highlighter-rouge">Always save output</code></li>
+        </ol>
+      </li>
+      <li>
+        <ol>
+          <li>submission 파일 이름은 반드시 <code class="highlighter-rouge">submission.csv</code>로 설정하기</li>
+        </ol>
+      </li>
+      <li>
+        <ol>
+          <li>Save하여 제출</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="submission-양식으로-바꿔주는-함수-정의하기"><font color="green">Submission 양식으로 바꿔주는 함수 정의하기</font></h3>
+
+<ul>
+  <li>대회마다 submission 제출 양식이 다르다. 이 대회에서는 아래와 같은 제출 양식을 요구하고 있다. 즉 <code class="highlighter-rouge">image_id</code>별로 [class_score, xmin, ymin, width, height] 의 양식으로 들어가야 한다는 것이다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">test</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>image_id</th>
+      <th>PredictionString</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>aac893a91</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>51f1be19e</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>f5a1f0358</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>796707dd7</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>51b3e36ab</td>
+      <td>1.0 0 0 50 50</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">format_prediction_string</span><span class="p">(</span><span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+    <span class="n">pred_strings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">boxes</span><span class="p">):</span>
+        <span class="n">pred_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">"{0:.4f} {1} {2} {3} {4}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="s">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pred_strings</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="최종-예측"><font color="green">최종 예측</font></h3>
+
+<ul>
+  <li><code class="highlighter-rouge">fasterrcnn_resnet50_fpn</code>의 output은 자동적으로 <code class="highlighter-rouge">labels</code>, <code class="highlighter-rouge">scores</code>, <code class="highlighter-rouge">boxes</code> 값들이 dictionary 형태로 저장된다.</li>
+  <li>또한 output의 <code class="highlighter-rouge">boxes</code>은 <code class="highlighter-rouge">[xmin, ymin, xmax, ymax]</code>로 나오므로, <code class="highlighter-rouge">[xmin, ymin, w, h]</code>로 처리해주자.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 예측 코드</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">image_ids</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">:</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">make_ensemble_predictions</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">images</span><span class="p">):</span>
+        <span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">run_wbf</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">image_index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="c"># WBF 적용</span>
+        <span class="n">boxes</span> <span class="o">=</span> <span class="p">(</span><span class="n">boxes</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1023</span><span class="p">)</span> <span class="c"># (1024,1024)로 이미지 사이즈 맞춰줌</span>
+        <span class="n">image_id</span> <span class="o">=</span> <span class="n">image_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">boxes</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">boxes</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">boxes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">boxes</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">boxes</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">boxes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'image_id'</span><span class="p">:</span> <span class="n">image_id</span><span class="p">,</span>
+            <span class="s">'PredictionString'</span><span class="p">:</span> <span class="n">format_prediction_string</span><span class="p">(</span><span class="n">boxes</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="n">test_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'image_id'</span><span class="p">,</span> <span class="s">'PredictionString'</span><span class="p">])</span>
+<span class="n">test_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'submission.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">test_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>image_id</th>
+      <th>PredictionString</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>aac893a91</td>
+      <td>0.9948 58 0 115 162 0.9921 618 914 74 109 0.98...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>51f1be19e</td>
+      <td>0.9933 605 87 156 166 0.9898 278 470 133 121 0...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>f5a1f0358</td>
+      <td>0.9972 886 645 86 141 0.9964 544 272 107 113 0...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>796707dd7</td>
+      <td>0.9935 710 823 107 101 0.9922 942 73 81 100 0....</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>51b3e36ab</td>
+      <td>0.9986 836 450 186 145 0.9982 234 644 93 155 0...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr />
+
+<h2 id="참고-자료"><font color="blue">참고 자료</font></h2>
+
+<ul>
+  <li>Weighted Boxes Fusion Ensemble Code : <a href="https://www.kaggle.com/shonenkov/wbf-approach-for-ensemble">https://www.kaggle.com/shonenkov/wbf-approach-for-ensemble</a></li>
+  <li>Weighted Boxes Fusion Github : <a href="https://github.com/ZFTurbo/Weighted-Boxes-Fusion">https://github.com/ZFTurbo/Weighted-Boxes-Fusion</a></li>
+  <li>Weighted Boxes Fusion 정리 : <a href="https://lv99.tistory.com/74">https://lv99.tistory.com/74</a></li>
+</ul>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            
+            <a href="/tag/#/Deep%20Learning" rel="tag"># Deep Learning</a>
+          
+            
+            <a href="/tag/#/CNN" rel="tag"># CNN</a>
+          
+            
+            <a href="/tag/#/Computer%20Vision" rel="tag"># Computer Vision</a>
+          
+            
+            <a href="/tag/#/Pytorch" rel="tag"># Pytorch</a>
+          
+            
+            <a href="/tag/#/Detection" rel="tag"># Detection</a>
+          
+            
+            <a href="/tag/#/Faster%20RCNN" rel="tag"># Faster RCNN</a>
+          
+            
+            <a href="/tag/#/StratifyKFold" rel="tag"># StratifyKFold</a>
+          
+            
+            <a href="/tag/#/Ensemble" rel="tag"># Ensemble</a>
+          
+            
+            <a href="/tag/#/Weighted%20Boxes%20Fusion" rel="tag"># Weighted Boxes Fusion</a>
+          
+            
+            <a href="/tag/#/Non%20Maximum%20Suppression" rel="tag"># Non Maximum Suppression</a>
+          
+        </div>
+      
+
+      
+      
+      
+      
+      
+
+      
+      
+        <div class="post-nav" id="post-nav-id">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/detection/2021/04/17/vinbigdata-train/" rel="next" title="VinBigData Chest X-ray(Object Detection)">
+                <i class="fa fa-chevron-left"></i> VinBigData Chest X-ray(Object Detection)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/detection/2021/03/14/wheat-detection-train/" rel="prev" title="Global Wheat Detection(Object Detection)">
+                Global Wheat Detection(Object Detection) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+      
+
+      
+    </footer>
+  </article>
+
+  <div class="post-spread">
+    
+  </div>
+</div>
+
+
+
+<head>
+    <!-- Begin section for dataframe table formatting -->
+    <style type="text/css">
+    table.dataframe {
+        width: 100%;
+        height: 240px;
+        display: block;
+        overflow: auto;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+    }
+    table.dataframe th {
+      font-weight: bold;
+      padding: 4px;
+    }
+    table.dataframe td {
+      padding: 4px;
+    }
+    table.dataframe tr:hover {
+      background: #b8d1f3; 
+    }
+    </style>
+    <!-- End section for dataframe table formatting -->
+  </head>
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        
+        
+        
+
+
+
+
+
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            목차
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            흝어보기
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/assets/images/profile.jpg"
+               alt="Seunghyun Lee" />
+          <p class="site-author-name" itemprop="name">Seunghyun Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">포스트</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">카테고리</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">태그</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://github.com/sseunghyuns" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/%EC%8A%B9%ED%98%84-%EC%9D%B4-6b2a371a6/" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.rocketpunch.com/@kannasta9621" target="_blank" title="RoketPunch">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  RoketPunch
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+            
+              <div class="post-toc-content">
+    <ol class=nav>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#weighted-boxes-fusion-방법-소개"> <span class="nav-number">1</span> <span class="nav-text">Weighted Boxes Fusion 방법 소개</center</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#wbfweighted-boxes-fusion"> <span class="nav-number">2</span> <span class="nav-text">WBF(Weighted Boxes Fusion)</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키지-불러오기"> <span class="nav-number">3</span> <span class="nav-text">패키지 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#하이퍼파라미터-설정"> <span class="nav-number">4</span> <span class="nav-text">하이퍼파라미터 설정</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-전처리"> <span class="nav-number">5</span> <span class="nav-text">데이터 전처리</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#데이터셋-만들기불러오기"> <span class="nav-number">5.1</span> <span class="nav-text">데이터셋 만들기(불러오기)</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#데이터-로더-만들기"> <span class="nav-number">5.2</span> <span class="nav-text">데이터 로더 만들기</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델-불러와서-weighted-boxes-fusion-적용하기"> <span class="nav-number">6</span> <span class="nav-text">모델 불러와서 Weighted Boxes Fusion 적용하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-가중치-로드하기"> <span class="nav-number">6.1</span> <span class="nav-text">모델 가중치 로드하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#5개-모델의-예측-결과-저장하는-함수-정의"> <span class="nav-number">6.2</span> <span class="nav-text">5개 모델의 예측 결과 저장하는 함수 정의</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#weighted-boxes-fusion-함수-정의"> <span class="nav-number">6.3</span> <span class="nav-text">Weighted Boxes Fusion 함수 정의</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#weighted-boxes-fusion-적용-결과-확인"> <span class="nav-number">6.4</span> <span class="nav-text">Weighted Boxes Fusion 적용 결과 확인</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#1-weighted-boxes-fusion-적용하지-않았을-때"> <span class="nav-number">6.4.1</span> <span class="nav-text">1. Weighted Boxes Fusion 적용하지 않았을 때</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#2-weighted-boxes-fusion-적용했을-때"> <span class="nav-number">6.4.2</span> <span class="nav-text">2. Weighted Boxes Fusion 적용했을 때</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#3-weighted-boxes-fusion-적용-전과-후"> <span class="nav-number">6.4.3</span> <span class="nav-text">3. Weighted Boxes Fusion 적용 전과 후</font</span> </a> </li> </ol> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#제출하기"> <span class="nav-number">7</span> <span class="nav-text">제출하기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#submission-양식으로-바꿔주는-함수-정의하기"> <span class="nav-number">7.1</span> <span class="nav-text">Submission 양식으로 바꿔주는 함수 정의하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#최종-예측"> <span class="nav-number">7.2</span> <span class="nav-text">최종 예측</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#참고-자료"> <span class="nav-number">8</span> <span class="nav-text">참고 자료</font</span> </a> </li>
+    </ol>
+  </div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Seunghyun Lee</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://jekyllrb.com">Jekyll</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/simpleyyt/jekyll-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/assets/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/assets/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/assets/js/src/post-details.js?v=5.1.1"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+  
+
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
+
