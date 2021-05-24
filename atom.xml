@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-25T01:42:07+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-25T02:04:58+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_36_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;식물 이미지로 침입종을 분류하는 이진 분류 대회&lt;/center&gt;
 &lt;center&gt;이미지 분류에서 Cut-Mix을 적용하여 모델 성능을 높일 수 있습니다.&lt;/center&gt;
@@ -1544,11 +1544,11 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 
 &lt;h2 id=&quot;wbfweighted-boxes-fusion&quot;&gt;&lt;font color=&quot;blue&quot;&gt;WBF(Weighted Boxes Fusion)&lt;/font&gt;&lt;/h2&gt;
 
-&lt;p&gt;WBF는 Object detection 문제에서, 여러 바운딩 박스들을 앙상블하는 방법이다. 모델은 이미지 내에 어디에(4개의 좌표값), 어떤 Class가(ex 사람/강아지/고양이), 얼마만큼의 확률(0~1)로 존재하는지 예측하게 된다. 만약 여러 모델에서 각기 다른 예측값들을 효과적으로 앙상블할 수 있다면, 모델의 성능을 더욱 높일 수 있을 것이다.&lt;/p&gt;
+&lt;p&gt;WBF는 Object detection 문제에서, 여러 바운딩 박스들을 앙상블하는 방법입니다. 모델은 이미지 내에 어디에(4개의 좌표값), 어떤 Class가(ex 사람/강아지/고양이), 얼마만큼의 확률(0~1)로 존재하는지 예측하게 됩니다. 만약 여러 모델에서 각기 다른 예측값들을 효과적으로 앙상블할 수 있다면, 모델의 성능을 더욱 높일 수 있을 것입니다.&lt;/p&gt;
 
-&lt;p&gt;기존 &lt;code class=&quot;highlighter-rouge&quot;&gt;NMS(Non Maximum Suppression)&lt;/code&gt;과 &lt;code class=&quot;highlighter-rouge&quot;&gt;Soft-NMS extenstion&lt;/code&gt;의 방법도 존재한다. &lt;code class=&quot;highlighter-rouge&quot;&gt;NMS&lt;/code&gt;나 &lt;code class=&quot;highlighter-rouge&quot;&gt;Soft-NMS&lt;/code&gt;는 예측값의 일부를 제거하는 방식이라면, &lt;code class=&quot;highlighter-rouge&quot;&gt;WBF&lt;/code&gt;는 예측된 모든 바운딩 박스들의 정보를 사용하여 결합하는 방식이다. 아래 이미지를 보면, 빨간색 박스가 모델의 예측값이고 파란색 박스가 정답값이다. &lt;code class=&quot;highlighter-rouge&quot;&gt;NMS&lt;/code&gt;는 부정확한 박스를 모두 제외하고 하나의 박스만 남겼다면, &lt;code class=&quot;highlighter-rouge&quot;&gt;WBF&lt;/code&gt;는 예측된 3개의 박스의 정보를 모두 사용하여 최종 예측값을 뽑아냈다.&lt;/p&gt;
+&lt;p&gt;기존 &lt;code class=&quot;highlighter-rouge&quot;&gt;NMS(Non Maximum Suppression)&lt;/code&gt;과 &lt;code class=&quot;highlighter-rouge&quot;&gt;Soft-NMS extenstion&lt;/code&gt;의 방법도 존재합니다. &lt;code class=&quot;highlighter-rouge&quot;&gt;NMS&lt;/code&gt;나 &lt;code class=&quot;highlighter-rouge&quot;&gt;Soft-NMS&lt;/code&gt;는 예측값의 일부를 제거하는 방식이라면, &lt;code class=&quot;highlighter-rouge&quot;&gt;WBF&lt;/code&gt;는 예측된 모든 바운딩 박스들의 정보를 사용하여 결합하는 방식입니다. 아래 이미지를 보면, 빨간색 박스가 모델의 예측값이고 파란색 박스가 정답값입니다. &lt;code class=&quot;highlighter-rouge&quot;&gt;NMS&lt;/code&gt;는 부정확한 박스를 모두 제외하고 하나의 박스만 남겼다면, &lt;code class=&quot;highlighter-rouge&quot;&gt;WBF&lt;/code&gt;는 예측된 3개의 박스의 정보를 모두 사용하여 최종 예측값을 뽑아냈습니다.&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;WBF&lt;/code&gt;의 알고리즘을 간단히 요약하자면, 두 박스의 IoU를 계산하여 &lt;code class=&quot;highlighter-rouge&quot;&gt;iou_thr&lt;/code&gt; 임계값을 넘으면 융합이 진행되는데, 융합 시 예측된 각 박스의 &lt;code class=&quot;highlighter-rouge&quot;&gt;score&lt;/code&gt;에 따라 결과가 조정되는 방식이다. 예측 박스들을 융합하는 알고리즘은 아래 참고 블로그에서 더욱 자세하게 알 수 있다.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;WBF&lt;/code&gt;의 알고리즘을 간단히 요약하자면, 두 박스의 IoU를 계산하여 &lt;code class=&quot;highlighter-rouge&quot;&gt;iou_thr&lt;/code&gt; 임계값을 넘으면 융합이 진행되는데, 융합 시 예측된 각 박스의 &lt;code class=&quot;highlighter-rouge&quot;&gt;score&lt;/code&gt;에 따라 결과가 조정되는 방식입니다. 예측 박스들을 융합하는 알고리즘은 아래 참고 블로그에서 더욱 자세하게 알 수 있습니다.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/wheatdetection-wbf-inference_files/wbf.png&quot; alt=&quot;png&quot; width=&quot;500&quot; height=&quot;500&quot; /&gt;&lt;/p&gt;
 
@@ -1598,7 +1598,7 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h3 id=&quot;데이터셋-만들기불러오기&quot;&gt;&lt;font color=&quot;green&quot;&gt;데이터셋 만들기(불러오기)&lt;/font&gt;&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;sample_submission&lt;/code&gt;파일을 불러온다.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;sample_submission&lt;/code&gt;파일을 불러옵니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read_csv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TEST_DIR&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
@@ -1746,9 +1746,9 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h3 id=&quot;모델-가중치-로드하기&quot;&gt;&lt;font color=&quot;green&quot;&gt;모델 가중치 로드하기&lt;/font&gt;&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;5번의 교차검증으로 학습된 5개의 모델을 불러온다. 불러오기 전, 학습했을 때의 모델 구조로 바꿔준다.&lt;/li&gt;
-  &lt;li&gt;추가하고자 하는 모델 가중치가 gpu 환경에서 학습되었기 때문에, 우리의 모델 역시 gpu 환경으로 맞춰준다. 만약 cpu로 예측을 하고 싶으면, &lt;code class=&quot;highlighter-rouge&quot;&gt;map_location&lt;/code&gt; 옵션을 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpu&lt;/code&gt;로 설정한다.&lt;/li&gt;
-  &lt;li&gt;또한 데이터를 예측 시에는 &lt;code class=&quot;highlighter-rouge&quot;&gt;model.eval()&lt;/code&gt;옵션을 준다. 이 옵션을 사용하면 모델 내부의 모든 layer가 evaluation 모드가 된다. Evaluation 모드에서는 &lt;code class=&quot;highlighter-rouge&quot;&gt;batchnorm&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Dropout&lt;/code&gt;과 같은 기능들이 사용되지 않는다.&lt;/li&gt;
+  &lt;li&gt;5번의 교차검증으로 학습된 5개의 모델을 불러옵니다. 불러오기 전, 학습했을 때의 모델 구조로 바꿔줍니다.&lt;/li&gt;
+  &lt;li&gt;추가하고자 하는 모델 가중치가 gpu 환경에서 학습되었기 때문에, 우리의 모델 역시 gpu 환경으로 맞춰줍니다. 만약 cpu로 예측을 하고 싶으면, &lt;code class=&quot;highlighter-rouge&quot;&gt;map_location&lt;/code&gt; 옵션을 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpu&lt;/code&gt;로 설정합니다.&lt;/li&gt;
+  &lt;li&gt;또한 데이터를 예측 시에는 &lt;code class=&quot;highlighter-rouge&quot;&gt;model.eval()&lt;/code&gt;옵션을 줍니다. 이 옵션을 사용하면 모델 내부의 모든 layer가 evaluation 모드가 됩니다. Evaluation 모드에서는 &lt;code class=&quot;highlighter-rouge&quot;&gt;batchnorm&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Dropout&lt;/code&gt;과 같은 기능들이 사용되지 않습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
@@ -1772,7 +1772,7 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h3 id=&quot;5개-모델의-예측-결과-저장하는-함수-정의&quot;&gt;&lt;font color=&quot;green&quot;&gt;5개 모델의 예측 결과 저장하는 함수 정의&lt;/font&gt;&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;make_ensemble_predictions&lt;/code&gt; 함수는 5개의 모델의 예측값을 모두 저장하여 리스트 값으로 반환해주는 함수이다.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;make_ensemble_predictions&lt;/code&gt; 함수는 5개의 모델의 예측값을 모두 저장하여 리스트 값으로 반환해주는 함수입니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 앙상블 &lt;/span&gt;
@@ -1790,11 +1790,11 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h3 id=&quot;weighted-boxes-fusion-함수-정의&quot;&gt;&lt;font color=&quot;green&quot;&gt;Weighted Boxes Fusion 함수 정의&lt;/font&gt;&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;WBF 적용할 때는, bounding box 좌표값들이 0~1 사이의 값을 가져야 한다. 아래 코드에서 좌표값들을 &lt;code class=&quot;highlighter-rouge&quot;&gt;(image_size-1)&lt;/code&gt;로 나누는 이유가 바로 그것이다.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;weighted_boxes_fusion&lt;/code&gt; 함수에서, &lt;code class=&quot;highlighter-rouge&quot;&gt;iou_thr&lt;/code&gt;과 &lt;code class=&quot;highlighter-rouge&quot;&gt;skip_box_thr&lt;/code&gt; 하이퍼파라미터를 이해해야 한다.
+  &lt;li&gt;WBF 적용할 때는, bounding box 좌표값들이 0~1 사이의 값을 가져야 합니다. 아래 코드에서 좌표값들을 &lt;code class=&quot;highlighter-rouge&quot;&gt;(image_size-1)&lt;/code&gt;로 나누는 이유가 바로 그것입니다.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;weighted_boxes_fusion&lt;/code&gt; 함수에서, &lt;code class=&quot;highlighter-rouge&quot;&gt;iou_thr&lt;/code&gt;과 &lt;code class=&quot;highlighter-rouge&quot;&gt;skip_box_thr&lt;/code&gt; 하이퍼파라미터를 이해해야 합니다.
     &lt;ul&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;iou_thr&lt;/code&gt; : IoU(Intersection over Union) 임계값이다. 두 박스의 IoU를 계산하여, 임계값을 넘겼을 경우, &lt;code class=&quot;highlighter-rouge&quot;&gt;config_type='avg'&lt;/code&gt;(디폴트 값) 방식으로 두 박스가 융합된다.&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;skip_box_thr&lt;/code&gt; class에 대한 예측 확률값(scores)이 skip_box_thr 임계값을 넘길 때만 가져온다.&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;iou_thr&lt;/code&gt; : IoU(Intersection over Union) 임계값입니다. 두 박스의 IoU를 계산하여, 임계값을 넘겼을 경우, &lt;code class=&quot;highlighter-rouge&quot;&gt;config_type='avg'&lt;/code&gt;(디폴트 값) 방식으로 두 박스가 융합됩니다.&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;skip_box_thr&lt;/code&gt; class에 대한 예측 확률값(scores)이 skip_box_thr 임계값을 넘길 때만 가져옵니다.&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -1827,8 +1827,8 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h4 id=&quot;1-weighted-boxes-fusion-적용하지-않았을-때&quot;&gt;&lt;font color=&quot;orange&quot;&gt;1. Weighted Boxes Fusion 적용하지 않았을 때&lt;/font&gt;&lt;/h4&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;5개의 모델이 예측한 바운딩 박스를 모두 plot 해보자. 모델 별로 색을 다르게 하여 구분할 수 있게 하자.&lt;/li&gt;
-  &lt;li&gt;아래 결과 이미지를 보면, 5개 모델이 예측한 바운딩 박스들을 볼 수 있다.&lt;/li&gt;
+  &lt;li&gt;5개의 모델이 예측한 바운딩 박스를 모두 plot 해봤습니다. 모델 별로 색을 다르게 하여 구분할 수 있게 했습니다.&lt;/li&gt;
+  &lt;li&gt;아래 결과 이미지를 보면, 5개 모델이 예측한 바운딩 박스들을 볼 수 있습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# WBF 적용되지 않은 결과&lt;/span&gt;
@@ -1862,7 +1862,7 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h4 id=&quot;2-weighted-boxes-fusion-적용했을-때&quot;&gt;&lt;font color=&quot;orange&quot;&gt;2. Weighted Boxes Fusion 적용했을 때&lt;/font&gt;&lt;/h4&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;WBF를 적용한 결과이다.&lt;/li&gt;
+  &lt;li&gt;WBF를 적용한 결과입니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# WBF 적용된 결과&lt;/span&gt;
@@ -1895,7 +1895,7 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h4 id=&quot;3-weighted-boxes-fusion-적용-전과-후&quot;&gt;&lt;font color=&quot;orange&quot;&gt;3. Weighted Boxes Fusion 적용 전과 후&lt;/font&gt;&lt;/h4&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;왼쪽 이미지부터 원본, WBF 적용 전, WBF 적용 후의 이미지이다.&lt;/li&gt;
+  &lt;li&gt;왼쪽 이미지부터 원본, WBF 적용 전, WBF 적용 후의 이미지입니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;fig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subplots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -1943,14 +1943,14 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;중간 이미지는 5개의 모델에 대한 예측값들 모두 그려진 상태이다. 모델이 각각 다른 가중치를 갖고 있기에 예측값도 조금씩 다르다. 이러한 예측값들을 모두 고려하여 WBF를 적용한 결과, 가장 오른쪽의 이미지와 같은 결과를 갖게 된다. 각 예측값의 score 값, 박스 간 IoU 값들을 기준으로 융합된 결과이다.&lt;/p&gt;
+&lt;p&gt;중간 이미지는 5개의 모델에 대한 예측값들 모두 그려진 상태입니다. 모델이 각각 다른 가중치를 갖고 있기에 예측값도 조금씩 다릅니다. 이러한 예측값들을 모두 고려하여 WBF를 적용한 결과, 가장 오른쪽의 이미지와 같은 결과를 갖게 됩니다. 각 예측값의 score 값, 박스 간 IoU 값들을 기준으로 융합된 결과입니다.&lt;/p&gt;
 
 &lt;hr /&gt;
 
 &lt;h2 id=&quot;제출하기&quot;&gt;&lt;font color=&quot;blue&quot;&gt;제출하기&lt;/font&gt;&lt;/h2&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;최근 kaggle에서는 예측값이 담긴 csv만 제출하는 것이 아니라, 부정행위를 방지하기 위해 notebook 전체를 제출하게끔 하고 있다.&lt;/li&gt;
+  &lt;li&gt;최근 kaggle에서는 예측값이 담긴 csv만 제출하는 것이 아니라, 부정행위를 방지하기 위해 notebook 전체를 제출하게끔 하고 있습니다.&lt;/li&gt;
   &lt;li&gt;notebook으로 제출하기
     &lt;ul&gt;
       &lt;li&gt;
@@ -1980,7 +1980,7 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h3 id=&quot;submission-양식으로-바꿔주는-함수-정의하기&quot;&gt;&lt;font color=&quot;green&quot;&gt;Submission 양식으로 바꿔주는 함수 정의하기&lt;/font&gt;&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;대회마다 submission 제출 양식이 다르다. 이 대회에서는 아래와 같은 제출 양식을 요구하고 있다. 즉 &lt;code class=&quot;highlighter-rouge&quot;&gt;image_id&lt;/code&gt;별로 [class_score, xmin, ymin, width, height] 의 양식으로 들어가야 한다는 것이다.&lt;/li&gt;
+  &lt;li&gt;대회마다 submission 제출 양식이 다릅니다. 이 대회에서는 아래와 같은 제출 양식을 요구하고 있습니다. 즉 &lt;code class=&quot;highlighter-rouge&quot;&gt;image_id&lt;/code&gt;별로 [class_score, xmin, ymin, width, height] 의 양식으로 들어가야 한다는 것입니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
@@ -2050,8 +2050,8 @@ Val Step : 9/220, summary_loss : 0.91504, time : 4.61471
 &lt;h3 id=&quot;최종-예측&quot;&gt;&lt;font color=&quot;green&quot;&gt;최종 예측&lt;/font&gt;&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;fasterrcnn_resnet50_fpn&lt;/code&gt;의 output은 자동적으로 &lt;code class=&quot;highlighter-rouge&quot;&gt;labels&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;scores&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;boxes&lt;/code&gt; 값들이 dictionary 형태로 저장된다.&lt;/li&gt;
-  &lt;li&gt;또한 output의 &lt;code class=&quot;highlighter-rouge&quot;&gt;boxes&lt;/code&gt;은 &lt;code class=&quot;highlighter-rouge&quot;&gt;[xmin, ymin, xmax, ymax]&lt;/code&gt;로 나오므로, &lt;code class=&quot;highlighter-rouge&quot;&gt;[xmin, ymin, w, h]&lt;/code&gt;로 처리해주자.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;fasterrcnn_resnet50_fpn&lt;/code&gt;의 output은 자동적으로 &lt;code class=&quot;highlighter-rouge&quot;&gt;labels&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;scores&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;boxes&lt;/code&gt; 값들이 dictionary 형태로 저장됩니다.&lt;/li&gt;
+  &lt;li&gt;또한 output의 &lt;code class=&quot;highlighter-rouge&quot;&gt;boxes&lt;/code&gt;은 &lt;code class=&quot;highlighter-rouge&quot;&gt;[xmin, ymin, xmax, ymax]&lt;/code&gt;로 나오므로, &lt;code class=&quot;highlighter-rouge&quot;&gt;[xmin, ymin, w, h]&lt;/code&gt;로 처리해줘야 합니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 예측 코드&lt;/span&gt;
@@ -8549,9 +8549,9 @@ Epoch 4/100
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/ComputerVision_files/ComputerVision_12_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;딥러닝 모델을 이용하여 글자 속 숨겨진 숫자를 정확하게 분류해내는 대회&lt;/center&gt;
 
-&lt;p&gt;&amp;lt;br&amp;gt;&lt;/p&gt;
+&lt;hr /&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://www.dacon.io/competitions/official/235626/overview/&quot;&gt;https://www.dacon.io/competitions/official/235626/overview/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;대회 주소 : &lt;a href=&quot;https://www.dacon.io/competitions/official/235626/overview/&quot;&gt;https://www.dacon.io/competitions/official/235626/overview/&lt;/a&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -9803,7 +9803,7 @@ Epoch 4/100
 &lt;/div&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;digit을 맞춰야 하는 대회이다.&lt;/li&gt;
+  &lt;li&gt;digit을 맞춰야 하는 대회입니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -9859,7 +9859,7 @@ Length: 786, dtype: object
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;숫자 맞춰야 하기 때문에 digit을 category형으로 바꿔야 한다.&lt;/li&gt;
+  &lt;li&gt;숫자 맞춰야 하기 때문에 digit을 category형으로 바꿔야 합니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -9881,8 +9881,8 @@ Name: digit, dtype: int64
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;목적변수의 분포를 파악한다.&lt;/li&gt;
-  &lt;li&gt;클래스간 어느정도 균형을 이루고 있음을 알수 있다.&lt;/li&gt;
+  &lt;li&gt;목적변수의 분포를 파악합니다.&lt;/li&gt;
+  &lt;li&gt;클래스간 어느정도 균형을 이루고 있음을 알수 있습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -9902,7 +9902,7 @@ Name: digit, dtype: int64
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/ComputerVision_files/ComputerVision_12_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;글자 속에 숫자가 숨겨져 있다.&lt;/li&gt;
+  &lt;li&gt;글자 속에 숫자가 숨겨져 있습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -9925,7 +9925,7 @@ Name: digit, dtype: int64
 
 &lt;ul&gt;
   &lt;li&gt;D 속에 숨어있는 숫자 9&lt;/li&gt;
-  &lt;li&gt;문자에 겹치는 숫자 부분만 표현된듯 하다.&lt;/li&gt;
+  &lt;li&gt;문자에 겹치는 숫자 부분만 표현된듯 합니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -9985,8 +9985,8 @@ Name: digit, dtype: int64
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/ComputerVision_files/ComputerVision_24_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Letter 부분이 지워지지 않고 그대로 학습됨.&lt;/li&gt;
-  &lt;li&gt;Letter 부분 픽셀을 제거하고 돌려보면 더 좋은 성능이 나올 것 같다.&lt;/li&gt;
+  &lt;li&gt;Letter 부분이 지워지지 않고 그대로 학습됐습니다.&lt;/li&gt;
+  &lt;li&gt;Letter 부분 픽셀을 제거하고 학습하는 실험을 해봤습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -10010,12 +10010,8 @@ Digit : 0
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/ComputerVision_files/ComputerVision_27_1.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Pixel값 140정도&lt;/li&gt;
-  &lt;li&gt;학습시 도움이 되지 않았다.
-    &lt;ul&gt;
-      &lt;li&gt;많은 정보가 손실되는 것 같다.&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
+  &lt;li&gt;Pixel값 약 140정도&lt;/li&gt;
+  &lt;li&gt;많은 정보가 손실돼서 학습시 도움이 되지 않았습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -10071,8 +10067,8 @@ Digit : 0
 &lt;h2 id=&quot;data-augmentation&quot;&gt;&lt;font color=&quot;blue&quot;&gt;Data Augmentation&lt;/font&gt;&lt;/h2&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;train셋이 2048개로 class 개수에 비해 적다.&lt;/li&gt;
-  &lt;li&gt;데이터를 늘려보자.&lt;/li&gt;
+  &lt;li&gt;train셋이 2048개로 class 개수에 비해 적습니다.&lt;/li&gt;
+  &lt;li&gt;데이터 증강이 필요할 것 같습니다.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;train&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read_csv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'train.csv'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index_col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# id column은 index column.&lt;/span&gt;
@@ -10406,5 +10402,5 @@ Epoch 00100: val_acc did not improve from 0.90244
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/ComputerVision_files/ComputerVision_54_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Letter는 주어진 값이고, 모델은 Digit을 예측한다.&lt;/li&gt;
+  &lt;li&gt;Letter는 주어진 값이고, 모델은 Digit을 예측합니다.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Seunghyun Lee</name></author><category term="Deep Learning" /><category term="Classification" /><category term="Computer Vision" /><category term="Tensorflow" /><summary type="html">대회 소개 딥러닝 모델을 이용하여 글자 속 숨겨진 숫자를 정확하게 분류해내는 대회</summary></entry></feed>

@@ -448,11 +448,11 @@
 
 <h2 id="wbfweighted-boxes-fusion"><font color="blue">WBF(Weighted Boxes Fusion)</font></h2>
 
-<p>WBF는 Object detection 문제에서, 여러 바운딩 박스들을 앙상블하는 방법이다. 모델은 이미지 내에 어디에(4개의 좌표값), 어떤 Class가(ex 사람/강아지/고양이), 얼마만큼의 확률(0~1)로 존재하는지 예측하게 된다. 만약 여러 모델에서 각기 다른 예측값들을 효과적으로 앙상블할 수 있다면, 모델의 성능을 더욱 높일 수 있을 것이다.</p>
+<p>WBF는 Object detection 문제에서, 여러 바운딩 박스들을 앙상블하는 방법입니다. 모델은 이미지 내에 어디에(4개의 좌표값), 어떤 Class가(ex 사람/강아지/고양이), 얼마만큼의 확률(0~1)로 존재하는지 예측하게 됩니다. 만약 여러 모델에서 각기 다른 예측값들을 효과적으로 앙상블할 수 있다면, 모델의 성능을 더욱 높일 수 있을 것입니다.</p>
 
-<p>기존 <code class="highlighter-rouge">NMS(Non Maximum Suppression)</code>과 <code class="highlighter-rouge">Soft-NMS extenstion</code>의 방법도 존재한다. <code class="highlighter-rouge">NMS</code>나 <code class="highlighter-rouge">Soft-NMS</code>는 예측값의 일부를 제거하는 방식이라면, <code class="highlighter-rouge">WBF</code>는 예측된 모든 바운딩 박스들의 정보를 사용하여 결합하는 방식이다. 아래 이미지를 보면, 빨간색 박스가 모델의 예측값이고 파란색 박스가 정답값이다. <code class="highlighter-rouge">NMS</code>는 부정확한 박스를 모두 제외하고 하나의 박스만 남겼다면, <code class="highlighter-rouge">WBF</code>는 예측된 3개의 박스의 정보를 모두 사용하여 최종 예측값을 뽑아냈다.</p>
+<p>기존 <code class="highlighter-rouge">NMS(Non Maximum Suppression)</code>과 <code class="highlighter-rouge">Soft-NMS extenstion</code>의 방법도 존재합니다. <code class="highlighter-rouge">NMS</code>나 <code class="highlighter-rouge">Soft-NMS</code>는 예측값의 일부를 제거하는 방식이라면, <code class="highlighter-rouge">WBF</code>는 예측된 모든 바운딩 박스들의 정보를 사용하여 결합하는 방식입니다. 아래 이미지를 보면, 빨간색 박스가 모델의 예측값이고 파란색 박스가 정답값입니다. <code class="highlighter-rouge">NMS</code>는 부정확한 박스를 모두 제외하고 하나의 박스만 남겼다면, <code class="highlighter-rouge">WBF</code>는 예측된 3개의 박스의 정보를 모두 사용하여 최종 예측값을 뽑아냈습니다.</p>
 
-<p><code class="highlighter-rouge">WBF</code>의 알고리즘을 간단히 요약하자면, 두 박스의 IoU를 계산하여 <code class="highlighter-rouge">iou_thr</code> 임계값을 넘으면 융합이 진행되는데, 융합 시 예측된 각 박스의 <code class="highlighter-rouge">score</code>에 따라 결과가 조정되는 방식이다. 예측 박스들을 융합하는 알고리즘은 아래 참고 블로그에서 더욱 자세하게 알 수 있다.</p>
+<p><code class="highlighter-rouge">WBF</code>의 알고리즘을 간단히 요약하자면, 두 박스의 IoU를 계산하여 <code class="highlighter-rouge">iou_thr</code> 임계값을 넘으면 융합이 진행되는데, 융합 시 예측된 각 박스의 <code class="highlighter-rouge">score</code>에 따라 결과가 조정되는 방식입니다. 예측 박스들을 융합하는 알고리즘은 아래 참고 블로그에서 더욱 자세하게 알 수 있습니다.</p>
 
 <p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wbf.png" alt="png" width="500" height="500" /></p>
 
@@ -502,7 +502,7 @@
 <h3 id="데이터셋-만들기불러오기"><font color="green">데이터셋 만들기(불러오기)</font></h3>
 
 <ul>
-  <li><code class="highlighter-rouge">sample_submission</code>파일을 불러온다.</li>
+  <li><code class="highlighter-rouge">sample_submission</code>파일을 불러옵니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code><span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"TEST_DIR"</span><span class="p">])</span>
@@ -650,9 +650,9 @@
 <h3 id="모델-가중치-로드하기"><font color="green">모델 가중치 로드하기</font></h3>
 
 <ul>
-  <li>5번의 교차검증으로 학습된 5개의 모델을 불러온다. 불러오기 전, 학습했을 때의 모델 구조로 바꿔준다.</li>
-  <li>추가하고자 하는 모델 가중치가 gpu 환경에서 학습되었기 때문에, 우리의 모델 역시 gpu 환경으로 맞춰준다. 만약 cpu로 예측을 하고 싶으면, <code class="highlighter-rouge">map_location</code> 옵션을 <code class="highlighter-rouge">cpu</code>로 설정한다.</li>
-  <li>또한 데이터를 예측 시에는 <code class="highlighter-rouge">model.eval()</code>옵션을 준다. 이 옵션을 사용하면 모델 내부의 모든 layer가 evaluation 모드가 된다. Evaluation 모드에서는 <code class="highlighter-rouge">batchnorm</code>, <code class="highlighter-rouge">Dropout</code>과 같은 기능들이 사용되지 않는다.</li>
+  <li>5번의 교차검증으로 학습된 5개의 모델을 불러옵니다. 불러오기 전, 학습했을 때의 모델 구조로 바꿔줍니다.</li>
+  <li>추가하고자 하는 모델 가중치가 gpu 환경에서 학습되었기 때문에, 우리의 모델 역시 gpu 환경으로 맞춰줍니다. 만약 cpu로 예측을 하고 싶으면, <code class="highlighter-rouge">map_location</code> 옵션을 <code class="highlighter-rouge">cpu</code>로 설정합니다.</li>
+  <li>또한 데이터를 예측 시에는 <code class="highlighter-rouge">model.eval()</code>옵션을 줍니다. 이 옵션을 사용하면 모델 내부의 모든 layer가 evaluation 모드가 됩니다. Evaluation 모드에서는 <code class="highlighter-rouge">batchnorm</code>, <code class="highlighter-rouge">Dropout</code>과 같은 기능들이 사용되지 않습니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -676,7 +676,7 @@
 <h3 id="5개-모델의-예측-결과-저장하는-함수-정의"><font color="green">5개 모델의 예측 결과 저장하는 함수 정의</font></h3>
 
 <ul>
-  <li><code class="highlighter-rouge">make_ensemble_predictions</code> 함수는 5개의 모델의 예측값을 모두 저장하여 리스트 값으로 반환해주는 함수이다.</li>
+  <li><code class="highlighter-rouge">make_ensemble_predictions</code> 함수는 5개의 모델의 예측값을 모두 저장하여 리스트 값으로 반환해주는 함수입니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 앙상블 </span>
@@ -694,11 +694,11 @@
 <h3 id="weighted-boxes-fusion-함수-정의"><font color="green">Weighted Boxes Fusion 함수 정의</font></h3>
 
 <ul>
-  <li>WBF 적용할 때는, bounding box 좌표값들이 0~1 사이의 값을 가져야 한다. 아래 코드에서 좌표값들을 <code class="highlighter-rouge">(image_size-1)</code>로 나누는 이유가 바로 그것이다.</li>
-  <li><code class="highlighter-rouge">weighted_boxes_fusion</code> 함수에서, <code class="highlighter-rouge">iou_thr</code>과 <code class="highlighter-rouge">skip_box_thr</code> 하이퍼파라미터를 이해해야 한다.
+  <li>WBF 적용할 때는, bounding box 좌표값들이 0~1 사이의 값을 가져야 합니다. 아래 코드에서 좌표값들을 <code class="highlighter-rouge">(image_size-1)</code>로 나누는 이유가 바로 그것입니다.</li>
+  <li><code class="highlighter-rouge">weighted_boxes_fusion</code> 함수에서, <code class="highlighter-rouge">iou_thr</code>과 <code class="highlighter-rouge">skip_box_thr</code> 하이퍼파라미터를 이해해야 합니다.
     <ul>
-      <li><code class="highlighter-rouge">iou_thr</code> : IoU(Intersection over Union) 임계값이다. 두 박스의 IoU를 계산하여, 임계값을 넘겼을 경우, <code class="highlighter-rouge">config_type='avg'</code>(디폴트 값) 방식으로 두 박스가 융합된다.</li>
-      <li><code class="highlighter-rouge">skip_box_thr</code> class에 대한 예측 확률값(scores)이 skip_box_thr 임계값을 넘길 때만 가져온다.</li>
+      <li><code class="highlighter-rouge">iou_thr</code> : IoU(Intersection over Union) 임계값입니다. 두 박스의 IoU를 계산하여, 임계값을 넘겼을 경우, <code class="highlighter-rouge">config_type='avg'</code>(디폴트 값) 방식으로 두 박스가 융합됩니다.</li>
+      <li><code class="highlighter-rouge">skip_box_thr</code> class에 대한 예측 확률값(scores)이 skip_box_thr 임계값을 넘길 때만 가져옵니다.</li>
     </ul>
   </li>
 </ul>
@@ -731,8 +731,8 @@
 <h4 id="1-weighted-boxes-fusion-적용하지-않았을-때"><font color="orange">1. Weighted Boxes Fusion 적용하지 않았을 때</font></h4>
 
 <ul>
-  <li>5개의 모델이 예측한 바운딩 박스를 모두 plot 해보자. 모델 별로 색을 다르게 하여 구분할 수 있게 하자.</li>
-  <li>아래 결과 이미지를 보면, 5개 모델이 예측한 바운딩 박스들을 볼 수 있다.</li>
+  <li>5개의 모델이 예측한 바운딩 박스를 모두 plot 해봤습니다. 모델 별로 색을 다르게 하여 구분할 수 있게 했습니다.</li>
+  <li>아래 결과 이미지를 보면, 5개 모델이 예측한 바운딩 박스들을 볼 수 있습니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22</pre></td><td class="code"><pre class="highlight"><code><span class="c"># WBF 적용되지 않은 결과</span>
@@ -766,7 +766,7 @@
 <h4 id="2-weighted-boxes-fusion-적용했을-때"><font color="orange">2. Weighted Boxes Fusion 적용했을 때</font></h4>
 
 <ul>
-  <li>WBF를 적용한 결과이다.</li>
+  <li>WBF를 적용한 결과입니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21</pre></td><td class="code"><pre class="highlight"><code><span class="c"># WBF 적용된 결과</span>
@@ -799,7 +799,7 @@
 <h4 id="3-weighted-boxes-fusion-적용-전과-후"><font color="orange">3. Weighted Boxes Fusion 적용 전과 후</font></h4>
 
 <ul>
-  <li>왼쪽 이미지부터 원본, WBF 적용 전, WBF 적용 후의 이미지이다.</li>
+  <li>왼쪽 이미지부터 원본, WBF 적용 전, WBF 적용 후의 이미지입니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38</pre></td><td class="code"><pre class="highlight"><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -847,14 +847,14 @@
 
 <p><img src="/assets/img/notebook/wheatdetection-wbf-inference_files/wheatdetection-wbf-inference_27_1.png" alt="png" /></p>
 
-<p>중간 이미지는 5개의 모델에 대한 예측값들 모두 그려진 상태이다. 모델이 각각 다른 가중치를 갖고 있기에 예측값도 조금씩 다르다. 이러한 예측값들을 모두 고려하여 WBF를 적용한 결과, 가장 오른쪽의 이미지와 같은 결과를 갖게 된다. 각 예측값의 score 값, 박스 간 IoU 값들을 기준으로 융합된 결과이다.</p>
+<p>중간 이미지는 5개의 모델에 대한 예측값들 모두 그려진 상태입니다. 모델이 각각 다른 가중치를 갖고 있기에 예측값도 조금씩 다릅니다. 이러한 예측값들을 모두 고려하여 WBF를 적용한 결과, 가장 오른쪽의 이미지와 같은 결과를 갖게 됩니다. 각 예측값의 score 값, 박스 간 IoU 값들을 기준으로 융합된 결과입니다.</p>
 
 <hr />
 
 <h2 id="제출하기"><font color="blue">제출하기</font></h2>
 
 <ul>
-  <li>최근 kaggle에서는 예측값이 담긴 csv만 제출하는 것이 아니라, 부정행위를 방지하기 위해 notebook 전체를 제출하게끔 하고 있다.</li>
+  <li>최근 kaggle에서는 예측값이 담긴 csv만 제출하는 것이 아니라, 부정행위를 방지하기 위해 notebook 전체를 제출하게끔 하고 있습니다.</li>
   <li>notebook으로 제출하기
     <ul>
       <li>
@@ -884,7 +884,7 @@
 <h3 id="submission-양식으로-바꿔주는-함수-정의하기"><font color="green">Submission 양식으로 바꿔주는 함수 정의하기</font></h3>
 
 <ul>
-  <li>대회마다 submission 제출 양식이 다르다. 이 대회에서는 아래와 같은 제출 양식을 요구하고 있다. 즉 <code class="highlighter-rouge">image_id</code>별로 [class_score, xmin, ymin, width, height] 의 양식으로 들어가야 한다는 것이다.</li>
+  <li>대회마다 submission 제출 양식이 다릅니다. 이 대회에서는 아래와 같은 제출 양식을 요구하고 있습니다. 즉 <code class="highlighter-rouge">image_id</code>별로 [class_score, xmin, ymin, width, height] 의 양식으로 들어가야 한다는 것입니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">test</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -954,8 +954,8 @@
 <h3 id="최종-예측"><font color="green">최종 예측</font></h3>
 
 <ul>
-  <li><code class="highlighter-rouge">fasterrcnn_resnet50_fpn</code>의 output은 자동적으로 <code class="highlighter-rouge">labels</code>, <code class="highlighter-rouge">scores</code>, <code class="highlighter-rouge">boxes</code> 값들이 dictionary 형태로 저장된다.</li>
-  <li>또한 output의 <code class="highlighter-rouge">boxes</code>은 <code class="highlighter-rouge">[xmin, ymin, xmax, ymax]</code>로 나오므로, <code class="highlighter-rouge">[xmin, ymin, w, h]</code>로 처리해주자.</li>
+  <li><code class="highlighter-rouge">fasterrcnn_resnet50_fpn</code>의 output은 자동적으로 <code class="highlighter-rouge">labels</code>, <code class="highlighter-rouge">scores</code>, <code class="highlighter-rouge">boxes</code> 값들이 dictionary 형태로 저장됩니다.</li>
+  <li>또한 output의 <code class="highlighter-rouge">boxes</code>은 <code class="highlighter-rouge">[xmin, ymin, xmax, ymax]</code>로 나오므로, <code class="highlighter-rouge">[xmin, ymin, w, h]</code>로 처리해줘야 합니다.</li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 예측 코드</span>
