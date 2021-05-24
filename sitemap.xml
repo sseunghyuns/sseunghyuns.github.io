@@ -17,10 +17,6 @@
 <lastmod>2021-01-14T22:15:00+09:00</lastmod>
 </url>
 <url>
-<loc>http://localhost:4000/classification/2021/01/21/invasive/</loc>
-<lastmod>2021-01-21T18:59:00+09:00</lastmod>
-</url>
-<url>
 <loc>http://localhost:4000/classification/2021/01/24/bowl/</loc>
 <lastmod>2021-01-24T15:00:00+09:00</lastmod>
 </url>
@@ -39,6 +35,10 @@
 <url>
 <loc>http://localhost:4000/detection/2021/04/17/vinbigdata-train/</loc>
 <lastmod>2021-04-17T16:17:00+09:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/classification/2021/05/25/invasive-pytorch/</loc>
+<lastmod>2021-05-25T01:16:00+09:00</lastmod>
 </url>
 <url>
 <loc>http://localhost:4000/</loc>
