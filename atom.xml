@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-25T02:04:58+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-25T12:12:10+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_36_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;식물 이미지로 침입종을 분류하는 이진 분류 대회&lt;/center&gt;
 &lt;center&gt;이미지 분류에서 Cut-Mix을 적용하여 모델 성능을 높일 수 있습니다.&lt;/center&gt;
@@ -14,6 +14,8 @@
 &lt;hr /&gt;
 
 &lt;h2 id=&quot;패키지-불러오기&quot;&gt;&lt;font color=&quot;blue&quot;&gt;패키지 불러오기&lt;/font&gt;&lt;/h2&gt;
+
+&lt;p&gt;필요한 라이브러라들을 불러옵니다.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;
 &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pandas&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt; 
@@ -48,6 +50,8 @@
 &lt;hr /&gt;
 
 &lt;h2 id=&quot;하이퍼-파라미터&quot;&gt;&lt;font color=&quot;blue&quot;&gt;하이퍼 파라미터&lt;/font&gt;&lt;/h2&gt;
+
+&lt;p&gt;하이퍼파라미터 값들이 있는 딕셔너리를 정해줍니다.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TRAIN_LABEL_CSV&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'./train_labels.csv'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
         &lt;span class=&quot;s&quot;&gt;&quot;TRAIN_PATH&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;../input/invasivespecies/train&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
@@ -161,7 +165,17 @@ Name: invasive, dtype: int64
 
 &lt;hr /&gt;
 
+&lt;h3 id=&quot;invasive1non-invasive0-이미지-확인&quot;&gt;&lt;font color=&quot;orange&quot;&gt;Invasive(1)/Non-invasive(0) 이미지 확인&lt;/font&gt;&lt;/h3&gt;
+
+&lt;p&gt;침입종 수국(1)과 침입종이 아닌 식물(0)의 이미지입니다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
 &lt;h2 id=&quot;데이터-로더&quot;&gt;&lt;font color=&quot;blue&quot;&gt;데이터 로더&lt;/font&gt;&lt;/h2&gt;
+
+&lt;p&gt;데이터 로더 클래스를 정의합니다.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;InvasiveDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataframe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
@@ -189,9 +203,8 @@ Name: invasive, dtype: int64
 
 &lt;h2 id=&quot;transforms-함수-정의&quot;&gt;&lt;font color=&quot;blue&quot;&gt;Transforms 함수 정의&lt;/font&gt;&lt;/h2&gt;
 
-&lt;p&gt;Train 데이터에 적용된 augmentation : &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomResizedCrop&lt;/code&gt; &amp;amp; &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomHorizontalFlip&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Valid 데이터에 적용된 augmentation : &lt;code class=&quot;highlighter-rouge&quot;&gt;Resize&lt;/code&gt; &amp;amp; &lt;code class=&quot;highlighter-rouge&quot;&gt;CenterCrop&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Train 데이터에 적용된 augmentation : &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomResizedCrop&lt;/code&gt; &amp;amp; &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomHorizontalFlip&lt;/code&gt;     &lt;br /&gt;
+Valid 데이터에 적용된 augmentation : &lt;code class=&quot;highlighter-rouge&quot;&gt;Resize&lt;/code&gt; &amp;amp; &lt;code class=&quot;highlighter-rouge&quot;&gt;CenterCrop&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;위 augmentation 적용 결과는 아래에서 확인할 수 있습니다.&lt;/p&gt;
 
@@ -216,6 +229,8 @@ Name: invasive, dtype: int64
 
 &lt;h2 id=&quot;데이터-로더-적용-함수&quot;&gt;&lt;font color=&quot;blue&quot;&gt;데이터 로더 적용 함수&lt;/font&gt;&lt;/h2&gt;
 
+&lt;p&gt;데이터 로더를 적용하여 데이터셋을 train, valid로 나누고, 각각 배치 형태로 만들어 줍니다.&lt;/p&gt;
+
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_data_loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;valid_df&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
     
     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;valid_df&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# k-fold&lt;/span&gt;
@@ -238,6 +253,8 @@ Name: invasive, dtype: int64
 &lt;hr /&gt;
 
 &lt;h3 id=&quot;1-augmentation-확인하기train&quot;&gt;&lt;font color=&quot;orange&quot;&gt;1. Augmentation 확인하기(Train)&lt;/font&gt;&lt;/h3&gt;
+
+&lt;p&gt;Train 데이터에 적용된 augmentation을 시각화했습니다.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;plot_train_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_images&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fig_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
 
@@ -277,12 +294,14 @@ Name: invasive, dtype: int64
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_12_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Train셋에 적용된 augmentation을 시각화하였습니다.
+&lt;p&gt;Train셋에 적용된 augmentation을 시각화하였습니다.     &lt;br /&gt;
 먼저 &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomResizedCrop&lt;/code&gt;을 통해 이미지를 &lt;code class=&quot;highlighter-rouge&quot;&gt;scale&lt;/code&gt;범위 내의 비율로 랜덤하게 크롭한 후, &lt;code class=&quot;highlighter-rouge&quot;&gt;size&lt;/code&gt;(224,224)로 크기를 조정했습니다. 그 다음 &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomHorizontalFlip&lt;/code&gt;으로 랜덤하게 좌우반전을 주었습니다.&lt;/p&gt;
 
 &lt;hr /&gt;
 
 &lt;h3 id=&quot;2-augmentation-확인하기valid&quot;&gt;&lt;font color=&quot;orange&quot;&gt;2. Augmentation 확인하기(Valid)&lt;/font&gt;&lt;/h3&gt;
+
+&lt;p&gt;Valid 데이터에 적용된 augmentation을 시각화했습니다.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;plot_valid_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_images&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fig_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
     
@@ -321,8 +340,9 @@ Name: invasive, dtype: int64
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_15_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Valid 데이터에는 &lt;code class=&quot;highlighter-rouge&quot;&gt;Resize&lt;/code&gt; 와 &lt;code class=&quot;highlighter-rouge&quot;&gt;CenterCrop&lt;/code&gt;이 적용되었습니다. 
-&lt;code class=&quot;highlighter-rouge&quot;&gt;Resize&lt;/code&gt;에서는 가로세로 비율을 유지하며 이미지 크기를 조정하였습니다. Invasive 대회의 데이터셋의 이미지들은 주로 중앙쪽에 주요 정보(침입종 식물)가 분포되어 있었습니다. 이러한 점을 이용하여 &lt;code class=&quot;highlighter-rouge&quot;&gt;CenterCrop&lt;/code&gt;으로 중간 부분 위주로 이미지를 잘라내어 모델이 주요한 정보에 더욱 집중하여 학습할 수 있도록 하였습니다.&lt;/p&gt;
+&lt;p&gt;Valid 데이터에는 &lt;code class=&quot;highlighter-rouge&quot;&gt;Resize&lt;/code&gt; 와 &lt;code class=&quot;highlighter-rouge&quot;&gt;CenterCrop&lt;/code&gt;이 적용되었습니다.   &lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Resize&lt;/code&gt;에서는 가로세로 비율을 유지하며 이미지 크기를 조정하였습니다. Invasive 대회의 데이터셋의 이미지들은 주로 중앙쪽에 주요 정보(침입종 식물)가 분포되어 있었습니다.   &lt;br /&gt;
+이러한 점을 이용하여 &lt;code class=&quot;highlighter-rouge&quot;&gt;CenterCrop&lt;/code&gt;으로 중간 부분 위주로 이미지를 잘라내어 모델이 주요한 정보에 더욱 집중하여 학습할 수 있도록 하였습니다.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -330,9 +350,8 @@ Name: invasive, dtype: int64
 
 &lt;h3 id=&quot;모델-optimizer-criterion&quot;&gt;&lt;font color=&quot;green&quot;&gt;모델, Optimizer, Criterion&lt;/font&gt;&lt;/h3&gt;
 
-&lt;p&gt;모델은 &lt;code class=&quot;highlighter-rouge&quot;&gt;resnet18&lt;/code&gt;을 사용했습니다. 이진 분류이므로, &lt;code class=&quot;highlighter-rouge&quot;&gt;num_classes&lt;/code&gt;를 2로 설정합니다.&lt;/p&gt;
-
-&lt;p&gt;Criterion은 &lt;code class=&quot;highlighter-rouge&quot;&gt;CrossEntropyLoss&lt;/code&gt;, Optimizer은 &lt;code class=&quot;highlighter-rouge&quot;&gt;Adam&lt;/code&gt;을 사용합니다.&lt;/p&gt;
+&lt;p&gt;모델은 &lt;code class=&quot;highlighter-rouge&quot;&gt;resnet18&lt;/code&gt;을 사용했습니다. 이진 분류이므로, &lt;code class=&quot;highlighter-rouge&quot;&gt;num_classes&lt;/code&gt;를 2로 설정합니다.    &lt;br /&gt;
+Criterion은 &lt;code class=&quot;highlighter-rouge&quot;&gt;CrossEntropyLoss&lt;/code&gt;, Optimizer은 &lt;code class=&quot;highlighter-rouge&quot;&gt;Adam&lt;/code&gt;을 사용합니다.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set_parameter_requires_grad&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feature_extracting&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feature_extracting&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
@@ -380,14 +399,7 @@ Name: invasive, dtype: int64
 &lt;span class=&quot;n&quot;&gt;check_batch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;train_loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;criterion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;optimizer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Downloading: &quot;https://download.pytorch.org/models/resnet18-5c106cde.pth&quot; to /root/.cache/torch/hub/checkpoints/resnet18-5c106cde.pth
-
-
-
-  0%|          | 0.00/44.7M [00:00&amp;lt;?, ?B/s]
-
-
-tensor(0.7094, device='cuda:0', grad_fn=&amp;lt;NllLossBackward&amp;gt;)
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;tensor(0.7094, device='cuda:0', grad_fn=&amp;lt;NllLossBackward&amp;gt;)
 tensor(0.6460, device='cuda:0', grad_fn=&amp;lt;NllLossBackward&amp;gt;)
 tensor(0.5871, device='cuda:0', grad_fn=&amp;lt;NllLossBackward&amp;gt;)
 tensor(0.5325, device='cuda:0', grad_fn=&amp;lt;NllLossBackward&amp;gt;)
@@ -809,7 +821,8 @@ Epoch: 25/50.. Training Loss: 0.36476.. Valid Loss: 0.25689.. Valid Accuracy: 0.
 
 &lt;h2 id=&quot;참고-자료&quot;&gt;&lt;font color=&quot;blue&quot;&gt;참고 자료&lt;/font&gt;&lt;/h2&gt;
 
-&lt;p&gt;CutMix Code(clovaai) : &lt;a href=&quot;https://github.com/clovaai/CutMix-PyTorch&quot;&gt;https://github.com/clovaai/CutMix-PyTorch&lt;/a&gt;  &lt;br /&gt;
+&lt;p&gt;Invasive Hydrangeas : &lt;a href=&quot;http://jenmenke.com/who-knew-hydrangeas-were-invasive/&quot;&gt;http://jenmenke.com/who-knew-hydrangeas-were-invasive/&lt;/a&gt;    &lt;br /&gt;
+CutMix Code(clovaai) : &lt;a href=&quot;https://github.com/clovaai/CutMix-PyTorch&quot;&gt;https://github.com/clovaai/CutMix-PyTorch&lt;/a&gt;  &lt;br /&gt;
 CutMix 설명 - 이유한님  : &lt;a href=&quot;https://github.com/kaggler-tv/codes/blob/master/cutmix/cutmix.ipynb&quot;&gt;https://github.com/kaggler-tv/codes/blob/master/cutmix/cutmix.ipynb&lt;/a&gt;&lt;/p&gt;</content><author><name>Seunghyun Lee</name></author><category term="Deep Learning" /><category term="Classification" /><category term="Computer Vision" /><category term="CNN" /><category term="Pytorch" /><category term="Cut Mix" /><category term="ResNet" /><summary type="html">Cut Mix 방법 소개 식물 이미지로 침입종을 분류하는 이진 분류 대회 이미지 분류에서 Cut-Mix을 적용하여 모델 성능을 높일 수 있습니다.</summary></entry><entry><title type="html">VinBigData Chest X-ray(Object Detection)</title><link href="http://localhost:4000/detection/2021/04/17/vinbigdata-train/" rel="alternate" type="text/html" title="VinBigData Chest X-ray(Object Detection)" /><published>2021-04-17T16:17:00+09:00</published><updated>2021-04-17T16:17:00+09:00</updated><id>http://localhost:4000/detection/2021/04/17/vinbigdata-train</id><content type="html" xml:base="http://localhost:4000/detection/2021/04/17/vinbigdata-train/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/vinbigdata_train/vinbigdata-train_11_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;Chest X-ray 흉부 기형 탐지하기&lt;/center&gt;

@@ -118,6 +118,7 @@
 <meta property="og:description" content="Cut Mix 방법 소개 식물 이미지로 침입종을 분류하는 이진 분류 대회 이미지 분류에서 Cut-Mix을 적용하여 모델 성능을 높일 수 있습니다.">
 <meta property="og:locale" content="ko">
 <meta property="og:image" content="/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_36_0.png">
+<meta property="og:image" content="/assets/img/notebook/invasive-pytorch_files/invasive.png">
 <meta property="og:image" content="/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_12_0.png">
 <meta property="og:image" content="/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_15_0.png">
 <meta property="og:image" content="/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_34_1.png">
@@ -456,6 +457,8 @@
 
 <h2 id="패키지-불러오기"><font color="blue">패키지 불러오기</font></h2>
 
+<p>필요한 라이브러라들을 불러옵니다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span> 
 <span class="kn">import</span> <span class="nn">glob</span>
@@ -489,6 +492,8 @@
 <hr />
 
 <h2 id="하이퍼-파라미터"><font color="blue">하이퍼 파라미터</font></h2>
+
+<p>하이퍼파라미터 값들이 있는 딕셔너리를 정해줍니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16</pre></td><td class="code"><pre class="highlight"><code><span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s">"TRAIN_LABEL_CSV"</span> <span class="p">:</span> <span class="s">'./train_labels.csv'</span><span class="p">,</span>
         <span class="s">"TRAIN_PATH"</span> <span class="p">:</span> <span class="s">"../input/invasivespecies/train"</span><span class="p">,</span>
@@ -602,7 +607,17 @@ Name: invasive, dtype: int64
 
 <hr />
 
+<h3 id="invasive1non-invasive0-이미지-확인"><font color="orange">Invasive(1)/Non-invasive(0) 이미지 확인</font></h3>
+
+<p>침입종 수국(1)과 침입종이 아닌 식물(0)의 이미지입니다.</p>
+
+<p><img src="/assets/img/notebook/invasive-pytorch_files/invasive.png" alt="png" /></p>
+
+<hr />
+
 <h2 id="데이터-로더"><font color="blue">데이터 로더</font></h2>
+
+<p>데이터 로더 클래스를 정의합니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20</pre></td><td class="code"><pre class="highlight"><code><span class="k">class</span> <span class="nc">InvasiveDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -630,9 +645,8 @@ Name: invasive, dtype: int64
 
 <h2 id="transforms-함수-정의"><font color="blue">Transforms 함수 정의</font></h2>
 
-<p>Train 데이터에 적용된 augmentation : <code class="highlighter-rouge">RandomResizedCrop</code> &amp; <code class="highlighter-rouge">RandomHorizontalFlip</code></p>
-
-<p>Valid 데이터에 적용된 augmentation : <code class="highlighter-rouge">Resize</code> &amp; <code class="highlighter-rouge">CenterCrop</code></p>
+<p>Train 데이터에 적용된 augmentation : <code class="highlighter-rouge">RandomResizedCrop</code> &amp; <code class="highlighter-rouge">RandomHorizontalFlip</code>     <br />
+Valid 데이터에 적용된 augmentation : <code class="highlighter-rouge">Resize</code> &amp; <code class="highlighter-rouge">CenterCrop</code></p>
 
 <p>위 augmentation 적용 결과는 아래에서 확인할 수 있습니다.</p>
 
@@ -657,6 +671,8 @@ Name: invasive, dtype: int64
 
 <h2 id="데이터-로더-적용-함수"><font color="blue">데이터 로더 적용 함수</font></h2>
 
+<p>데이터 로더를 적용하여 데이터셋을 train, valid로 나누고, 각각 배치 형태로 만들어 줍니다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_data_loader</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">valid_df</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     
     <span class="k">if</span> <span class="n">valid_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> <span class="c"># k-fold</span>
@@ -679,6 +695,8 @@ Name: invasive, dtype: int64
 <hr />
 
 <h3 id="1-augmentation-확인하기train"><font color="orange">1. Augmentation 확인하기(Train)</font></h3>
+
+<p>Train 데이터에 적용된 augmentation을 시각화했습니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">plot_train_transform</span><span class="p">(</span><span class="n">train_list</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">num_images</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fig_size</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">15</span><span class="p">)):</span>
 
@@ -718,12 +736,14 @@ Name: invasive, dtype: int64
 
 <p><img src="/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_12_0.png" alt="png" /></p>
 
-<p>Train셋에 적용된 augmentation을 시각화하였습니다.
+<p>Train셋에 적용된 augmentation을 시각화하였습니다.     <br />
 먼저 <code class="highlighter-rouge">RandomResizedCrop</code>을 통해 이미지를 <code class="highlighter-rouge">scale</code>범위 내의 비율로 랜덤하게 크롭한 후, <code class="highlighter-rouge">size</code>(224,224)로 크기를 조정했습니다. 그 다음 <code class="highlighter-rouge">RandomHorizontalFlip</code>으로 랜덤하게 좌우반전을 주었습니다.</p>
 
 <hr />
 
 <h3 id="2-augmentation-확인하기valid"><font color="orange">2. Augmentation 확인하기(Valid)</font></h3>
+
+<p>Valid 데이터에 적용된 augmentation을 시각화했습니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">plot_valid_transform</span><span class="p">(</span><span class="n">train_list</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">num_images</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fig_size</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">15</span><span class="p">)):</span>
     
@@ -762,8 +782,9 @@ Name: invasive, dtype: int64
 
 <p><img src="/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_15_0.png" alt="png" /></p>
 
-<p>Valid 데이터에는 <code class="highlighter-rouge">Resize</code> 와 <code class="highlighter-rouge">CenterCrop</code>이 적용되었습니다. 
-<code class="highlighter-rouge">Resize</code>에서는 가로세로 비율을 유지하며 이미지 크기를 조정하였습니다. Invasive 대회의 데이터셋의 이미지들은 주로 중앙쪽에 주요 정보(침입종 식물)가 분포되어 있었습니다. 이러한 점을 이용하여 <code class="highlighter-rouge">CenterCrop</code>으로 중간 부분 위주로 이미지를 잘라내어 모델이 주요한 정보에 더욱 집중하여 학습할 수 있도록 하였습니다.</p>
+<p>Valid 데이터에는 <code class="highlighter-rouge">Resize</code> 와 <code class="highlighter-rouge">CenterCrop</code>이 적용되었습니다.   <br />
+<code class="highlighter-rouge">Resize</code>에서는 가로세로 비율을 유지하며 이미지 크기를 조정하였습니다. Invasive 대회의 데이터셋의 이미지들은 주로 중앙쪽에 주요 정보(침입종 식물)가 분포되어 있었습니다.   <br />
+이러한 점을 이용하여 <code class="highlighter-rouge">CenterCrop</code>으로 중간 부분 위주로 이미지를 잘라내어 모델이 주요한 정보에 더욱 집중하여 학습할 수 있도록 하였습니다.</p>
 
 <hr />
 
@@ -771,9 +792,8 @@ Name: invasive, dtype: int64
 
 <h3 id="모델-optimizer-criterion"><font color="green">모델, Optimizer, Criterion</font></h3>
 
-<p>모델은 <code class="highlighter-rouge">resnet18</code>을 사용했습니다. 이진 분류이므로, <code class="highlighter-rouge">num_classes</code>를 2로 설정합니다.</p>
-
-<p>Criterion은 <code class="highlighter-rouge">CrossEntropyLoss</code>, Optimizer은 <code class="highlighter-rouge">Adam</code>을 사용합니다.</p>
+<p>모델은 <code class="highlighter-rouge">resnet18</code>을 사용했습니다. 이진 분류이므로, <code class="highlighter-rouge">num_classes</code>를 2로 설정합니다.    <br />
+Criterion은 <code class="highlighter-rouge">CrossEntropyLoss</code>, Optimizer은 <code class="highlighter-rouge">Adam</code>을 사용합니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">set_parameter_requires_grad</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">feature_extracting</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">feature_extracting</span><span class="p">:</span>
@@ -821,14 +841,7 @@ Name: invasive, dtype: int64
 <span class="n">check_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 </code></pre></td></tr></tbody></table></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37</pre></td><td class="code"><pre class="highlight"><code>Downloading: "https://download.pytorch.org/models/resnet18-5c106cde.pth" to /root/.cache/torch/hub/checkpoints/resnet18-5c106cde.pth
-
-
-
-  0%|          | 0.00/44.7M [00:00&lt;?, ?B/s]
-
-
-tensor(0.7094, device='cuda:0', grad_fn=&lt;NllLossBackward&gt;)
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30</pre></td><td class="code"><pre class="highlight"><code>tensor(0.7094, device='cuda:0', grad_fn=&lt;NllLossBackward&gt;)
 tensor(0.6460, device='cuda:0', grad_fn=&lt;NllLossBackward&gt;)
 tensor(0.5871, device='cuda:0', grad_fn=&lt;NllLossBackward&gt;)
 tensor(0.5325, device='cuda:0', grad_fn=&lt;NllLossBackward&gt;)
@@ -1250,7 +1263,8 @@ Epoch: 25/50.. Training Loss: 0.36476.. Valid Loss: 0.25689.. Valid Accuracy: 0.
 
 <h2 id="참고-자료"><font color="blue">참고 자료</font></h2>
 
-<p>CutMix Code(clovaai) : <a href="https://github.com/clovaai/CutMix-PyTorch">https://github.com/clovaai/CutMix-PyTorch</a>  <br />
+<p>Invasive Hydrangeas : <a href="http://jenmenke.com/who-knew-hydrangeas-were-invasive/">http://jenmenke.com/who-knew-hydrangeas-were-invasive/</a>    <br />
+CutMix Code(clovaai) : <a href="https://github.com/clovaai/CutMix-PyTorch">https://github.com/clovaai/CutMix-PyTorch</a>  <br />
 CutMix 설명 - 이유한님  : <a href="https://github.com/kaggler-tv/codes/blob/master/cutmix/cutmix.ipynb">https://github.com/kaggler-tv/codes/blob/master/cutmix/cutmix.ipynb</a></p>
 
 
@@ -1537,7 +1551,7 @@ CutMix 설명 - 이유한님  : <a href="https://github.com/kaggler-tv/codes/blo
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#cut-mix-방법-소개"> <span class="nav-number">1</span> <span class="nav-text">Cut Mix 방법 소개</center</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#invasive-species-monitoring"> <span class="nav-number">1.1</span> <span class="nav-text">Invasive Species Monitoring</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키지-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키지 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#하이퍼-파라미터"> <span class="nav-number">3</span> <span class="nav-text">하이퍼 파라미터</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">4</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-로더"> <span class="nav-number">5</span> <span class="nav-text">데이터 로더</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#transforms-함수-정의"> <span class="nav-number">6</span> <span class="nav-text">Transforms 함수 정의</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-로더-적용-함수"> <span class="nav-number">7</span> <span class="nav-text">데이터 로더 적용 함수</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#1-augmentation-확인하기train"> <span class="nav-number">7.1</span> <span class="nav-text">1. Augmentation 확인하기(Train)</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#2-augmentation-확인하기valid"> <span class="nav-number">7.2</span> <span class="nav-text">2. Augmentation 확인하기(Valid)</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#학습-준비"> <span class="nav-number">8</span> <span class="nav-text">학습 준비</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-optimizer-criterion"> <span class="nav-number">8.1</span> <span class="nav-text">모델, Optimizer, Criterion</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#한개의-배치에-대해-모델-성능-확인"> <span class="nav-number">8.2</span> <span class="nav-text">한개의 배치에 대해 모델 성능 확인</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#cut-mix"> <span class="nav-number">9</span> <span class="nav-text">Cut Mix</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cut-mix-설명"> <span class="nav-number">9.1</span> <span class="nav-text">Cut Mix 설명</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cut-mix-적용-과정"> <span class="nav-number">9.2</span> <span class="nav-text">Cut Mix 적용 과정</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#1-배치-내의-데이터-셔플"> <span class="nav-number">9.2.1</span> <span class="nav-text">1. 배치 내의 데이터 셔플</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#2-패치-부분-교체하기"> <span class="nav-number">9.2.2</span> <span class="nav-text">2. 패치 부분 교체하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#3-람다-조정하기"> <span class="nav-number">9.2.3</span> <span class="nav-text">3. 람다 조정하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#4-결과"> <span class="nav-number">9.2.4</span> <span class="nav-text">4. 결과</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cut-mix-결과-이미지"> <span class="nav-number">9.3</span> <span class="nav-text">Cut Mix 결과 이미지</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델-학습"> <span class="nav-number">10</span> <span class="nav-text">모델 학습</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#validation-함수"> <span class="nav-number">10.1</span> <span class="nav-text">Validation 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#train-함수"> <span class="nav-number">10.2</span> <span class="nav-text">Train 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#fold-없이-단일-모델-학습"> <span class="nav-number">10.3</span> <span class="nav-text">Fold 없이 단일 모델 학습</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#5-fold-학습"> <span class="nav-number">10.4</span> <span class="nav-text">5-Fold 학습</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#참고-자료"> <span class="nav-number">11</span> <span class="nav-text">참고 자료</font</span> </a> </li>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#cut-mix-방법-소개"> <span class="nav-number">1</span> <span class="nav-text">Cut Mix 방법 소개</center</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#invasive-species-monitoring"> <span class="nav-number">1.1</span> <span class="nav-text">Invasive Species Monitoring</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#패키지-불러오기"> <span class="nav-number">2</span> <span class="nav-text">패키지 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#하이퍼-파라미터"> <span class="nav-number">3</span> <span class="nav-text">하이퍼 파라미터</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">4</span> <span class="nav-text">데이터 불러오기</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#invasive1non-invasive0-이미지-확인"> <span class="nav-number">4.1</span> <span class="nav-text">Invasive(1)/Non-invasive(0) 이미지 확인</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-로더"> <span class="nav-number">5</span> <span class="nav-text">데이터 로더</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#transforms-함수-정의"> <span class="nav-number">6</span> <span class="nav-text">Transforms 함수 정의</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-로더-적용-함수"> <span class="nav-number">7</span> <span class="nav-text">데이터 로더 적용 함수</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#1-augmentation-확인하기train"> <span class="nav-number">7.1</span> <span class="nav-text">1. Augmentation 확인하기(Train)</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#2-augmentation-확인하기valid"> <span class="nav-number">7.2</span> <span class="nav-text">2. Augmentation 확인하기(Valid)</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#학습-준비"> <span class="nav-number">8</span> <span class="nav-text">학습 준비</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#모델-optimizer-criterion"> <span class="nav-number">8.1</span> <span class="nav-text">모델, Optimizer, Criterion</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#한개의-배치에-대해-모델-성능-확인"> <span class="nav-number">8.2</span> <span class="nav-text">한개의 배치에 대해 모델 성능 확인</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#cut-mix"> <span class="nav-number">9</span> <span class="nav-text">Cut Mix</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cut-mix-설명"> <span class="nav-number">9.1</span> <span class="nav-text">Cut Mix 설명</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cut-mix-적용-과정"> <span class="nav-number">9.2</span> <span class="nav-text">Cut Mix 적용 과정</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#1-배치-내의-데이터-셔플"> <span class="nav-number">9.2.1</span> <span class="nav-text">1. 배치 내의 데이터 셔플</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#2-패치-부분-교체하기"> <span class="nav-number">9.2.2</span> <span class="nav-text">2. 패치 부분 교체하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#3-람다-조정하기"> <span class="nav-number">9.2.3</span> <span class="nav-text">3. 람다 조정하기</font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#4-결과"> <span class="nav-number">9.2.4</span> <span class="nav-text">4. 결과</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cut-mix-결과-이미지"> <span class="nav-number">9.3</span> <span class="nav-text">Cut Mix 결과 이미지</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델-학습"> <span class="nav-number">10</span> <span class="nav-text">모델 학습</font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#validation-함수"> <span class="nav-number">10.1</span> <span class="nav-text">Validation 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#train-함수"> <span class="nav-number">10.2</span> <span class="nav-text">Train 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#fold-없이-단일-모델-학습"> <span class="nav-number">10.3</span> <span class="nav-text">Fold 없이 단일 모델 학습</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#5-fold-학습"> <span class="nav-number">10.4</span> <span class="nav-text">5-Fold 학습</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#참고-자료"> <span class="nav-number">11</span> <span class="nav-text">참고 자료</font</span> </a> </li>
     </ol>
   </div>
             
