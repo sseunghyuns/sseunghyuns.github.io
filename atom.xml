@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-25T12:12:10+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-26T00:26:14+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_36_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;식물 이미지로 침입종을 분류하는 이진 분류 대회&lt;/center&gt;
 &lt;center&gt;이미지 분류에서 Cut-Mix을 적용하여 모델 성능을 높일 수 있습니다.&lt;/center&gt;
@@ -1029,10 +1029,10 @@ Successfully installed timm-0.1.26
 
 &lt;h2 id=&quot;이미지-확인하기&quot;&gt;&lt;font color=&quot;blue&quot;&gt;이미지 확인하기&lt;/font&gt;&lt;/h2&gt;
 
+&lt;p&gt;한 이미지에서 여러 boundingbox가 겹쳐 보이는 이유는, &lt;code class=&quot;highlighter-rouge&quot;&gt;multiple radiologists&lt;/code&gt;가 labeling을 했기 때문이다.    &lt;br /&gt;
+Data Description의 설명을 확인해보자.&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;한 이미지에서 여러 boundingbox가 겹쳐 보이는 이유는, &lt;code class=&quot;highlighter-rouge&quot;&gt;multiple radiologists&lt;/code&gt;가 labeling을 했기 때문이다.&lt;/li&gt;
-  &lt;li&gt;Data Description의 설명을 확인하자. &lt;br /&gt;
-  &lt;code class=&quot;highlighter-rouge&quot;&gt;Note that a key part of this competition is working with ground truth from multiple radiologists.&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Note that a key part of this competition is working with ground truth from multiple radiologists.&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;imgs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
@@ -1072,11 +1072,9 @@ Successfully installed timm-0.1.26
 
 &lt;h3 id=&quot;데이터-로더-만들기&quot;&gt;&lt;font color=&quot;green&quot;&gt;데이터 로더 만들기&lt;/font&gt;&lt;/h3&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;데이터 로더 만들 시 주의할 점은, 어떤 Detection 모델을 사용하느냐에 따라 &lt;code class=&quot;highlighter-rouge&quot;&gt;boxes&lt;/code&gt; 좌표 순서가 바뀔 수 있다는 점이다.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;EfficientDet&lt;/code&gt; 모델은 &lt;code class=&quot;highlighter-rouge&quot;&gt;y_min&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;x_min&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;y_max&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;x_max&lt;/code&gt; 순서로 좌표가 들어가므로 이에 맞춰서 전처리를 해주어야 한다.&lt;/li&gt;
-  &lt;li&gt;Kaggle에서 &lt;code class=&quot;highlighter-rouge&quot;&gt;dicom&lt;/code&gt; 파일의 이미지들을 &lt;code class=&quot;highlighter-rouge&quot;&gt;jpg&lt;/code&gt; 포맷으로 바꿔놓은 데이터가 올라와 있으므로, 이 데이터를 사용해보자.&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;데이터 로더 만들 시 주의할 점은, 어떤 Detection 모델을 사용하느냐에 따라 &lt;code class=&quot;highlighter-rouge&quot;&gt;boxes&lt;/code&gt; 좌표 순서가 바뀔 수 있다는 점이다.     &lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;EfficientDet&lt;/code&gt; 모델은 &lt;code class=&quot;highlighter-rouge&quot;&gt;y_min&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;x_min&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;y_max&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;x_max&lt;/code&gt; 순서로 좌표가 들어가므로 이에 맞춰서 전처리를 해줘야 한다.   &lt;br /&gt;
+참고로 Kaggle에서 &lt;code class=&quot;highlighter-rouge&quot;&gt;dicom&lt;/code&gt; 파일의 이미지들을 &lt;code class=&quot;highlighter-rouge&quot;&gt;jpg&lt;/code&gt; 포맷으로 바꿔놓은 데이터가 올라와 있으므로, 이 데이터를 사용해보자.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VinBigDataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;marking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_ids&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transforms&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;

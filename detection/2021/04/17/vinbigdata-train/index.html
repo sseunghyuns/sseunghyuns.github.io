@@ -643,10 +643,10 @@ Successfully installed timm-0.1.26
 
 <h2 id="이미지-확인하기"><font color="blue">이미지 확인하기</font></h2>
 
+<p>한 이미지에서 여러 boundingbox가 겹쳐 보이는 이유는, <code class="highlighter-rouge">multiple radiologists</code>가 labeling을 했기 때문이다.    <br />
+Data Description의 설명을 확인해보자.</p>
 <ul>
-  <li>한 이미지에서 여러 boundingbox가 겹쳐 보이는 이유는, <code class="highlighter-rouge">multiple radiologists</code>가 labeling을 했기 때문이다.</li>
-  <li>Data Description의 설명을 확인하자. <br />
-  <code class="highlighter-rouge">Note that a key part of this competition is working with ground truth from multiple radiologists.</code></li>
+  <li><code class="highlighter-rouge">Note that a key part of this competition is working with ground truth from multiple radiologists.</code></li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27</pre></td><td class="code"><pre class="highlight"><code><span class="n">imgs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -686,11 +686,9 @@ Successfully installed timm-0.1.26
 
 <h3 id="데이터-로더-만들기"><font color="green">데이터 로더 만들기</font></h3>
 
-<ul>
-  <li>데이터 로더 만들 시 주의할 점은, 어떤 Detection 모델을 사용하느냐에 따라 <code class="highlighter-rouge">boxes</code> 좌표 순서가 바뀔 수 있다는 점이다.</li>
-  <li><code class="highlighter-rouge">EfficientDet</code> 모델은 <code class="highlighter-rouge">y_min</code>, <code class="highlighter-rouge">x_min</code>, <code class="highlighter-rouge">y_max</code>, <code class="highlighter-rouge">x_max</code> 순서로 좌표가 들어가므로 이에 맞춰서 전처리를 해주어야 한다.</li>
-  <li>Kaggle에서 <code class="highlighter-rouge">dicom</code> 파일의 이미지들을 <code class="highlighter-rouge">jpg</code> 포맷으로 바꿔놓은 데이터가 올라와 있으므로, 이 데이터를 사용해보자.</li>
-</ul>
+<p>데이터 로더 만들 시 주의할 점은, 어떤 Detection 모델을 사용하느냐에 따라 <code class="highlighter-rouge">boxes</code> 좌표 순서가 바뀔 수 있다는 점이다.     <br />
+<code class="highlighter-rouge">EfficientDet</code> 모델은 <code class="highlighter-rouge">y_min</code>, <code class="highlighter-rouge">x_min</code>, <code class="highlighter-rouge">y_max</code>, <code class="highlighter-rouge">x_max</code> 순서로 좌표가 들어가므로 이에 맞춰서 전처리를 해줘야 한다.   <br />
+참고로 Kaggle에서 <code class="highlighter-rouge">dicom</code> 파일의 이미지들을 <code class="highlighter-rouge">jpg</code> 포맷으로 바꿔놓은 데이터가 올라와 있으므로, 이 데이터를 사용해보자.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41</pre></td><td class="code"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VinBigDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marking</span><span class="p">,</span> <span class="n">image_ids</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
