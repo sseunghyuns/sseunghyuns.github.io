@@ -41,6 +41,10 @@
 <lastmod>2021-05-25T01:16:00+09:00</lastmod>
 </url>
 <url>
+<loc>http://localhost:4000/classification/2021/09/05/blindness-detection/</loc>
+<lastmod>2021-09-05T11:25:00+09:00</lastmod>
+</url>
+<url>
 <loc>http://localhost:4000/</loc>
 </url>
 <url>
@@ -69,5 +73,8 @@
 </url>
 <url>
 <loc>http://localhost:4000/assets/lib/jquery_lazyload/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page2/</loc>
 </url>
 </urlset>
