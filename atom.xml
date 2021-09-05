@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-09-05T12:45:00+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Blindness Classification</title><link href="http://localhost:4000/classification/2021/09/05/blindness-detection/" rel="alternate" type="text/html" title="Blindness Classification" /><published>2021-09-05T11:25:00+09:00</published><updated>2021-09-05T11:25:00+09:00</updated><id>http://localhost:4000/classification/2021/09/05/blindness-detection</id><content type="html" xml:base="http://localhost:4000/classification/2021/09/05/blindness-detection/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-09-05T19:21:24+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Blindness Classification</title><link href="http://localhost:4000/classification/2021/09/05/blindness-detection/" rel="alternate" type="text/html" title="Blindness Classification" /><published>2021-09-05T11:25:00+09:00</published><updated>2021-09-05T11:25:00+09:00</updated><id>http://localhost:4000/classification/2021/09/05/blindness-detection</id><content type="html" xml:base="http://localhost:4000/classification/2021/09/05/blindness-detection/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/blindness-detection_files/blindness-detection_25_1.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;안저 이미지를 통한 Diabetic retinopathy(DR, 당뇨성 망막증) 악화 정도 분류 대회&lt;/center&gt;
 &lt;center&gt;모델 구조에 SEBlock을 추가하여 모델 복잡도를 크게 증가시키지 않으면서 성능을 향상시킬 수 있습니다.&lt;/center&gt;
@@ -425,6 +425,8 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 
+&lt;hr /&gt;
+
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;make_predictions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_csv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'submission.csv'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;preds&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;filenames&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
@@ -535,7 +537,45 @@
 
 &lt;h3 id=&quot;-se-block-&quot;&gt;&lt;font color=&quot;orange&quot;&gt; SE Block &lt;/font&gt;&lt;/h3&gt;
 
-&lt;p&gt;ResNet18에 Squeeze and Excitation Block(SE Block)을 추가했습니다. SE Block을 통해 Convolution 연산을 거친 피쳐맵에서 중요한 정보들을 &lt;code class=&quot;highlighter-rouge&quot;&gt;압축(Squeeze)&lt;/code&gt;하고 &lt;code class=&quot;highlighter-rouge&quot;&gt;재조정(Recalibration)&lt;/code&gt;할 수 있습니다. 중요 정보를 추출하는 과정에서는 &lt;code class=&quot;highlighter-rouge&quot;&gt;GAP(Global Average Pooling)&lt;/code&gt;을 사용하고, 재조정 과정에서는 Fully Connected Layer과 비선형 함수인 ReLU, Sigmoid이 사용됩니다. 결국 SE Block을 거치게 되면 피쳐맵이 채널들의 중요도에 따라 스케일 됩니다. 더 자세한 설명은 아래 블로그를 참고하시면 됩니다.&lt;/p&gt;
+&lt;p&gt;ResNet18에 Squeeze and Excitation Block(SE Block)을 추가했습니다. SE Block을 통해 Convolution 연산을 거친 피쳐맵에서 중요한 정보들을 &lt;code class=&quot;highlighter-rouge&quot;&gt;압축(Squeeze)&lt;/code&gt;하고 &lt;code class=&quot;highlighter-rouge&quot;&gt;재조정(Recalibration)&lt;/code&gt;할 수 있습니다. 중요 정보를 추출하는 과정에서는 &lt;code class=&quot;highlighter-rouge&quot;&gt;GAP(Global Average Pooling)&lt;/code&gt;을 사용하고, 재조정 과정에서는 Fully Connected Layer과 비선형 함수인 ReLU, Sigmoid이 사용됩니다. 결국 SE Block을 거치게 되면 피쳐맵이 채널들의 중요도에 따라 스케일 됩니다.&lt;/p&gt;
+
+&lt;p&gt;실제 아래 실험 결과표에서 확인할 수 있듯이, ResNet18 모델 구조에 SEBlock을 추가했을 경우 test셋에 대한 Quadratic Weighted Kappa 점수가 더 높은 것을 확인할 수 있습니다.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th&gt;Loss&lt;/th&gt;
+      &lt;th&gt;Private Score&lt;/th&gt;
+      &lt;th&gt;Public Score&lt;/th&gt;
+      &lt;th&gt;Valid QWK&lt;/th&gt;
+      &lt;th&gt;Valid Loss&lt;/th&gt;
+      &lt;th&gt;Valid Accuracy&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;ResNet18&lt;/td&gt;
+      &lt;td&gt;MSE&lt;/td&gt;
+      &lt;td&gt;0.7610&lt;/td&gt;
+      &lt;td&gt;0.5091&lt;/td&gt;
+      &lt;td&gt;0.8599&lt;/td&gt;
+      &lt;td&gt;0.4247&lt;/td&gt;
+      &lt;td&gt;0.7572&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;ResNet18 + SEBlock&lt;/td&gt;
+      &lt;td&gt;MSE&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.8310&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.6766&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;0.8491&lt;/td&gt;
+      &lt;td&gt;0.4059&lt;/td&gt;
+      &lt;td&gt;0.7340&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Squeeze and Excitation에 대한 더 자세한 설명은 아래 블로그를 참고하시면 됩니다.&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
@@ -545,6 +585,8 @@
     &lt;p&gt;코드 참고 : &lt;a href=&quot;https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py&quot;&gt;https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py&lt;/a&gt;&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;hr /&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
 
