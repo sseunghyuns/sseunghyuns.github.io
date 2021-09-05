@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-09-05T19:21:24+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Blindness Classification</title><link href="http://localhost:4000/classification/2021/09/05/blindness-detection/" rel="alternate" type="text/html" title="Blindness Classification" /><published>2021-09-05T11:25:00+09:00</published><updated>2021-09-05T11:25:00+09:00</updated><id>http://localhost:4000/classification/2021/09/05/blindness-detection</id><content type="html" xml:base="http://localhost:4000/classification/2021/09/05/blindness-detection/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-09-05T19:27:06+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Blindness Classification</title><link href="http://localhost:4000/classification/2021/09/05/blindness-detection/" rel="alternate" type="text/html" title="Blindness Classification" /><published>2021-09-05T11:25:00+09:00</published><updated>2021-09-05T11:25:00+09:00</updated><id>http://localhost:4000/classification/2021/09/05/blindness-detection</id><content type="html" xml:base="http://localhost:4000/classification/2021/09/05/blindness-detection/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/blindness-detection_files/blindness-detection_25_1.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;안저 이미지를 통한 Diabetic retinopathy(DR, 당뇨성 망막증) 악화 정도 분류 대회&lt;/center&gt;
 &lt;center&gt;모델 구조에 SEBlock을 추가하여 모델 복잡도를 크게 증가시키지 않으면서 성능을 향상시킬 수 있습니다.&lt;/center&gt;
@@ -569,7 +569,7 @@
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.8310&lt;/font&gt;&lt;/td&gt;
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.6766&lt;/font&gt;&lt;/td&gt;
       &lt;td&gt;0.8491&lt;/td&gt;
-      &lt;td&gt;0.4059&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.4059&lt;/font&gt;&lt;/td&gt;
       &lt;td&gt;0.7340&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/tbody&gt;
