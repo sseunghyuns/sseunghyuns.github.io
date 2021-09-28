@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-09-05T19:27:06+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Blindness Classification</title><link href="http://localhost:4000/classification/2021/09/05/blindness-detection/" rel="alternate" type="text/html" title="Blindness Classification" /><published>2021-09-05T11:25:00+09:00</published><updated>2021-09-05T11:25:00+09:00</updated><id>http://localhost:4000/classification/2021/09/05/blindness-detection</id><content type="html" xml:base="http://localhost:4000/classification/2021/09/05/blindness-detection/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-09-28T17:39:59+09:00</updated><id>http://localhost:4000/atom.xml</id><title type="html">Seung Hyun’s Blog</title><author><name>Seunghyun Lee</name></author><entry><title type="html">Blindness Classification</title><link href="http://localhost:4000/classification/2021/09/05/blindness-detection/" rel="alternate" type="text/html" title="Blindness Classification" /><published>2021-09-05T11:25:00+09:00</published><updated>2021-09-05T11:25:00+09:00</updated><id>http://localhost:4000/classification/2021/09/05/blindness-detection</id><content type="html" xml:base="http://localhost:4000/classification/2021/09/05/blindness-detection/">&lt;h2 id=&quot;대회-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;대회 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/blindness-detection_files/blindness-detection_25_1.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;안저 이미지를 통한 Diabetic retinopathy(DR, 당뇨성 망막증) 악화 정도 분류 대회&lt;/center&gt;
 &lt;center&gt;모델 구조에 SEBlock을 추가하여 모델 복잡도를 크게 증가시키지 않으면서 성능을 향상시킬 수 있습니다.&lt;/center&gt;
@@ -10,6 +10,59 @@
 &lt;a href=&quot;https://www.kaggle.com/c/aptos2019-blindness-detection&quot;&gt;https://www.kaggle.com/c/aptos2019-blindness-detection&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;평가 지표 : &lt;code class=&quot;highlighter-rouge&quot;&gt;Quadratic weighted kappa&lt;/code&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;-요약-&quot;&gt;&lt;font color=&quot;blue&quot;&gt; 요약 &lt;/font&gt;&lt;/h2&gt;
+
+&lt;p&gt;이번 프로젝트는 안저 이미지 데이터를 사용하여 당뇨성 망막증의 증상을 분류하는 모델을 구현하는 것입니다. 당뇨성 망막증은 당뇨병에 의해 망막의 미세혈관이 손상되어 발생하는 질병입니다. 세계 각국의 실명 원인 중에서 높은 비중을 차지하고 있기에 이를 초기에 발견하고 치료하는 것이 중요합니다. 하지만 충분한 의료 인력 및 인프라가 갖추어지지 않은 환경에서 이러한 질병을 발견하고 예방하기란 쉽지 않은 상황입니다. 이 대회에서는  당뇨성 망막증을 식별해내는 인공지능 모델로 환자들을 쉽고 빠르게 파악할 수 있기를 기대하고 있습니다.&lt;/p&gt;
+
+&lt;p&gt;데이터는 kaggle에서 진행된 APTOS 2019 Blindness Detection에서 제공하는 안저 이미지들입니다. 전체 이미지의 개수는 3662개이고, 각각 0~4 까지의 정수로 레이블링이 되어있습니다. 숫자가 높을수록 병증이 악화됨을 의미합니다. 대회의 평가 지표는 Quadratic weighted kappa입니다. 실제 레이블에서 모델의 예측값이 멀어질수록 더 큰 loss를 주는 방식이기 때문에, 이러한 레이블별 거리를 고려할 수 있도록 모델 학습시 Crossentropy loss 대신 mean squared error를 사용했습니다.&lt;/p&gt;
+
+&lt;p&gt;모델은 Pre-trained된 ResNet18을 사용했으며, 모델 구조에 Squeeze and Excitation Block을 추가했습니다. SE Block는 feature map의 정보를 요약하고 그 중요도에 따라 채널 단위로 새로운 가중치를 주는 방식으로, 일종의 attention mechanism이라고 볼 수도 있습니다.  이 방식을 제안한 논문의 저자들은 모델 구조 어떤 곳이라도 바로 붙일 수 있고 계산 복잡도를 크게 증가시키지 않으면서도 모델의 성능을 많이 높일 수 있다는 장점이 있다고 말합니다.&lt;/p&gt;
+
+&lt;p&gt;아래는 앞서 이 프로젝트에서 적용했던 방식들을 비교한 표입니다. 모두 동일한 전처리(resize-&amp;gt;(150,150), 데이터셋 나누기 등) 방식을 사용했습니다. MSE loss를 사용했을 때 Crossentropy보다 Test셋과 Valid셋 모두에서 더 높은 성능을 보여주었습니다(파란색). 또한 동일하게 MSE loss를 사용하는 상황에서는 SEBlock을 추가한 경우 Test 셋에 대해서는 Private, public score 모두 향상되었고, 학습시에는 더 낮은 valid loss를 보여주었습니다(빨간색).&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th&gt;Loss&lt;/th&gt;
+      &lt;th&gt;Private Score&lt;/th&gt;
+      &lt;th&gt;Public Score&lt;/th&gt;
+      &lt;th&gt;Valid QWK&lt;/th&gt;
+      &lt;th&gt;Valid Loss&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;ResNet18&lt;/td&gt;
+      &lt;td&gt;CrossEntropy&lt;/td&gt;
+      &lt;td&gt;0.7183&lt;/td&gt;
+      &lt;td&gt;0.4173&lt;/td&gt;
+      &lt;td&gt;0.8142&lt;/td&gt;
+      &lt;td&gt;0.6464&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;ResNet18&lt;/td&gt;
+      &lt;td&gt;MSE&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;blue&quot;&gt;0.7610&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;blue&quot;&gt;0.5091&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;blue&quot;&gt;0.8599&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;blue&quot;&gt;0.4247&lt;/font&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;ResNet18 + SEBlock&lt;/td&gt;
+      &lt;td&gt;MSE&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.8310&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.6766&lt;/font&gt;&lt;/td&gt;
+      &lt;td&gt;0.8491&lt;/td&gt;
+      &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.4059&lt;/font&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;이번 프로젝트에서는 기본적인 전처리를 적용한 baseline 모델을 구현했습니다. 이후 정교한 하이퍼파라미터 튜닝이나 이미지 resize 및 여러 augmentation을 적용하여 모델의 성능을 끌어올릴 수 있습니다.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -400,7 +453,6 @@
       &lt;th&gt;Public Score&lt;/th&gt;
       &lt;th&gt;Valid QWK&lt;/th&gt;
       &lt;th&gt;Valid Loss&lt;/th&gt;
-      &lt;th&gt;Valid Accuracy&lt;/th&gt;
     &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
@@ -411,7 +463,6 @@
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.5091&lt;/font&gt;&lt;/td&gt;
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.8599&lt;/font&gt;&lt;/td&gt;
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.4247&lt;/font&gt;&lt;/td&gt;
-      &lt;td&gt;0.7572&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;td&gt;ResNet18&lt;/td&gt;
@@ -420,7 +471,6 @@
       &lt;td&gt;0.4173&lt;/td&gt;
       &lt;td&gt;0.8142&lt;/td&gt;
       &lt;td&gt;0.6464&lt;/td&gt;
-      &lt;td&gt;0.7572&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
@@ -550,7 +600,6 @@
       &lt;th&gt;Public Score&lt;/th&gt;
       &lt;th&gt;Valid QWK&lt;/th&gt;
       &lt;th&gt;Valid Loss&lt;/th&gt;
-      &lt;th&gt;Valid Accuracy&lt;/th&gt;
     &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
@@ -561,7 +610,6 @@
       &lt;td&gt;0.5091&lt;/td&gt;
       &lt;td&gt;0.8599&lt;/td&gt;
       &lt;td&gt;0.4247&lt;/td&gt;
-      &lt;td&gt;0.7572&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;td&gt;ResNet18 + SEBlock&lt;/td&gt;
@@ -570,7 +618,6 @@
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.6766&lt;/font&gt;&lt;/td&gt;
       &lt;td&gt;0.8491&lt;/td&gt;
       &lt;td&gt;&lt;font color=&quot;red&quot;&gt;0.4059&lt;/font&gt;&lt;/td&gt;
-      &lt;td&gt;0.7340&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
@@ -1154,15 +1201,16 @@ Prediction Finished..
 
 &lt;h2 id=&quot;-결론-&quot;&gt;&lt;font color=&quot;blue&quot;&gt; 결론 &lt;/font&gt;&lt;/h2&gt;
 
-&lt;p&gt;pre-trained ResNet18에 SEBlock을 적용한 베이스라인 모델을 만들었습니다. 이후 하이퍼파라미터 튜닝 및 다른 모델 구조들을 적용하여 점수를 높일 수 있습니다. 또한 &lt;a href=&quot;https://www.kaggle.com/c/diabetic-retinopathy-detection/data&quot;&gt;https://www.kaggle.com/c/diabetic-retinopathy-detection/data&lt;/a&gt; 대회에서 약 35,000개의 Fundus 이미지를 학습에 사용해볼 수도 있을 것 같습니다.&lt;/p&gt;
+&lt;p&gt;이번 프로젝트에서는 pre-trained ResNet18에 SEBlock을 적용한 베이스라인 모델을 만들었습니다. 이후 하이퍼파라미터 튜닝 및 다른 모델 구조들을 적용하여 점수를 높일 수 있습니다. 현재 학습에는 동일한 random seed로 train과 valid를 8:2로 나눈 데이터셋을 사용했는데, 5-fold cross validation과 soft-voting과 같은 방식으로 여러 모델을 앙상블하여 더욱 강건한 예측값을 뽑아낼 수도 있을 것으로 기대합니다. 또한 &lt;a href=&quot;https://www.kaggle.com/c/diabetic-retinopathy-detection/data&quot;&gt;https://www.kaggle.com/c/diabetic-retinopathy-detection/data&lt;/a&gt; 대회에서 제공하고 있는 약 35,000개의 Fundus 이미지를 학습한 모델에 transfer learning을 시켜주어 정확도를 더 높일 수도 있을 것입니다.&lt;/p&gt;
 
 &lt;hr /&gt;
 
 &lt;h2 id=&quot;-참고-자료-&quot;&gt;&lt;font color=&quot;blue&quot;&gt; 참고 자료 &lt;/font&gt;&lt;/h2&gt;
 
-&lt;p&gt;Squeeze and Excitation Block (1): &lt;a href=&quot;https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py&quot;&gt;https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py&lt;/a&gt;  &lt;br /&gt;
-Squeeze and Excitation Block (2): &lt;a href=&quot;https://jayhey.github.io/deep%20learning/2018/07/18/SENet/&quot;&gt;https://jayhey.github.io/deep%20learning/2018/07/18/SENet/&lt;/a&gt; &lt;br /&gt;
-Quadratic Weighted Kappa: &lt;a href=&quot;https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps&quot;&gt;https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps&lt;/a&gt;&lt;/p&gt;</content><author><name>Seunghyun Lee</name></author><category term="Deep Learning" /><category term="Classification" /><category term="Computer Vision" /><category term="CNN" /><category term="Pytorch" /><category term="SEBlock" /><category term="ResNet" /><summary type="html">대회 소개 안저 이미지를 통한 Diabetic retinopathy(DR, 당뇨성 망막증) 악화 정도 분류 대회 모델 구조에 SEBlock을 추가하여 모델 복잡도를 크게 증가시키지 않으면서 성능을 향상시킬 수 있습니다.</summary></entry><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
+&lt;p&gt;[1] Squeeze and Excitation Block (1): &lt;a href=&quot;https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py&quot;&gt;https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py&lt;/a&gt;  &lt;br /&gt;
+[2] Squeeze and Excitation Block (2): &lt;a href=&quot;https://jayhey.github.io/deep%20learning/2018/07/18/SENet/&quot;&gt;https://jayhey.github.io/deep%20learning/2018/07/18/SENet/&lt;/a&gt; &lt;br /&gt;
+[3] Quadratic Weighted Kappa: &lt;a href=&quot;https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps&quot;&gt;https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps&lt;/a&gt;  &lt;br /&gt;
+[4] &lt;a href=&quot;https://arxiv.org/abs/1709.01507&quot;&gt;https://arxiv.org/abs/1709.01507&lt;/a&gt;&lt;/p&gt;</content><author><name>Seunghyun Lee</name></author><category term="Deep Learning" /><category term="Classification" /><category term="Computer Vision" /><category term="CNN" /><category term="Pytorch" /><category term="SEBlock" /><category term="ResNet" /><summary type="html">대회 소개 안저 이미지를 통한 Diabetic retinopathy(DR, 당뇨성 망막증) 악화 정도 분류 대회 모델 구조에 SEBlock을 추가하여 모델 복잡도를 크게 증가시키지 않으면서 성능을 향상시킬 수 있습니다.</summary></entry><entry><title type="html">Cut-Mix in Classification</title><link href="http://localhost:4000/classification/2021/05/25/invasive-pytorch/" rel="alternate" type="text/html" title="Cut-Mix in Classification" /><published>2021-05-25T01:16:00+09:00</published><updated>2021-05-25T01:16:00+09:00</updated><id>http://localhost:4000/classification/2021/05/25/invasive-pytorch</id><content type="html" xml:base="http://localhost:4000/classification/2021/05/25/invasive-pytorch/">&lt;h2 id=&quot;cut-mix-방법-소개&quot;&gt;&lt;center&gt;&lt;font color=&quot;darkblue&quot;&gt;Cut Mix 방법 소개&lt;/font&gt;&lt;/center&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/notebook/invasive-pytorch_files/invasive-pytorch_36_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 &lt;center&gt;식물 이미지로 침입종을 분류하는 이진 분류 대회&lt;/center&gt;
 &lt;center&gt;이미지 분류에서 Cut-Mix을 적용하여 모델 성능을 높일 수 있습니다.&lt;/center&gt;

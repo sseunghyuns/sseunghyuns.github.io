@@ -455,6 +455,59 @@
 
 <hr />
 
+<h2 id="-요약-"><font color="blue"> 요약 </font></h2>
+
+<p>이번 프로젝트는 안저 이미지 데이터를 사용하여 당뇨성 망막증의 증상을 분류하는 모델을 구현하는 것입니다. 당뇨성 망막증은 당뇨병에 의해 망막의 미세혈관이 손상되어 발생하는 질병입니다. 세계 각국의 실명 원인 중에서 높은 비중을 차지하고 있기에 이를 초기에 발견하고 치료하는 것이 중요합니다. 하지만 충분한 의료 인력 및 인프라가 갖추어지지 않은 환경에서 이러한 질병을 발견하고 예방하기란 쉽지 않은 상황입니다. 이 대회에서는  당뇨성 망막증을 식별해내는 인공지능 모델로 환자들을 쉽고 빠르게 파악할 수 있기를 기대하고 있습니다.</p>
+
+<p>데이터는 kaggle에서 진행된 APTOS 2019 Blindness Detection에서 제공하는 안저 이미지들입니다. 전체 이미지의 개수는 3662개이고, 각각 0~4 까지의 정수로 레이블링이 되어있습니다. 숫자가 높을수록 병증이 악화됨을 의미합니다. 대회의 평가 지표는 Quadratic weighted kappa입니다. 실제 레이블에서 모델의 예측값이 멀어질수록 더 큰 loss를 주는 방식이기 때문에, 이러한 레이블별 거리를 고려할 수 있도록 모델 학습시 Crossentropy loss 대신 mean squared error를 사용했습니다.</p>
+
+<p>모델은 Pre-trained된 ResNet18을 사용했으며, 모델 구조에 Squeeze and Excitation Block을 추가했습니다. SE Block는 feature map의 정보를 요약하고 그 중요도에 따라 채널 단위로 새로운 가중치를 주는 방식으로, 일종의 attention mechanism이라고 볼 수도 있습니다.  이 방식을 제안한 논문의 저자들은 모델 구조 어떤 곳이라도 바로 붙일 수 있고 계산 복잡도를 크게 증가시키지 않으면서도 모델의 성능을 많이 높일 수 있다는 장점이 있다고 말합니다.</p>
+
+<p>아래는 앞서 이 프로젝트에서 적용했던 방식들을 비교한 표입니다. 모두 동일한 전처리(resize-&gt;(150,150), 데이터셋 나누기 등) 방식을 사용했습니다. MSE loss를 사용했을 때 Crossentropy보다 Test셋과 Valid셋 모두에서 더 높은 성능을 보여주었습니다(파란색). 또한 동일하게 MSE loss를 사용하는 상황에서는 SEBlock을 추가한 경우 Test 셋에 대해서는 Private, public score 모두 향상되었고, 학습시에는 더 낮은 valid loss를 보여주었습니다(빨간색).</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Loss</th>
+      <th>Private Score</th>
+      <th>Public Score</th>
+      <th>Valid QWK</th>
+      <th>Valid Loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ResNet18</td>
+      <td>CrossEntropy</td>
+      <td>0.7183</td>
+      <td>0.4173</td>
+      <td>0.8142</td>
+      <td>0.6464</td>
+    </tr>
+    <tr>
+      <td>ResNet18</td>
+      <td>MSE</td>
+      <td><font color="blue">0.7610</font></td>
+      <td><font color="blue">0.5091</font></td>
+      <td><font color="blue">0.8599</font></td>
+      <td><font color="blue">0.4247</font></td>
+    </tr>
+    <tr>
+      <td>ResNet18 + SEBlock</td>
+      <td>MSE</td>
+      <td><font color="red">0.8310</font></td>
+      <td><font color="red">0.6766</font></td>
+      <td>0.8491</td>
+      <td><font color="red">0.4059</font></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>이번 프로젝트에서는 기본적인 전처리를 적용한 baseline 모델을 구현했습니다. 이후 정교한 하이퍼파라미터 튜닝이나 이미지 resize 및 여러 augmentation을 적용하여 모델의 성능을 끌어올릴 수 있습니다.</p>
+
+<hr />
+
 <h2 id="packages-"><font color="blue">Packages </font></h2>
 
 <p>필요한 패키지들을 불러옵니다.</p>
@@ -842,7 +895,6 @@
       <th>Public Score</th>
       <th>Valid QWK</th>
       <th>Valid Loss</th>
-      <th>Valid Accuracy</th>
     </tr>
   </thead>
   <tbody>
@@ -853,7 +905,6 @@
       <td><font color="red">0.5091</font></td>
       <td><font color="red">0.8599</font></td>
       <td><font color="red">0.4247</font></td>
-      <td>0.7572</td>
     </tr>
     <tr>
       <td>ResNet18</td>
@@ -862,7 +913,6 @@
       <td>0.4173</td>
       <td>0.8142</td>
       <td>0.6464</td>
-      <td>0.7572</td>
     </tr>
   </tbody>
 </table>
@@ -992,7 +1042,6 @@
       <th>Public Score</th>
       <th>Valid QWK</th>
       <th>Valid Loss</th>
-      <th>Valid Accuracy</th>
     </tr>
   </thead>
   <tbody>
@@ -1003,7 +1052,6 @@
       <td>0.5091</td>
       <td>0.8599</td>
       <td>0.4247</td>
-      <td>0.7572</td>
     </tr>
     <tr>
       <td>ResNet18 + SEBlock</td>
@@ -1012,7 +1060,6 @@
       <td><font color="red">0.6766</font></td>
       <td>0.8491</td>
       <td><font color="red">0.4059</font></td>
-      <td>0.7340</td>
     </tr>
   </tbody>
 </table>
@@ -1596,15 +1643,16 @@ Prediction Finished..
 
 <h2 id="-결론-"><font color="blue"> 결론 </font></h2>
 
-<p>pre-trained ResNet18에 SEBlock을 적용한 베이스라인 모델을 만들었습니다. 이후 하이퍼파라미터 튜닝 및 다른 모델 구조들을 적용하여 점수를 높일 수 있습니다. 또한 <a href="https://www.kaggle.com/c/diabetic-retinopathy-detection/data">https://www.kaggle.com/c/diabetic-retinopathy-detection/data</a> 대회에서 약 35,000개의 Fundus 이미지를 학습에 사용해볼 수도 있을 것 같습니다.</p>
+<p>이번 프로젝트에서는 pre-trained ResNet18에 SEBlock을 적용한 베이스라인 모델을 만들었습니다. 이후 하이퍼파라미터 튜닝 및 다른 모델 구조들을 적용하여 점수를 높일 수 있습니다. 현재 학습에는 동일한 random seed로 train과 valid를 8:2로 나눈 데이터셋을 사용했는데, 5-fold cross validation과 soft-voting과 같은 방식으로 여러 모델을 앙상블하여 더욱 강건한 예측값을 뽑아낼 수도 있을 것으로 기대합니다. 또한 <a href="https://www.kaggle.com/c/diabetic-retinopathy-detection/data">https://www.kaggle.com/c/diabetic-retinopathy-detection/data</a> 대회에서 제공하고 있는 약 35,000개의 Fundus 이미지를 학습한 모델에 transfer learning을 시켜주어 정확도를 더 높일 수도 있을 것입니다.</p>
 
 <hr />
 
 <h2 id="-참고-자료-"><font color="blue"> 참고 자료 </font></h2>
 
-<p>Squeeze and Excitation Block (1): <a href="https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py">https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py</a>  <br />
-Squeeze and Excitation Block (2): <a href="https://jayhey.github.io/deep%20learning/2018/07/18/SENet/">https://jayhey.github.io/deep%20learning/2018/07/18/SENet/</a> <br />
-Quadratic Weighted Kappa: <a href="https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps">https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps</a></p>
+<p>[1] Squeeze and Excitation Block (1): <a href="https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py">https://github.com/edshkim98/ChannelwiseAttention/blob/main/resnet_se.py</a>  <br />
+[2] Squeeze and Excitation Block (2): <a href="https://jayhey.github.io/deep%20learning/2018/07/18/SENet/">https://jayhey.github.io/deep%20learning/2018/07/18/SENet/</a> <br />
+[3] Quadratic Weighted Kappa: <a href="https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps">https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5-simple-steps</a>  <br />
+[4] <a href="https://arxiv.org/abs/1709.01507">https://arxiv.org/abs/1709.01507</a></p>
 
 
       
@@ -1890,7 +1938,7 @@ Quadratic Weighted Kappa: <a href="https://www.kaggle.com/aroraaman/quadratic-ka
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</center</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#aptos-2019-blindness-detection"> <span class="nav-number">1.1</span> <span class="nav-text">APTOS 2019 Blindness Detection</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#packages-"> <span class="nav-number">2</span> <span class="nav-text">Packages </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#arguments-"> <span class="nav-number">3</span> <span class="nav-text">Arguments </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">4</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-view-original-data-"> <span class="nav-number">5</span> <span class="nav-text"> View Original Data </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-preprocesstrim--resize--"> <span class="nav-number">6</span> <span class="nav-text"> Preprocess(Trim &amp; Resize) </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-1-view-trimmed--resized-data-"> <span class="nav-number">6.1</span> <span class="nav-text"> 1. View trimmed &amp; resized data </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-1-trimming-process--"> <span class="nav-number">6.1.1</span> <span class="nav-text"> (1) Trimming Process </font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-2-resize-with-its-aspect-maintained--"> <span class="nav-number">6.1.2</span> <span class="nav-text"> (2) Resize with its Aspect maintained </font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-3-trim--resize--clahe--"> <span class="nav-number">6.1.3</span> <span class="nav-text"> (3) Trim + Resize + CLAHE </font</span> </a> </li> </ol> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-transforms-"> <span class="nav-number">7</span> <span class="nav-text"> Transforms </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-data-loader-"> <span class="nav-number">8</span> <span class="nav-text"> Data Loader </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-데이터셋-나누기-"> <span class="nav-number">8.1</span> <span class="nav-text"> 데이터셋 나누기 </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-데이터셋-나누기--1"> <span class="nav-number">8.2</span> <span class="nav-text"> 데이터셋 나누기 </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-check-augmentations-in-data-loader-"> <span class="nav-number">9</span> <span class="nav-text"> Check Augmentations in Data Loader </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-utils-"> <span class="nav-number">10</span> <span class="nav-text"> Utils </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-train-"> <span class="nav-number">11</span> <span class="nav-text"> Train </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-se-block-"> <span class="nav-number">11.1</span> <span class="nav-text"> SE Block </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-se-block을-resnet18-모델-구조에-추가하기"> <span class="nav-number">11.2</span> <span class="nav-text"> SE Block을 ResNet18 모델 구조에 추가하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-전체-학습-함수"> <span class="nav-number">11.3</span> <span class="nav-text"> 전체 학습 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-학습시키기-"> <span class="nav-number">11.4</span> <span class="nav-text"> 학습시키기 </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-test-"> <span class="nav-number">12</span> <span class="nav-text"> Test </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-결론-"> <span class="nav-number">13</span> <span class="nav-text"> 결론 </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-참고-자료-"> <span class="nav-number">14</span> <span class="nav-text"> 참고 자료 </font</span> </a> </li>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#대회-소개"> <span class="nav-number">1</span> <span class="nav-text">대회 소개</center</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#aptos-2019-blindness-detection"> <span class="nav-number">1.1</span> <span class="nav-text">APTOS 2019 Blindness Detection</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-요약-"> <span class="nav-number">2</span> <span class="nav-text"> 요약 </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#packages-"> <span class="nav-number">3</span> <span class="nav-text">Packages </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#arguments-"> <span class="nav-number">4</span> <span class="nav-text">Arguments </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">5</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-view-original-data-"> <span class="nav-number">6</span> <span class="nav-text"> View Original Data </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-preprocesstrim--resize--"> <span class="nav-number">7</span> <span class="nav-text"> Preprocess(Trim &amp; Resize) </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-1-view-trimmed--resized-data-"> <span class="nav-number">7.1</span> <span class="nav-text"> 1. View trimmed &amp; resized data </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-1-trimming-process--"> <span class="nav-number">7.1.1</span> <span class="nav-text"> (1) Trimming Process </font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-2-resize-with-its-aspect-maintained--"> <span class="nav-number">7.1.2</span> <span class="nav-text"> (2) Resize with its Aspect maintained </font</span> </a> </li> <li class="nav-item nav-level-4"> <a class="nav-link" href="#-3-trim--resize--clahe--"> <span class="nav-number">7.1.3</span> <span class="nav-text"> (3) Trim + Resize + CLAHE </font</span> </a> </li> </ol> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-transforms-"> <span class="nav-number">8</span> <span class="nav-text"> Transforms </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-data-loader-"> <span class="nav-number">9</span> <span class="nav-text"> Data Loader </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-데이터셋-나누기-"> <span class="nav-number">9.1</span> <span class="nav-text"> 데이터셋 나누기 </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-데이터셋-나누기--1"> <span class="nav-number">9.2</span> <span class="nav-text"> 데이터셋 나누기 </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-check-augmentations-in-data-loader-"> <span class="nav-number">10</span> <span class="nav-text"> Check Augmentations in Data Loader </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-utils-"> <span class="nav-number">11</span> <span class="nav-text"> Utils </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-train-"> <span class="nav-number">12</span> <span class="nav-text"> Train </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-se-block-"> <span class="nav-number">12.1</span> <span class="nav-text"> SE Block </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-se-block을-resnet18-모델-구조에-추가하기"> <span class="nav-number">12.2</span> <span class="nav-text"> SE Block을 ResNet18 모델 구조에 추가하기</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-전체-학습-함수"> <span class="nav-number">12.3</span> <span class="nav-text"> 전체 학습 함수</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-학습시키기-"> <span class="nav-number">12.4</span> <span class="nav-text"> 학습시키기 </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-test-"> <span class="nav-number">13</span> <span class="nav-text"> Test </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-결론-"> <span class="nav-number">14</span> <span class="nav-text"> 결론 </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-참고-자료-"> <span class="nav-number">15</span> <span class="nav-text"> 참고 자료 </font</span> </a> </li>
     </ol>
   </div>
             
