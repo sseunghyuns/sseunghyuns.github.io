@@ -1,0 +1,2170 @@
+
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/assets/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/assets/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Deep Learning,Segmentation,Computer Vision,DGCNN,Pytorch,Point Cloud,Spatial Transformer Network," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="프로젝트 소개 DGCNN 모델 아키텍처를 이용한 3D Point Cloud Segmentation">
+<meta name="keywords" content="Deep Learning, Segmentation, Computer Vision, DGCNN, Pytorch, Point Cloud, Spatial Transformer Network">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Point Cloud Segmentation using DGCNN">
+<meta property="og:url" content="http://localhost:4000/segmentation/2021/09/28/dgcnn/">
+<meta property="og:site_name" content="Seung Hyun's Blog">
+<meta property="og:description" content="프로젝트 소개 DGCNN 모델 아키텍처를 이용한 3D Point Cloud Segmentation">
+<meta property="og:locale" content="ko">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/thumbnail.png">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/plot1.png">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/chair_pred.png">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/chair_true.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Point Cloud Segmentation using DGCNN">
+<meta name="twitter:description" content="프로젝트 소개 DGCNN 모델 아키텍처를 이용한 3D Point Cloud Segmentation">
+<meta name="twitter:image" content="/assets/img/notebook/dgcnn/thumbnail.png">
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '작성자'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://localhost:4000/"/>
+
+
+
+
+
+  <title>Point Cloud Segmentation using DGCNN | Seung Hyun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="ko">
+
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Seung Hyun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">이승현의 깃허브 블로그</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            홈
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            카테고리
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            아카이브
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            태그
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            검색
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="" spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+<div id="posts" class="posts-expand">
+  
+  
+
+  
+
+  
+  
+  
+
+  <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/segmentation/2021/09/28/dgcnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Seunghyun Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/assets/images/profile.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Seung Hyun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+          
+          
+            Point Cloud Segmentation using DGCNN
+          
+        </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">작성일</span>
+              
+              <time title="" itemprop="dateCreated datePublished" datetime="2021-09-28T11:25:00+09:00">
+                2021-09-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/Segmentation" itemprop="url" rel="index">
+                    <span itemprop="name">Segmentation</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 id="프로젝트-소개"><center><font color="darkblue">프로젝트 소개</font></center></h2>
+<p><img src="/assets/img/notebook/dgcnn/thumbnail.png" alt="png" /></p>
+<center>DGCNN 모델 아키텍처를 이용한 3D Point Cloud Segmentation</center>
+
+<hr />
+
+<h2 id="packages-"><font color="blue">Packages </font></h2>
+
+<p>필요한 패키지들을 불러옵니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18</pre></td><td class="code"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.init</span> <span class="k">as</span> <span class="n">init</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">StratifiedKFold</span>
+<span class="kn">from</span> <span class="nn">easydict</span> <span class="kn">import</span> <span class="n">EasyDict</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">import</span> <span class="nn">plotly.offline</span> <span class="k">as</span> <span class="n">pyo</span>
+<span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="kn">import</span> <span class="n">init_notebook_mode</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="n">go</span>
+<span class="n">pyo</span><span class="o">.</span><span class="n">init_notebook_mode</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+<hr />
+
+<h2 id="arguments-"><font color="blue">Arguments </font></h2>
+
+<p>하이퍼파라미터 값들이 저장된 딕셔너리를 생성합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14</pre></td><td class="code"><pre class="highlight"><code><span class="n">config</span> <span class="o">=</span> <span class="n">EasyDict</span><span class="p">({</span>
+    <span class="s">'TRAIN_DATA_PATH'</span> <span class="p">:</span> <span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/train0.h5'</span><span class="p">,</span>
+    <span class="s">'VALID_DATA_PATH'</span> <span class="p">:</span> <span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/val0.h5'</span><span class="p">,</span>
+    <span class="s">'TEST_DATA_PATH'</span> <span class="p">:</span> <span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/test0.h5'</span><span class="p">,</span>
+    <span class="s">'DEVICE'</span> <span class="p">:</span> <span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">,</span>
+    <span class="s">'BATCH_SIZE'</span> <span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="s">'EPOCHS'</span> <span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="s">'LEARNING_RATE'</span> <span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="s">'DROP_OUT'</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s">'EMB_DIMS'</span> <span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+    <span class="s">'SEG_NUM_ALL'</span> <span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s">'WEIGHT_DECAY'</span> <span class="p">:</span> <span class="mf">0.0001</span><span class="p">,</span>
+    <span class="s">'K'</span> <span class="p">:</span> <span class="mi">40</span>
+<span class="p">})</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5</pre></td><td class="code"><pre class="highlight"><code><span class="n">shapenetpart_cat2id</span> <span class="o">=</span> <span class="p">{</span><span class="s">'airplane'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'bag'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'cap'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">'car'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">'chair'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> 
+                       <span class="s">'earphone'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">'guitar'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">'knife'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s">'lamp'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s">'laptop'</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> 
+                       <span class="s">'motorbike'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">'mug'</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span> <span class="s">'pistol'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s">'rocket'</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s">'skateboard'</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s">'table'</span><span class="p">:</span> <span class="mi">15</span><span class="p">}</span>
+<span class="n">shapenetpart_seg_num</span><span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">shapenetpart_seg_start_index</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">47</span><span class="p">]</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="데이터-불러오기"><font color="blue">데이터 불러오기</font></h2>
+
+<p>필요한 데이터를 불러옵니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9</pre></td><td class="code"><pre class="highlight"><code><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/train0_id2file.json'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+    <span class="n">train_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/val0_id2file.json'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+    <span class="n">valid_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+    
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/train0_id2name.json'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+    <span class="n">train_name</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/val0_id2name.json'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+    <span class="n">valid_name</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12</pre></td><td class="code"><pre class="highlight"><code><span class="n">train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">'path'</span> <span class="p">:</span> <span class="n">train_id</span><span class="p">,</span> <span class="s">'label'</span><span class="p">:</span> <span class="n">train_name</span><span class="p">})</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s">'segmentation_part_num'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_df</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">shapenetpart_seg_num</span><span class="p">[</span><span class="n">shapenetpart_cat2id</span><span class="p">[</span><span class="n">x</span><span class="p">]])</span>
+
+<span class="n">valid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">'path'</span> <span class="p">:</span> <span class="n">valid_id</span><span class="p">,</span> <span class="s">'label'</span><span class="p">:</span> <span class="n">valid_name</span><span class="p">})</span>
+<span class="n">valid_df</span><span class="p">[</span><span class="s">'segmentation_part_num'</span><span class="p">]</span> <span class="o">=</span> <span class="n">valid_df</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">shapenetpart_seg_num</span><span class="p">[</span><span class="n">shapenetpart_cat2id</span><span class="p">[</span><span class="n">x</span><span class="p">]])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">'#'</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">"Label distribution:</span><span class="se">\n</span><span class="s">{train_df['label'].value_counts()}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'#'</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">'Total data: {train_df.shape[0]}'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'#'</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">train_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23</pre></td><td class="code"><pre class="highlight"><code>##############################
+Label distribution:
+table         615
+chair         454
+airplane      335
+lamp          198
+car           120
+guitar         88
+laptop         57
+knife          41
+pistol         37
+mug            27
+skateboard     20
+motorbike      19
+bag            12
+rocket         11
+cap             9
+earphone        5
+Name: label, dtype: int64
+
+##############################
+Total data: 2048
+##############################
+</code></pre></td></tr></tbody></table></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>path</th>
+      <th>label</th>
+      <th>segmentation_part_num</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>02691156/points/d4d61a35e8b568fb7f1f82f6fc8747...</td>
+      <td>airplane</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>03636649/points/eee7062babab62aa8930422448288e...</td>
+      <td>lamp</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>04379243/points/90992c45f7b2ee7d71a48b5339c6e0...</td>
+      <td>table</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>02691156/points/a3c928995562fca8ca8607f540cc62...</td>
+      <td>airplane</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>03636649/points/85335cc8e6ac212a3834555ce6c51f...</td>
+      <td>lamp</td>
+      <td>4</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">h5_path</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_path</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s">'data'</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">'float32'</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s">'label'</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">'int64'</span><span class="p">)</span>
+    <span class="n">seg</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s">'seg'</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">'int64'</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">seg</span>
+
+<span class="n">train_data</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span> <span class="n">train_seg</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'TRAIN_DATA_PATH'</span><span class="p">])</span>
+<span class="n">valid_data</span><span class="p">,</span> <span class="n">valid_label</span><span class="p">,</span> <span class="n">valid_seg</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'VALID_DATA_PATH'</span><span class="p">])</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3</pre></td><td class="code"><pre class="highlight"><code>/opt/conda/lib/python3.7/site-packages/ipykernel_launcher.py:2: H5pyDeprecationWarning:
+
+The default file mode will change to 'r' (read-only) in h5py 3.0. To suppress this warning, pass the mode you need to h5py.File(), or set the global default h5.get_config().default_file_mode, or set the environment variable H5PY_DEFAULT_READONLY=1. Available modes are: 'r', 'r+', 'w', 'w-'/'x', 'a'. See the docs for details.
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10</pre></td><td class="code"><pre class="highlight"><code><span class="c"># For quick experiment, get 20% data of the total valid set. (Total valid set has 1870 data.)</span>
+<span class="n">folds</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">valid_index</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">folds</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">valid_label</span><span class="p">,</span><span class="n">valid_label</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))):</span>
+    <span class="n">valid_part_data</span> <span class="o">=</span> <span class="n">valid_data</span><span class="p">[</span><span class="n">valid_index</span><span class="p">]</span>
+    <span class="n">valid_part_label</span> <span class="o">=</span> <span class="n">valid_label</span><span class="p">[</span><span class="n">valid_index</span><span class="p">]</span>
+    <span class="n">valid_part_seg</span> <span class="o">=</span> <span class="n">valid_seg</span><span class="p">[</span><span class="n">valid_index</span><span class="p">]</span>
+    <span class="n">valid_part_df</span> <span class="o">=</span> <span class="n">valid_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">valid_index</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">break</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">'Total valid data: {valid_data.shape[0]}'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">'Valid data to use: {valid_part_data.shape[0]}'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2</pre></td><td class="code"><pre class="highlight"><code>Total valid data: 1870
+Valid data to use: 374
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="-augmentations--"><font color="blue"> Augmentations  </font></h2>
+
+<p>Point cloud에 적용될 수 있는 augmentation 코드입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22</pre></td><td class="code"><pre class="highlight"><code><span class="c"># 전체 포인트 비율 조정 및 이동</span>
+<span class="k">def</span> <span class="nf">translate_pointcloud</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">):</span>
+    <span class="n">xyz1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">3.</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">xyz2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+       
+    <span class="n">translated_pointcloud</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">,</span> <span class="n">xyz1</span><span class="p">),</span> <span class="n">xyz2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">'float32'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">translated_pointcloud</span>
+
+
+<span class="c"># -0.02 ~ 0.02 범위 내에서 포인트들의 x,y,z 값이 이동</span>
+<span class="k">def</span> <span class="nf">jitter_pointcloud</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">pointcloud</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">pointcloud</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">C</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">clip</span><span class="p">,</span> <span class="n">clip</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pointcloud</span>
+
+
+<span class="c"># 전체 포인트 회전</span>
+<span class="k">def</span> <span class="nf">rotate_pointcloud</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">):</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span>
+    <span class="n">rotation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)],[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)]])</span>
+    <span class="n">pointcloud</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pointcloud</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rotation_matrix</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">pointcloud</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="-visualization-"><font color="blue"> Visualization </font></h2>
+
+<p>데이터를 시각화하여 확인합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">seg_num</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+        <span class="n">scene</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">aspectmode</span><span class="o">=</span><span class="s">'data'</span>
+
+        <span class="p">))</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter3d</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                                       <span class="n">mode</span><span class="o">=</span><span class="s">'markers'</span><span class="p">,</span>
+                                       <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                                           <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>              
+                                           <span class="n">color</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>          
+                                           <span class="n">colorscale</span><span class="o">=</span><span class="s">'rainbow'</span><span class="p">,</span>
+                                           <span class="n">opacity</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                                       <span class="p">))],</span>
+                    <span class="n">layout_title_text</span><span class="o">=</span><span class="n">f</span><span class="s">"[ShapeNet Dataset]   Label: {name},   Segmentation parts: {seg_num},   Total Points: {label.shape[0] if label is not None else None}"</span><span class="p">,</span>
+                    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_traces</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                                  <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                                            <span class="n">color</span><span class="o">=</span><span class="s">'DarkSlateGrey'</span><span class="p">)),</span>
+                      <span class="n">selector</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">'markers'</span><span class="p">))</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">f</span><span class="s">'{fname}.html'</span><span class="p">)</span>
+
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="n">visualize_index</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">visualize</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="n">visualize_index</span><span class="p">],</span>
+          <span class="n">train_seg</span><span class="p">[</span><span class="n">visualize_index</span><span class="p">],</span>
+          <span class="n">train_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">visualize_index</span><span class="p">,</span> <span class="s">'label'</span><span class="p">],</span>
+          <span class="n">train_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">visualize_index</span><span class="p">,</span> <span class="s">'segmentation_part_num'</span><span class="p">],</span>
+          <span class="s">'airplane'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/dgcnn/plot1.png" alt="png" /></p>
+
+<hr />
+
+<h2 id="-data-loader-"><font color="blue"> Data Loader </font></h2>
+
+<p>데이터 로더 코드입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43</pre></td><td class="code"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ShapeNetDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">random_translate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_jitter</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_rotate</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">dataframe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg</span> <span class="o">=</span> <span class="n">seg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span>
+<span class="c">#         self.seg_num_all = dataframe['segmentation_part_num']</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_translate</span> <span class="o">=</span> <span class="n">random_translate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_jitter</span> <span class="o">=</span> <span class="n">random_jitter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_rotate</span> <span class="o">=</span> <span class="n">random_rotate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg_num_all</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg_start_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">c_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+<span class="c">#         seg_num_all = self.seg_num_all[index]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_translate</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">translate_pointcloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_jitter</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">jitter_pointcloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_rotate</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">rotate_pointcloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        
+        <span class="c"># categorical vector</span>
+        <span class="n">label_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">16</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">label_one_hot</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">label</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">label_one_hot</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">label_one_hot</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+        
+        
+        <span class="n">points</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">points</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">seg</span><span class="p">,</span> <span class="n">c_name</span><span class="c">#, seg_num_all </span>
+    
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="-dgcnn-model-"><font color="blue"> DGCNN Model </font></h2>
+
+<p>DGCNN 모델 아키텍쳐를 구현한 코드입니다. 구현 코드는 [3]을 참고하여 작성되었습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">knn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="n">inner</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">pairwise_distance</span> <span class="o">=</span> <span class="o">-</span><span class="n">xx</span> <span class="o">-</span> <span class="n">inner</span> <span class="o">-</span> <span class="n">xx</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">pairwise_distance</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>   <span class="c"># (batch_size, num_points, k)</span>
+    <span class="k">return</span> <span class="n">idx</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_graph_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dim9</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s">'cpu'</span><span class="p">):</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">num_points</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dim9</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">knn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>   <span class="c"># (batch_size, num_points, k)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">knn</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">:],</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">idx_base</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_points</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">idx_base</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>   <span class="c"># (batch_size, num_points, num_dims)  -&gt; (batch_size*num_points, num_dims) #   batch_size * num_points * k + range(0, batch_size*num_points)</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="o">*</span><span class="n">num_points</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_points</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">)</span> 
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_points</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">feature</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">feature</span>      <span class="c"># (batch_size, 2*num_dims, num_points, k)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38</pre></td><td class="code"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Transform_Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transform_Net</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">512</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn4</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">eye_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 3*2, num_points, k) -&gt; (batch_size, 64, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 64, num_points, k) -&gt; (batch_size, 128, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>     <span class="c"># (batch_size, 128, num_points, k) -&gt; (batch_size, 128, num_points)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 128, num_points) -&gt; (batch_size, 1024, num_points)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>     <span class="c"># (batch_size, 1024, num_points) -&gt; (batch_size, 1024)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">leaky_relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>     <span class="c"># (batch_size, 1024) -&gt; (batch_size, 512)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">leaky_relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn4</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>     <span class="c"># (batch_size, 512) -&gt; (batch_size, 256)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                   <span class="c"># (batch_size, 256) -&gt; (batch_size, 3*3)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>            <span class="c"># (batch_size, 3*3) -&gt; (batch_size, 3, 3)</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60<br/>61<br/>62<br/>63<br/>64<br/>65<br/>66<br/>67<br/>68<br/>69<br/>70<br/>71<br/>72<br/>73<br/>74<br/>75<br/>76<br/>77<br/>78<br/>79<br/>80<br/>81<br/>82<br/>83<br/>84<br/>85<br/>86<br/>87<br/>88<br/>89<br/>90<br/>91<br/>92<br/>93<br/>94<br/>95<br/>96<br/>97<br/>98<br/>99</pre></td><td class="code"><pre class="highlight"><code><span class="k">class</span> <span class="nc">DGCNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg_num_all</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">'SEG_NUM_ALL'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">'K'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_net</span> <span class="o">=</span> <span class="n">Transform_Net</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn4</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn5</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn6</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'EMB_DIMS'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn7</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn8</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn9</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn10</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv4</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn4</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv5</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn5</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv6</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">192</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s">'EMB_DIMS'</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn6</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv7</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn7</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv8</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn8</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dp1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'DROP_OUT'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv9</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn9</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dp2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'DROP_OUT'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv10</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bn10</span><span class="p">,</span>
+                                   <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv11</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_num_all</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">]</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">get_graph_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>     <span class="c"># (batch_size, 3, num_points) -&gt; (batch_size, 3*2, num_points, k)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_net</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>              <span class="c"># (batch_size, 3, 3)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>                   <span class="c"># (batch_size, 3, num_points) -&gt; (batch_size, num_points, 3)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>                     <span class="c"># (batch_size, num_points, 3) * (batch_size, 3, 3) -&gt; (batch_size, num_points, 3)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>                   <span class="c"># (batch_size, num_points, 3) -&gt; (batch_size, 3, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">get_graph_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>      <span class="c"># (batch_size, 3, num_points) -&gt; (batch_size, 3*2, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 3*2, num_points, k) -&gt; (batch_size, 64, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 64, num_points, k) -&gt; (batch_size, 64, num_points, k)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>    <span class="c"># (batch_size, 64, num_points, k) -&gt; (batch_size, 64, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">get_graph_feature</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>     <span class="c"># (batch_size, 64, num_points) -&gt; (batch_size, 64*2, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 64*2, num_points, k) -&gt; (batch_size, 64, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv4</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 64, num_points, k) -&gt; (batch_size, 64, num_points, k)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>    <span class="c"># (batch_size, 64, num_points, k) -&gt; (batch_size, 64, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">get_graph_feature</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>     <span class="c"># (batch_size, 64, num_points) -&gt; (batch_size, 64*2, num_points, k)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv5</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 64*2, num_points, k) -&gt; (batch_size, 64, num_points, k)</span>
+        <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>    <span class="c"># (batch_size, 64, num_points, k) -&gt; (batch_size, 64, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>      <span class="c"># (batch_size, 64*3, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv6</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 64*3, num_points) -&gt; (batch_size, emb_dims, num_points)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>      <span class="c"># (batch_size, emb_dims, num_points) -&gt; (batch_size, emb_dims, 1)</span>
+
+        <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>           <span class="c"># (batch_size, num_categoties, 1)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv7</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>                       <span class="c"># (batch_size, num_categoties, 1) -&gt; (batch_size, 64, 1)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>            <span class="c"># (batch_size, 1088, 1)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>          <span class="c"># (batch_size, 1088, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>   <span class="c"># (batch_size, 1088+64*3, num_points)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv8</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 1088+64*3, num_points) -&gt; (batch_size, 256, num_points)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dp1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv9</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                       <span class="c"># (batch_size, 256, num_points) -&gt; (batch_size, 256, num_points)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dp2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                      <span class="c"># (batch_size, 256, num_points) -&gt; (batch_size, 128, num_points)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv11</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                      <span class="c"># (batch_size, 256, num_points) -&gt; (batch_size, seg_num_all, num_points)</span>
+        
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="모델-성능-지표---iou-"><font color="blue">모델 성능 지표 - IoU </font></h2>
+
+<p>모델의 성능 확인을 위해 IoU(Intersection over Union)을 사용했습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">calculate_shape_IoU</span><span class="p">(</span><span class="n">pred_np</span><span class="p">,</span> <span class="n">seg_np</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <span class="n">shape_ious</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">shape_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">seg_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> 
+        <span class="c"># class별 segmentation index가 다르므로, 해당 class의 index 범위로 설정해줘야 한다.</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">shapenetpart_seg_start_index</span><span class="p">[</span><span class="n">label</span><span class="p">[</span><span class="n">shape_idx</span><span class="p">]]</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">shapenetpart_seg_num</span><span class="p">[</span><span class="n">label</span><span class="p">[</span><span class="n">shape_idx</span><span class="p">]]</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_index</span><span class="p">,</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num</span><span class="p">)</span>
+        <span class="n">part_ious</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+            <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">pred_np</span><span class="p">[</span><span class="n">shape_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">part</span><span class="p">,</span> <span class="n">seg_np</span><span class="p">[</span><span class="n">shape_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">part</span><span class="p">))</span>
+            <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">pred_np</span><span class="p">[</span><span class="n">shape_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">part</span><span class="p">,</span> <span class="n">seg_np</span><span class="p">[</span><span class="n">shape_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">part</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">U</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">iou</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c"># If the union of groundtruth and prediction points is empty, then count part IoU as 1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">iou</span> <span class="o">=</span> <span class="n">I</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
+            <span class="n">part_ious</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iou</span><span class="p">)</span>
+        <span class="n">shape_ious</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">part_ious</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">shape_ious</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="-train-"><font color="blue"> Train </font></h2>
+
+<p>전체 학습 코드입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60<br/>61<br/>62<br/>63<br/>64<br/>65<br/>66<br/>67<br/>68<br/>69<br/>70<br/>71<br/>72<br/>73<br/>74<br/>75<br/>76<br/>77<br/>78<br/>79<br/>80<br/>81<br/>82<br/>83<br/>84<br/>85<br/>86<br/>87<br/>88<br/>89<br/>90<br/>91<br/>92<br/>93<br/>94<br/>95<br/>96<br/>97<br/>98<br/>99<br/>100<br/>101<br/>102<br/>103<br/>104<br/>105<br/>106<br/>107<br/>108<br/>109<br/>110<br/>111<br/>112<br/>113<br/>114<br/>115<br/>116<br/>117<br/>118<br/>119<br/>120<br/>121<br/>122<br/>123<br/>124<br/>125<br/>126<br/>127</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">ShapeNetDataset</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span> <span class="n">train_seg</span><span class="p">)</span>
+    <span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">ShapeNetDataset</span><span class="p">(</span><span class="n">valid_part_df</span><span class="p">,</span> <span class="n">valid_part_data</span><span class="p">,</span> <span class="n">valid_part_label</span><span class="p">,</span> <span class="n">valid_part_seg</span><span class="p">)</span>
+
+    <span class="n">train_loader</span>  <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'BATCH_SIZE'</span><span class="p">],</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">drop_last</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">valid_loader</span>  <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'BATCH_SIZE'</span><span class="p">],</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">drop_last</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    
+    
+    <span class="n">model</span> <span class="o">=</span> <span class="n">DGCNN</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">])</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'LEARNING_RATE'</span><span class="p">],</span> <span class="n">weight_decay</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'WEIGHT_DECAY'</span><span class="p">])</span>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+    
+    <span class="n">device</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">]</span>
+    <span class="n">best_valid_iou</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">'{"#"*30} Start Training {"#"*30}'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'EPOCHS'</span><span class="p">]):</span>
+        <span class="c">############</span>
+        <span class="c">## TRAIN  ##</span>
+        <span class="c">############</span>
+        <span class="n">running_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="n">total_step</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+
+        <span class="n">train_true_cls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_pred_cls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_true_seg</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_pred_seg</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_label_seg</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">c_name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+
+            <span class="n">point</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">,</span> <span class="n">seg</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">label_one_hot</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">seg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c"># (batch_size, num_points, 3) -&gt; (batch_size, 3, num_points)</span>
+
+            <span class="n">seg_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">)</span> 
+            <span class="n">seg_prediction</span> <span class="o">=</span> <span class="n">seg_prediction</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span> <span class="c"># (batch_size, seg_all_num, num_points) -&gt; (batch_size, num_points, seg_all_num)</span>
+
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">seg_prediction</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s">'SEG_NUM_ALL'</span><span class="p">]),</span>  <span class="c"># (batch_size, num_points, 50) -&gt; (batch_size x num_points, 50)</span>
+                             <span class="n">seg</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>        <span class="c"># (batch_size, num_points) -&gt; (batch_size x num_points)</span>
+
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="n">running_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="n">pred</span> <span class="o">=</span> <span class="n">seg_prediction</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="c"># (batch_size x num_points) - seg_num_all(50) 기준으로 max 값의 index 추출</span>
+            <span class="n">seg_np</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>  <span class="c"># (batch_size, num_points)</span>
+            <span class="n">pred_np</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="c"># (batch_size, num_points)</span>
+
+            <span class="c"># For Accuracy computation</span>
+            <span class="n">train_true_cls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="c"># (batch_size * num_points, )</span>
+            <span class="n">train_pred_cls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="c"># (batch_size * num_points, )</span>
+
+            <span class="n">train_true_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_np</span><span class="p">)</span>
+            <span class="n">train_pred_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_np</span><span class="p">)</span>
+            <span class="n">train_label_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+
+        <span class="n">train_true_cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">train_true_cls</span><span class="p">)</span>
+        <span class="n">train_pred_cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">train_pred_cls</span><span class="p">)</span>
+        <span class="n">train_accuracy</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">train_pred_cls</span> <span class="o">==</span> <span class="n">train_true_cls</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_pred_cls</span><span class="p">)</span> <span class="c"># Accuracy</span>
+
+        <span class="n">train_true_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">train_true_seg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">train_pred_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">train_pred_seg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">train_label_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">train_label_seg</span><span class="p">)</span>
+        <span class="n">train_ious</span> <span class="o">=</span> <span class="n">calculate_shape_IoU</span><span class="p">(</span><span class="n">train_pred_seg</span><span class="p">,</span> <span class="n">train_true_seg</span><span class="p">,</span> <span class="n">train_label_seg</span><span class="p">)</span> <span class="c"># IoU</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+
+        <span class="c">############</span>
+        <span class="c">## VALID  ##</span>
+        <span class="c">############    </span>
+        <span class="n">valid_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
+        <span class="n">valid_true_cls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">valid_pred_cls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">valid_true_seg</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">valid_pred_seg</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">valid_label_seg</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">c_name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">valid_loader</span><span class="p">):</span>
+                <span class="n">point</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">,</span> <span class="n">seg</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">label_one_hot</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">seg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c"># (batch_size, num_points, 3) -&gt; (batch_size, 3, num_points)</span>
+                <span class="n">seg_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">)</span> 
+                <span class="n">seg_prediction</span> <span class="o">=</span> <span class="n">seg_prediction</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">seg_prediction</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s">'SEG_NUM_ALL'</span><span class="p">]),</span>  
+                                         <span class="n">seg</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>   
+                <span class="n">pred</span> <span class="o">=</span> <span class="n">seg_prediction</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">valid_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">seg_np</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                <span class="n">pred_np</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+                <span class="n">valid_true_cls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">valid_pred_cls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+                <span class="n">valid_true_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_np</span><span class="p">)</span>
+                <span class="n">valid_pred_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_np</span><span class="p">)</span>
+                <span class="n">valid_label_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+
+            <span class="n">valid_true_cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">valid_true_cls</span><span class="p">)</span>
+            <span class="n">valid_pred_cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">valid_pred_cls</span><span class="p">)</span>
+            <span class="n">valid_accuracy</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_pred_cls</span> <span class="o">==</span> <span class="n">valid_true_cls</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_pred_cls</span><span class="p">)</span> <span class="c"># Accuracy</span>
+
+            <span class="n">valid_true_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">valid_true_seg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">valid_pred_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">valid_pred_seg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">valid_label_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">valid_label_seg</span><span class="p">)</span>
+            <span class="n">valid_ious</span> <span class="o">=</span> <span class="n">calculate_shape_IoU</span><span class="p">(</span><span class="n">valid_pred_seg</span><span class="p">,</span> <span class="n">valid_true_seg</span><span class="p">,</span> <span class="n">valid_label_seg</span><span class="p">)</span> <span class="c"># IoU</span>
+
+
+
+            <span class="k">print</span><span class="p">(</span><span class="s">"Epoch: {}/{}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s">'EPOCHS'</span><span class="p">])</span> <span class="o">+</span>
+                                  <span class="s">"Loss: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">running_loss</span> <span class="o">/</span> <span class="n">total_step</span><span class="p">)</span> <span class="o">+</span>
+                                  <span class="s">"IoU: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">train_ious</span><span class="p">))</span> <span class="o">+</span> 
+                                  <span class="s">"Accuracy: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">train_accuracy</span><span class="p">)</span> <span class="o">+</span> 
+                                  <span class="s">"Valid Loss: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">valid_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_loader</span><span class="p">))</span> <span class="o">+</span>
+                                  <span class="s">"Valid Accuracy: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">valid_accuracy</span><span class="p">)</span> <span class="o">+</span>
+                                  <span class="s">"Valid IoU: {:.5f}.."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">valid_ious</span><span class="p">)))</span>
+
+        <span class="c"># Early Stopping</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">valid_ious</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">best_valid_iou</span><span class="p">:</span>
+            <span class="n">best_valid_iou</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">valid_ious</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">f</span><span class="s">'epoch{str(epoch + 1).zfill(3)}_seg.tar'</span><span class="p">)</span>  
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">train</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60<br/>61<br/>62<br/>63<br/>64<br/>65<br/>66<br/>67<br/>68<br/>69<br/>70<br/>71<br/>72<br/>73<br/>74<br/>75<br/>76<br/>77<br/>78<br/>79<br/>80<br/>81<br/>82<br/>83<br/>84<br/>85</pre></td><td class="code"><pre class="highlight"><code>    Epoch: 1/200.. Loss: 1.31692.. IoU: 0.54590.. Accuracy: 0.70046.. Valid Loss: 0.65172.. Valid Accuracy: 0.81989.. Valid IoU: 0.66308..
+    Epoch: 2/200.. Loss: 0.55490.. IoU: 0.68076.. Accuracy: 0.84702.. Valid Loss: 0.39328.. Valid Accuracy: 0.87850.. Valid IoU: 0.73454..
+    Epoch: 3/200.. Loss: 0.38516.. IoU: 0.72497.. Accuracy: 0.88587.. Valid Loss: 0.26998.. Valid Accuracy: 0.90768.. Valid IoU: 0.78491..
+    Epoch: 4/200.. Loss: 0.31265.. IoU: 0.74951.. Accuracy: 0.90163.. Valid Loss: 0.26334.. Valid Accuracy: 0.90714.. Valid IoU: 0.78399..
+    Epoch: 5/200.. Loss: 0.27762.. IoU: 0.76045.. Accuracy: 0.90901.. Valid Loss: 0.25485.. Valid Accuracy: 0.90983.. Valid IoU: 0.80047..
+    Epoch: 6/200.. Loss: 0.25684.. IoU: 0.77536.. Accuracy: 0.91510.. Valid Loss: 0.22206.. Valid Accuracy: 0.91785.. Valid IoU: 0.81682..
+    Epoch: 7/200.. Loss: 0.24241.. IoU: 0.78215.. Accuracy: 0.91883.. Valid Loss: 0.22032.. Valid Accuracy: 0.92526.. Valid IoU: 0.81722..
+    Epoch: 8/200.. Loss: 0.23585.. IoU: 0.78331.. Accuracy: 0.91991.. Valid Loss: 0.21144.. Valid Accuracy: 0.92591.. Valid IoU: 0.82841..
+    Epoch: 9/200.. Loss: 0.22112.. IoU: 0.79032.. Accuracy: 0.92524.. Valid Loss: 0.23086.. Valid Accuracy: 0.92256.. Valid IoU: 0.82251..
+    Epoch: 10/200.. Loss: 0.21806.. IoU: 0.79583.. Accuracy: 0.92532.. Valid Loss: 0.21657.. Valid Accuracy: 0.92456.. Valid IoU: 0.82978..
+    Epoch: 11/200.. Loss: 0.21182.. IoU: 0.79948.. Accuracy: 0.92750.. Valid Loss: 0.24648.. Valid Accuracy: 0.91635.. Valid IoU: 0.80556..
+    Epoch: 12/200.. Loss: 0.21545.. IoU: 0.79723.. Accuracy: 0.92640.. Valid Loss: 0.22097.. Valid Accuracy: 0.92159.. Valid IoU: 0.81647..
+    Epoch: 13/200.. Loss: 0.20051.. IoU: 0.80254.. Accuracy: 0.93094.. Valid Loss: 0.23823.. Valid Accuracy: 0.91569.. Valid IoU: 0.81353..
+    Epoch: 14/200.. Loss: 0.19512.. IoU: 0.80915.. Accuracy: 0.93247.. Valid Loss: 0.21295.. Valid Accuracy: 0.92765.. Valid IoU: 0.82732..
+    Epoch: 15/200.. Loss: 0.19006.. IoU: 0.81226.. Accuracy: 0.93412.. Valid Loss: 0.19994.. Valid Accuracy: 0.92901.. Valid IoU: 0.83136..
+    Epoch: 16/200.. Loss: 0.18558.. IoU: 0.81408.. Accuracy: 0.93566.. Valid Loss: 0.21710.. Valid Accuracy: 0.92464.. Valid IoU: 0.82064..
+    Epoch: 17/200.. Loss: 0.19991.. IoU: 0.80636.. Accuracy: 0.93024.. Valid Loss: 0.21422.. Valid Accuracy: 0.92818.. Valid IoU: 0.83190..
+    Epoch: 18/200.. Loss: 0.18842.. IoU: 0.81347.. Accuracy: 0.93385.. Valid Loss: 0.22044.. Valid Accuracy: 0.91553.. Valid IoU: 0.82048..
+    Epoch: 19/200.. Loss: 0.18017.. IoU: 0.81823.. Accuracy: 0.93626.. Valid Loss: 0.21378.. Valid Accuracy: 0.92428.. Valid IoU: 0.82102..
+    Epoch: 20/200.. Loss: 0.19431.. IoU: 0.80714.. Accuracy: 0.93194.. Valid Loss: 0.21395.. Valid Accuracy: 0.92609.. Valid IoU: 0.83094..
+    Epoch: 21/200.. Loss: 0.17439.. IoU: 0.81997.. Accuracy: 0.93900.. Valid Loss: 0.20616.. Valid Accuracy: 0.93017.. Valid IoU: 0.83651..
+    Epoch: 22/200.. Loss: 0.17570.. IoU: 0.82240.. Accuracy: 0.93820.. Valid Loss: 0.24689.. Valid Accuracy: 0.91422.. Valid IoU: 0.81267..
+    Epoch: 23/200.. Loss: 0.17458.. IoU: 0.82025.. Accuracy: 0.93858.. Valid Loss: 0.22000.. Valid Accuracy: 0.92761.. Valid IoU: 0.83319..
+    Epoch: 24/200.. Loss: 0.16986.. IoU: 0.82343.. Accuracy: 0.94004.. Valid Loss: 0.19641.. Valid Accuracy: 0.93258.. Valid IoU: 0.84404..
+    Epoch: 25/200.. Loss: 0.16861.. IoU: 0.82677.. Accuracy: 0.94052.. Valid Loss: 0.19602.. Valid Accuracy: 0.93314.. Valid IoU: 0.84136..
+    Epoch: 26/200.. Loss: 0.17455.. IoU: 0.82170.. Accuracy: 0.93848.. Valid Loss: 0.18726.. Valid Accuracy: 0.93133.. Valid IoU: 0.83599..
+    Epoch: 27/200.. Loss: 0.17093.. IoU: 0.82359.. Accuracy: 0.93934.. Valid Loss: 0.18854.. Valid Accuracy: 0.93474.. Valid IoU: 0.84933..
+    Epoch: 28/200.. Loss: 0.16073.. IoU: 0.82810.. Accuracy: 0.94255.. Valid Loss: 0.18518.. Valid Accuracy: 0.93435.. Valid IoU: 0.84498..
+    Epoch: 29/200.. Loss: 0.17026.. IoU: 0.82506.. Accuracy: 0.93964.. Valid Loss: 0.38316.. Valid Accuracy: 0.88538.. Valid IoU: 0.74567..
+    Epoch: 30/200.. Loss: 0.17922.. IoU: 0.81712.. Accuracy: 0.93703.. Valid Loss: 0.22341.. Valid Accuracy: 0.91714.. Valid IoU: 0.81960..
+    Epoch: 31/200.. Loss: 0.16245.. IoU: 0.82867.. Accuracy: 0.94206.. Valid Loss: 0.22318.. Valid Accuracy: 0.92237.. Valid IoU: 0.82672..
+    Epoch: 32/200.. Loss: 0.17099.. IoU: 0.82517.. Accuracy: 0.93954.. Valid Loss: 0.22027.. Valid Accuracy: 0.92594.. Valid IoU: 0.82357..
+    Epoch: 33/200.. Loss: 0.15605.. IoU: 0.83051.. Accuracy: 0.94452.. Valid Loss: 0.18681.. Valid Accuracy: 0.93503.. Valid IoU: 0.84846..
+    Epoch: 34/200.. Loss: 0.15843.. IoU: 0.82996.. Accuracy: 0.94284.. Valid Loss: 0.20392.. Valid Accuracy: 0.92836.. Valid IoU: 0.84245..
+    Epoch: 35/200.. Loss: 0.16202.. IoU: 0.82617.. Accuracy: 0.94193.. Valid Loss: 0.24778.. Valid Accuracy: 0.91084.. Valid IoU: 0.77830..
+    Epoch: 36/200.. Loss: 0.15833.. IoU: 0.82924.. Accuracy: 0.94326.. Valid Loss: 0.21210.. Valid Accuracy: 0.93203.. Valid IoU: 0.84168..
+    Epoch: 37/200.. Loss: 0.15254.. IoU: 0.83496.. Accuracy: 0.94545.. Valid Loss: 0.19363.. Valid Accuracy: 0.93366.. Valid IoU: 0.84353..
+    Epoch: 38/200.. Loss: 0.15498.. IoU: 0.83194.. Accuracy: 0.94453.. Valid Loss: 0.21816.. Valid Accuracy: 0.92127.. Valid IoU: 0.80463..
+    Epoch: 39/200.. Loss: 0.16115.. IoU: 0.82815.. Accuracy: 0.94203.. Valid Loss: 0.25720.. Valid Accuracy: 0.91437.. Valid IoU: 0.80738..
+    Epoch: 40/200.. Loss: 0.16718.. IoU: 0.82467.. Accuracy: 0.94033.. Valid Loss: 0.18402.. Valid Accuracy: 0.93358.. Valid IoU: 0.84360..
+    Epoch: 41/200.. Loss: 0.15862.. IoU: 0.83146.. Accuracy: 0.94304.. Valid Loss: 0.29855.. Valid Accuracy: 0.90643.. Valid IoU: 0.79258..
+    Epoch: 42/200.. Loss: 0.15664.. IoU: 0.83043.. Accuracy: 0.94403.. Valid Loss: 0.20042.. Valid Accuracy: 0.93113.. Valid IoU: 0.84125..
+    Epoch: 43/200.. Loss: 0.14966.. IoU: 0.83759.. Accuracy: 0.94630.. Valid Loss: 0.18705.. Valid Accuracy: 0.93755.. Valid IoU: 0.84825..
+    Epoch: 44/200.. Loss: 0.14887.. IoU: 0.83623.. Accuracy: 0.94683.. Valid Loss: 0.19898.. Valid Accuracy: 0.93518.. Valid IoU: 0.84447..
+    Epoch: 45/200.. Loss: 0.15301.. IoU: 0.83464.. Accuracy: 0.94513.. Valid Loss: 0.16970.. Valid Accuracy: 0.94148.. Valid IoU: 0.85462..
+    Epoch: 46/200.. Loss: 0.14684.. IoU: 0.83714.. Accuracy: 0.94734.. Valid Loss: 0.27009.. Valid Accuracy: 0.90795.. Valid IoU: 0.80442..
+    Epoch: 47/200.. Loss: 0.14504.. IoU: 0.83595.. Accuracy: 0.94767.. Valid Loss: 0.19581.. Valid Accuracy: 0.93256.. Valid IoU: 0.84187..
+    Epoch: 48/200.. Loss: 0.15833.. IoU: 0.83007.. Accuracy: 0.94335.. Valid Loss: 0.26672.. Valid Accuracy: 0.92026.. Valid IoU: 0.82362..
+    Epoch: 49/200.. Loss: 0.16092.. IoU: 0.82581.. Accuracy: 0.94222.. Valid Loss: 0.17721.. Valid Accuracy: 0.94083.. Valid IoU: 0.85759..
+    Epoch: 50/200.. Loss: 0.14550.. IoU: 0.83773.. Accuracy: 0.94765.. Valid Loss: 0.20740.. Valid Accuracy: 0.92963.. Valid IoU: 0.83126..
+    Epoch: 51/200.. Loss: 0.14189.. IoU: 0.83956.. Accuracy: 0.94905.. Valid Loss: 0.18474.. Valid Accuracy: 0.93543.. Valid IoU: 0.83999..
+    Epoch: 52/200.. Loss: 0.15474.. IoU: 0.83124.. Accuracy: 0.94438.. Valid Loss: 0.47906.. Valid Accuracy: 0.82504.. Valid IoU: 0.71061..
+    Epoch: 53/200.. Loss: 0.15270.. IoU: 0.83258.. Accuracy: 0.94569.. Valid Loss: 0.17861.. Valid Accuracy: 0.93641.. Valid IoU: 0.84815..
+    Epoch: 54/200.. Loss: 0.14379.. IoU: 0.84142.. Accuracy: 0.94829.. Valid Loss: 0.19526.. Valid Accuracy: 0.93123.. Valid IoU: 0.83683..
+    Epoch: 55/200.. Loss: 0.14429.. IoU: 0.84052.. Accuracy: 0.94802.. Valid Loss: 0.20402.. Valid Accuracy: 0.93151.. Valid IoU: 0.83997..
+    Epoch: 56/200.. Loss: 0.14514.. IoU: 0.83779.. Accuracy: 0.94734.. Valid Loss: 0.23526.. Valid Accuracy: 0.92803.. Valid IoU: 0.83161..
+    Epoch: 57/200.. Loss: 0.14962.. IoU: 0.83497.. Accuracy: 0.94604.. Valid Loss: 0.19088.. Valid Accuracy: 0.93505.. Valid IoU: 0.84819..
+    Epoch: 58/200.. Loss: 0.14637.. IoU: 0.83939.. Accuracy: 0.94744.. Valid Loss: 0.21823.. Valid Accuracy: 0.92583.. Valid IoU: 0.83253..
+    Epoch: 59/200.. Loss: 0.15409.. IoU: 0.83140.. Accuracy: 0.94492.. Valid Loss: 0.40655.. Valid Accuracy: 0.86304.. Valid IoU: 0.75745..
+    Epoch: 60/200.. Loss: 0.14265.. IoU: 0.83913.. Accuracy: 0.94861.. Valid Loss: 0.19094.. Valid Accuracy: 0.93554.. Valid IoU: 0.84706..
+    Epoch: 61/200.. Loss: 0.14286.. IoU: 0.84096.. Accuracy: 0.94832.. Valid Loss: 0.20205.. Valid Accuracy: 0.93043.. Valid IoU: 0.81473..
+    Epoch: 62/200.. Loss: 0.14355.. IoU: 0.83862.. Accuracy: 0.94835.. Valid Loss: 0.20353.. Valid Accuracy: 0.93093.. Valid IoU: 0.83541..
+    Epoch: 63/200.. Loss: 0.14098.. IoU: 0.84437.. Accuracy: 0.94908.. Valid Loss: 0.25240.. Valid Accuracy: 0.91294.. Valid IoU: 0.81494..
+    Epoch: 64/200.. Loss: 0.14083.. IoU: 0.83992.. Accuracy: 0.94895.. Valid Loss: 0.20649.. Valid Accuracy: 0.93593.. Valid IoU: 0.84198..
+    Epoch: 65/200.. Loss: 0.15158.. IoU: 0.83413.. Accuracy: 0.94502.. Valid Loss: 0.20826.. Valid Accuracy: 0.93343.. Valid IoU: 0.84039..
+    Epoch: 66/200.. Loss: 0.16724.. IoU: 0.82294.. Accuracy: 0.94009.. Valid Loss: 0.23660.. Valid Accuracy: 0.92282.. Valid IoU: 0.81949..
+    Epoch: 67/200.. Loss: 0.14525.. IoU: 0.83594.. Accuracy: 0.94782.. Valid Loss: 0.21190.. Valid Accuracy: 0.93242.. Valid IoU: 0.84279..
+    Epoch: 68/200.. Loss: 0.13772.. IoU: 0.84340.. Accuracy: 0.95039.. Valid Loss: 0.18135.. Valid Accuracy: 0.93932.. Valid IoU: 0.85039..
+    Epoch: 69/200.. Loss: 0.13618.. IoU: 0.84754.. Accuracy: 0.95095.. Valid Loss: 0.20335.. Valid Accuracy: 0.93110.. Valid IoU: 0.83127..
+    Epoch: 70/200.. Loss: 0.13659.. IoU: 0.84179.. Accuracy: 0.95069.. Valid Loss: 0.18244.. Valid Accuracy: 0.93982.. Valid IoU: 0.85437..
+    Epoch: 71/200.. Loss: 0.14031.. IoU: 0.83734.. Accuracy: 0.94919.. Valid Loss: 0.21056.. Valid Accuracy: 0.92931.. Valid IoU: 0.84468..
+    Epoch: 72/200.. Loss: 0.13603.. IoU: 0.84462.. Accuracy: 0.95114.. Valid Loss: 0.24763.. Valid Accuracy: 0.92385.. Valid IoU: 0.82229..
+    Epoch: 73/200.. Loss: 0.14204.. IoU: 0.84362.. Accuracy: 0.94875.. Valid Loss: 0.25850.. Valid Accuracy: 0.91415.. Valid IoU: 0.81627..
+    Epoch: 74/200.. Loss: 0.14324.. IoU: 0.83919.. Accuracy: 0.94892.. Valid Loss: 0.24689.. Valid Accuracy: 0.92635.. Valid IoU: 0.83444..
+    Epoch: 75/200.. Loss: 0.14355.. IoU: 0.83870.. Accuracy: 0.94826.. Valid Loss: 0.18079.. Valid Accuracy: 0.93849.. Valid IoU: 0.85249..
+    Epoch: 76/200.. Loss: 0.13630.. IoU: 0.84431.. Accuracy: 0.95086.. Valid Loss: 0.25681.. Valid Accuracy: 0.91564.. Valid IoU: 0.80750..
+    Epoch: 77/200.. Loss: 0.13581.. IoU: 0.84146.. Accuracy: 0.95097.. Valid Loss: 0.19432.. Valid Accuracy: 0.93582.. Valid IoU: 0.84452..
+    Epoch: 78/200.. Loss: 0.13732.. IoU: 0.84624.. Accuracy: 0.95060.. Valid Loss: 0.21660.. Valid Accuracy: 0.92575.. Valid IoU: 0.83615..
+    Epoch: 79/200.. Loss: 0.14015.. IoU: 0.84498.. Accuracy: 0.94937.. Valid Loss: 0.24544.. Valid Accuracy: 0.92610.. Valid IoU: 0.82973..
+    Epoch: 80/200.. Loss: 0.16115.. IoU: 0.82898.. Accuracy: 0.94340.. Valid Loss: 0.17465.. Valid Accuracy: 0.93654.. Valid IoU: 0.84511..
+    Epoch: 81/200.. Loss: 0.15004.. IoU: 0.83131.. Accuracy: 0.94588.. Valid Loss: 0.19234.. Valid Accuracy: 0.93430.. Valid IoU: 0.83985..
+    Epoch: 82/200.. Loss: 0.14164.. IoU: 0.84265.. Accuracy: 0.94882.. Valid Loss: 0.18463.. Valid Accuracy: 0.93401.. Valid IoU: 0.84632..
+    Epoch: 83/200.. Loss: 0.13916.. IoU: 0.84483.. Accuracy: 0.95011.. Valid Loss: 0.19545.. Valid Accuracy: 0.93725.. Valid IoU: 0.84867..
+    Epoch: 84/200.. Loss: 0.14014.. IoU: 0.84242.. Accuracy: 0.94960.. Valid Loss: 0.18799.. Valid Accuracy: 0.93462.. Valid IoU: 0.84691..
+    Epoch: 85/200.. Loss: 0.13429.. IoU: 0.84732.. Accuracy: 0.95123.. Valid Loss: 0.24446.. Valid Accuracy: 0.91742.. Valid IoU: 0.80324..
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h2 id="-test-"><font color="blue"> Test </font></h2>
+
+<p>학습에 사용되지 않은 데이터에 대해 예측해보는 test 코드입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20<br/>21<br/>22<br/>23<br/>24<br/>25<br/>26<br/>27<br/>28<br/>29<br/>30<br/>31<br/>32<br/>33<br/>34<br/>35<br/>36<br/>37<br/>38<br/>39<br/>40<br/>41<br/>42<br/>43<br/>44<br/>45<br/>46<br/>47<br/>48<br/>49<br/>50<br/>51<br/>52<br/>53<br/>54<br/>55<br/>56<br/>57<br/>58<br/>59<br/>60</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/test0_id2file.json'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'../input/shapenetpart/shapenetpart_hdf5_2048/test0_id2name.json'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+        <span class="n">test_name</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+        
+    <span class="n">test_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">'path'</span> <span class="p">:</span> <span class="n">test_id</span><span class="p">,</span> <span class="s">'label'</span><span class="p">:</span> <span class="n">test_name</span><span class="p">})</span>
+    <span class="n">test_df</span><span class="p">[</span><span class="s">'segmentation_part_num'</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">shapenetpart_seg_num</span><span class="p">[</span><span class="n">shapenetpart_cat2id</span><span class="p">[</span><span class="n">x</span><span class="p">]])</span>
+    <span class="n">test_data</span><span class="p">,</span> <span class="n">test_label</span><span class="p">,</span> <span class="n">test_seg</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'TEST_DATA_PATH'</span><span class="p">])</span>
+    
+    <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">ShapeNetDataset</span><span class="p">(</span><span class="n">test_df</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">test_label</span><span class="p">,</span> <span class="n">test_seg</span><span class="p">)</span>
+    <span class="n">test_loader</span>  <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'BATCH_SIZE'</span><span class="p">],</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">drop_last</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">DGCNN</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">'../input/shapenet-pretrained/epoch049_seg.tar'</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">]))</span>
+    <span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
+    
+    <span class="n">device</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">'DEVICE'</span><span class="p">]</span>
+
+    <span class="n">test_true_cls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_pred_cls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_true_seg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_pred_seg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_label_seg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_point</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">c_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">test_loader</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)):</span>
+            <span class="n">point</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">,</span> <span class="n">seg</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">label_one_hot</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">seg</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c"># (batch_size, num_points, 3) -&gt; (batch_size, 3, num_points)</span>
+            <span class="n">seg_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">label_one_hot</span><span class="p">)</span> 
+            <span class="n">seg_prediction</span> <span class="o">=</span> <span class="n">seg_prediction</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+            <span class="n">pred</span> <span class="o">=</span> <span class="n">seg_prediction</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">seg_np</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="n">pred_np</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+            <span class="n">test_true_cls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">test_pred_cls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+            <span class="n">test_true_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_np</span><span class="p">)</span>
+            <span class="n">test_pred_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_np</span><span class="p">)</span>
+            <span class="n">test_label_seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+            <span class="n">test_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+        <span class="n">test_true_cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">test_true_cls</span><span class="p">)</span>
+        <span class="n">test_pred_cls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">test_pred_cls</span><span class="p">)</span>
+        <span class="n">test_accuracy</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">test_pred_cls</span> <span class="o">==</span> <span class="n">test_true_cls</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_pred_cls</span><span class="p">)</span> <span class="c"># Accuracy</span>
+
+        <span class="n">test_true_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">test_true_seg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">test_pred_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">test_pred_seg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">test_label_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">test_label_seg</span><span class="p">)</span>
+        <span class="n">test_ious</span> <span class="o">=</span> <span class="n">calculate_shape_IoU</span><span class="p">(</span><span class="n">test_pred_seg</span><span class="p">,</span> <span class="n">test_true_seg</span><span class="p">,</span> <span class="n">test_label_seg</span><span class="p">)</span> <span class="c"># IoU</span>
+
+        <span class="n">test_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">test_point</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Inference fin... '</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Test IoU: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_ious</span><span class="p">))</span> <span class="o">+</span> 
+          <span class="s">"Test Accuracy: {:.5f}.. "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_accuracy</span><span class="p">))</span>   
+    
+    <span class="k">return</span> <span class="n">test_true_seg</span><span class="p">,</span> <span class="n">test_pred_seg</span><span class="p">,</span> <span class="n">test_point</span><span class="p">,</span>  <span class="n">test_df</span><span class="p">,</span> <span class="n">test_ious</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code><span class="n">test_true_seg</span><span class="p">,</span> <span class="n">test_pred_seg</span><span class="p">,</span> <span class="n">test_point</span><span class="p">,</span> <span class="n">test_df</span><span class="p">,</span> <span class="n">test_ious</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9</pre></td><td class="code"><pre class="highlight"><code>/opt/conda/lib/python3.7/site-packages/ipykernel_launcher.py:2: H5pyDeprecationWarning:
+
+The default file mode will change to 'r' (read-only) in h5py 3.0. To suppress this warning, pass the mode you need to h5py.File(), or set the global default h5.get_config().default_file_mode, or set the environment variable H5PY_DEFAULT_READONLY=1. Available modes are: 'r', 'r+', 'w', 'w-'/'x', 'a'. See the docs for details.
+
+100%|██████████| 128/128 [00:29&lt;00:00,  4.34it/s]
+
+
+Inference fin... 
+Test IoU: 0.81172.. Test Accuracy: 0.92177.. 
+</code></pre></td></tr></tbody></table></div></div>
+
+<hr />
+
+<h3 id="-prediction-result-"><font color="orange"> Prediction result </font></h3>
+
+<p>모델의 예측 결과입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7</pre></td><td class="code"><pre class="highlight"><code><span class="n">idx</span> <span class="o">=</span> <span class="mi">2045</span>
+<span class="n">visualize</span><span class="p">(</span><span class="n">test_point</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> 
+          <span class="n">test_pred_seg</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+          <span class="n">test_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s">'label'</span><span class="p">],</span>
+          <span class="n">test_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s">'segmentation_part_num'</span><span class="p">],</span>
+          <span class="s">'chair_pred'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">'Test IoU: {test_ious[idx]}'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>Test IoU: 0.9765684201114649
+</code></pre></td></tr></tbody></table></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/dgcnn/chair_pred.png" alt="png" /></p>
+
+<hr />
+
+<h3 id="-true-label-"><font color="orange"> True label </font></h3>
+
+<p>실제 레이블입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="n">visualize</span><span class="p">(</span><span class="n">test_point</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> 
+          <span class="n">test_true_seg</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+          <span class="n">test_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s">'label'</span><span class="p">],</span>
+          <span class="n">test_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s">'segmentation_part_num'</span><span class="p">],</span>
+          <span class="s">'chair_true'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s">'Test IoU: {test_ious[idx]}'</span><span class="p">)</span>
+</code></pre></td></tr></tbody></table></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1</pre></td><td class="code"><pre class="highlight"><code>Test IoU: 0.9765684201114649
+</code></pre></td></tr></tbody></table></td></tr></tbody></table></div></div>
+
+<p><img src="/assets/img/notebook/dgcnn/chair_true.png" alt="png" /></p>
+
+<hr />
+
+<h2 id="-참고-자료-"><font color="blue"> 참고 자료 </font></h2>
+
+<p>[1] Dataset: <a href="https://github.com/AnTao97/PointCloudDatasets">https://github.com/AnTao97/PointCloudDatasets </a></p>
+<ul>
+  <li>As mentioned in the above github, for each shape in these datasets, farthest point sampling algorithm was applied to uniformly sample 2,048 points from shape surface.</li>
+</ul>
+
+<p>[2] Data loading code : <a href="https://github.com/AnTao97/PointCloudDatasets/blob/master/dataset.py">https://github.com/AnTao97/PointCloudDatasets/blob/master/dataset.py</a><br />
+[3] Model code: <a href="https://github.com/AnTao97/dgcnn.pytorch/blob/master/model.py">https://github.com/AnTao97/dgcnn.pytorch/blob/master/model.py</a>  <br />
+[4] Spatial Transformer Networks: <a href="https://www.youtube.com/watch?v=Rv3osRZWGbg">https://www.youtube.com/watch?v=Rv3osRZWGbg</a>  <br />
+[5] DGCNN: <a href="https://www.youtube.com/watch?v=Rv3osRZWGbg">https://www.youtube.com/watch?v=Rv3osRZWGbg</a>  <br />
+[4] <a href="https://arxiv.org/abs/1801.07829v2">https://arxiv.org/abs/1801.07829v2</a><br />
+[5] <a href="https://arxiv.org/abs/1506.02025">https://arxiv.org/abs/1506.02025</a>, NIPS 2015</p>
+
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            
+            <a href="/tag/#/Deep%20Learning" rel="tag"># Deep Learning</a>
+          
+            
+            <a href="/tag/#/Segmentation" rel="tag"># Segmentation</a>
+          
+            
+            <a href="/tag/#/Computer%20Vision" rel="tag"># Computer Vision</a>
+          
+            
+            <a href="/tag/#/DGCNN" rel="tag"># DGCNN</a>
+          
+            
+            <a href="/tag/#/Pytorch" rel="tag"># Pytorch</a>
+          
+            
+            <a href="/tag/#/Point%20Cloud" rel="tag"># Point Cloud</a>
+          
+            
+            <a href="/tag/#/Spatial%20Transformer%20Network" rel="tag"># Spatial Transformer Network</a>
+          
+        </div>
+      
+
+      
+      
+      
+      
+      
+
+      
+      
+        <div class="post-nav" id="post-nav-id">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/classification/2021/09/05/blindness-detection/" rel="prev" title="Blindness Classification">
+                Blindness Classification <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+      
+
+      
+    </footer>
+  </article>
+
+  <div class="post-spread">
+    
+  </div>
+</div>
+
+
+
+
+
+<head>
+    <!-- Begin section for dataframe table formatting -->
+    <style type="text/css">
+    table.dataframe {
+        width: 100%;
+        height: 240px;
+        display: block;
+        overflow: auto;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+    }
+    table.dataframe th {
+      font-weight: bold;
+      padding: 4px;
+    }
+    table.dataframe td {
+      padding: 4px;
+    }
+    table.dataframe tr:hover {
+      background: #b8d1f3; 
+    }
+    </style>
+    <!-- End section for dataframe table formatting -->
+  </head>
+
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        
+        
+        
+
+
+
+
+
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            목차
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            흝어보기
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/assets/images/profile.jpg"
+               alt="Seunghyun Lee" />
+          <p class="site-author-name" itemprop="name">Seunghyun Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">포스트</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">카테고리</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">태그</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://github.com/sseunghyuns" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/%EC%8A%B9%ED%98%84-%EC%9D%B4-6b2a371a6/" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              
+              
+              <span class="links-of-author-item">
+                <a href="https://www.rocketpunch.com/@kannasta9621" target="_blank" title="RoketPunch">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  RoketPunch
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+            
+              <div class="post-toc-content">
+    <ol class=nav>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#프로젝트-소개"> <span class="nav-number">1</span> <span class="nav-text">프로젝트 소개</center</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#packages-"> <span class="nav-number">2</span> <span class="nav-text">Packages </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#arguments-"> <span class="nav-number">3</span> <span class="nav-text">Arguments </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">4</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-augmentations--"> <span class="nav-number">5</span> <span class="nav-text"> Augmentations </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-visualization-"> <span class="nav-number">6</span> <span class="nav-text"> Visualization </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-data-loader-"> <span class="nav-number">7</span> <span class="nav-text"> Data Loader </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-dgcnn-model-"> <span class="nav-number">8</span> <span class="nav-text"> DGCNN Model </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델-성능-지표---iou-"> <span class="nav-number">9</span> <span class="nav-text">모델 성능 지표 - IoU </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-train-"> <span class="nav-number">10</span> <span class="nav-text"> Train </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-test-"> <span class="nav-number">11</span> <span class="nav-text"> Test </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-prediction-result-"> <span class="nav-number">11.1</span> <span class="nav-text"> Prediction result </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-true-label-"> <span class="nav-number">11.2</span> <span class="nav-text"> True label </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-참고-자료-"> <span class="nav-number">12</span> <span class="nav-text"> 참고 자료 </font</span> </a> </li>
+    </ol>
+  </div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Seunghyun Lee</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://jekyllrb.com">Jekyll</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/simpleyyt/jekyll-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/assets/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/assets/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/assets/js/src/post-details.js?v=5.1.1"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+
+
+  
+
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
+
