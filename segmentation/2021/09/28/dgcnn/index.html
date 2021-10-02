@@ -118,6 +118,9 @@
 <meta property="og:description" content="프로젝트 소개 DGCNN 모델 아키텍처를 이용한 3D Point Cloud Segmentation">
 <meta property="og:locale" content="ko">
 <meta property="og:image" content="/assets/img/notebook/dgcnn/thumbnail.png">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/pointnet.png">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/dgcnn.png">
+<meta property="og:image" content="/assets/img/notebook/dgcnn/edgeconv.png">
 <meta property="og:image" content="/assets/img/notebook/dgcnn/plot1.png">
 <meta property="og:image" content="/assets/img/notebook/dgcnn/chair_pred.png">
 <meta property="og:image" content="/assets/img/notebook/dgcnn/chair_true.png">
@@ -441,6 +444,48 @@
   <h2 id="프로젝트-소개"><center><font color="darkblue">프로젝트 소개</font></center></h2>
 <p><img src="/assets/img/notebook/dgcnn/thumbnail.png" alt="png" /></p>
 <center>DGCNN 모델 아키텍처를 이용한 3D Point Cloud Segmentation</center>
+
+<hr />
+
+<h2 id="-요약-"><font color="blue"> 요약 </font></h2>
+
+<p>Point cloud 데이터는 주로 3D space에서 어떤 object 표면 위에 존재하는 점들의 집합을 의미합니다. 드론이나 자율주행자동차에 달려있는 Lidar 센서를 통해 수집되는 데이터가 이러한 point cloud 형태로 존재합니다. Point cloud는 일정한 간격의 grid 형태로 존재하는 2D 이미지 데이터와는 달리 공간 안의 점들이 여기저기 흩어져 있고, 점들의 density 역시 일정하지 않습니다. 또한 point들이 어떤 순서로 있던지 간에 형태는 항상 일정하게 유지된다는 점에서 점에서 permutation invariant 하다는 특성이 있습니다.</p>
+
+<p>따라서 기존 2D 형태 학습에 최적화된 grid convolution 방식을 그대로 적용할 수는 없습니다. 2017년 CVPR에서 발표된 PointNet[2] 논문을 기점으로 point cloud 데이터에 deep learning을 적용한 연구 결과가 발표되고 있는데, 이번 프로젝트의 DGCNN 역시 PointNet의 구조를 응용한 것입니다. DGCNN의 특징을 요약하면 아래와 같습니다.</p>
+
+<ul>
+  <li><strong>EdgeConv</strong>라는 연산을 새롭게 추가하여 permutation invariance를 유지하며 포인트들의 local feature을 학습할 수 있도록 하였습니다.</li>
+  <li>레이어마다 포인트들의 관계 그래프를 <strong>dynamic</strong>하게 다시 구성하여 의미있는 <strong>grouping</strong>을 학습할 수 있도록 하였습니다. 이 논문에서 제시하고 있는 모델 아키텍처의 이름이 DGCNN(Dynamic Graph CNN)인 이유가 바로 여기에 있습니다.</li>
+</ul>
+
+<p>DGCNN이 PointNet 기반으로 만들어졌기 때문에, PointNet 모델 구조를 먼저 살펴볼 필요가 있습니다.</p>
+
+<h3 id="pointnet"><font color="orange">PointNet</font></h3>
+
+<p><img src="/assets/img/notebook/dgcnn/pointnet.png" alt="png" />
+<em>PointNet model architectures</em></p>
+
+<p>PointNet은 input points가 들어오면 permutation-invariant 연산인 mlp와 max pooling 을 사용하여 feature을 추출하는 것이 특징입니다. 여기서 feature transform에 해당하는 T-Net은 학습되는 point들의 feature들이 특정한 변환에 불변한 형태로 바꾸어주는 역할을 합니다. 예를 들어 point 전체를 회전한다고 하여 global point cloud의 카테고리나 point들의 segmentation 결과가 달라져서는 안되므로, T-Net의 affine transformation을 통해 이 문제를 해결했습니다. T-Net 역시 전체 모델 구조와 유사하게 mlp와 max pooling으로만 구성되어 있습니다. 이러한 T-Net의 아이디어는 Spatial Transformer Networks[3]의 개념과 비슷합니다. Segmentation 네트워크 구조에서는 global feature까지 고려하기 위해 위 그림에서와같이 이를 결합하여 입력으로 사용하는 것을 확인할 수 있습니다.</p>
+
+<p>PointNet은 낱개 입력 point 하나하나의 좌표에 대한 연산을 하여 추출한 global feature를 사용하기 때문에 어떤 point 주변에 모여있는 local feature는 얻어낼 수 없다는 문제가 있습니다. 이후 저자들은 PointNet의 개선판인 PointNet++ 으로 local feature를 고려하는 방식을 제안하였지만 여기서는 다루지 않겠습니다.</p>
+
+<h3 id="dgcnn"><font color="orange">DGCNN</font></h3>
+
+<p><img src="/assets/img/notebook/dgcnn/dgcnn.png" alt="png" />
+<em>DGCNN model architectures</em></p>
+
+<p>DGCNN의 모델 구조입니다. PointNet 모델 구조와 비슷하지만 EdgeConv가 새롭게 적용되었습니다. EdgeConv 연산이 적용될 때, k-NN을 사용하여 입력 그래프를 매번 새롭게 생성해줍니다. 따라서 첫 번째 EdgeConv에서는 input space에서 물리적으로 가까이 있는 k 개의 point들을 뽑아서 사용한다면, 그 다음 EdgeConv부터는 feature space에서 distance가 가까운 k 개의 point들을 새롭게 뽑아서 사용하게 됩니다.</p>
+
+<p><br /></p>
+
+<p><img src="/assets/img/notebook/dgcnn/edgeconv.png" alt="png" width="600" height="300" />
+<em>Point cloud segmentation using the proposed neural network</em></p>
+
+<p>위 그림에서처럼 입력으로 들어온 point들 중에서 기준점(빨간색)을 찍어보면, input space 상에서 euclidean distance가 가까운 점들이 선택됩니다. 이 과정을 반복하여 뒷단으로 갈수록 feature space 상에서 가까운 점들을 추출하고 있는 것을 확인할 수 있습니다. 아래 코드에서 feature를 새롭게 추출해내는 부분은 get_graph_feature 함수로 구현되어 있습니다.</p>
+
+<p>논문에서는 총 16,881개의 3D 데이터를 사용하였고, 각 데이터는 2048개의 points들로 샘플링 되었습니다. 총 16개의 object categories(비행기, 의자, 자동차 등)가 있고, 각 object별로 최대 6개 part(ex. 비행기: 날개, 몸통, 꼬리, 엔진)로 포인트들이 레이블링 되어져 있습니다. 아래 구현 부분에서는 빠른 실험을 위해 약 17,000개 중 2048개의 3D 데이터만을 사용하여 훈련하였습니다. Test셋 역시 일부만을 추출하여 사용하였고, 그 결과 81.17%의 mIoU를 보여주었습니다. 훨씬 적은 데이터셋을 사용하였기에 논문(85.2% mIoU)보다는 낮았습니다.</p>
+
+<p>최근 인턴으로 일하고 있는 회사에서 3D 치아 데이터를 다루고 있어 이번 포스팅을 작성해보았습니다. 딥러닝을 적용하여 치아 데이터를 각각의 치아별로 segmentation해주는 프로젝트에 참여하게 되어 point cloud 및 DGCNN 모델 구조에 대해 자연스럽게 공부하게 되었습니다. 다음에는 이러한 point cloud에 적용될 수 있는 다른 모델 아키텍쳐들(ex. PointCNN, RandLA-Net 등)을 공부해 포스팅해보겠습니다.</p>
 
 <hr />
 
@@ -775,29 +820,29 @@ Valid data to use: 374
 <p>DGCNN 모델 아키텍쳐를 구현한 코드입니다. 구현 코드는 [3]을 참고하여 작성되었습니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">knn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="n">inner</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span>
-    <span class="n">xx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">pairwise_distance</span> <span class="o">=</span> <span class="o">-</span><span class="n">xx</span> <span class="o">-</span> <span class="n">inner</span> <span class="o">-</span> <span class="n">xx</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">pairwise_distance</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>   <span class="c"># (batch_size, num_points, k)</span>
+    <span class="n">inner</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span> <span class="c"># (batch_size, num_points, 3) x (batch_size, 3, num_points) -&gt; (batcH_size, num_points, num_points) </span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># (batch_size, 1, num_points)</span>
+    <span class="n">pairwise_distance</span> <span class="o">=</span> <span class="o">-</span><span class="n">xx</span> <span class="o">-</span> <span class="n">inner</span> <span class="o">-</span> <span class="n">xx</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c"># (batcH_size, num_points, num_points) </span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">pairwise_distance</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>   <span class="c"># (batch_size, num_points, k) / Get the index</span>
     <span class="k">return</span> <span class="n">idx</span>
 </code></pre></td></tr></tbody></table></div></div>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><table style="margin: 0px"><tbody><tr><td class="gutter"><pre>1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19</pre></td><td class="code"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_graph_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dim9</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s">'cpu'</span><span class="p">):</span>
     <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">num_points</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span> <span class="c"># (batch_size, 3, num_points)</span>
     <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">dim9</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">knn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>   <span class="c"># (batch_size, num_points, k)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">knn</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">:],</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">idx_base</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_points</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">idx_base</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+    <span class="n">idx_base</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_points</span> <span class="c"># (batch_size, 1, 1)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">idx_base</span> <span class="c"># update index numbers</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c"># (batch_size * num_points * k)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="c"># num_dims = 3</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>   <span class="c"># (batch_size, num_points, num_dims)  -&gt; (batch_size*num_points, num_dims) #   batch_size * num_points * k + range(0, batch_size*num_points)</span>
-    <span class="n">feature</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="o">*</span><span class="n">num_points</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_points</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">)</span> 
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="o">*</span><span class="n">num_points</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="c"># (batch_size * num_points * k, 3)</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_points</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">)</span> <span class="c"># (batch_size, num_points, k, 3)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_points</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">feature</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">feature</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">feature</span>      <span class="c"># (batch_size, 2*num_dims, num_points, k)</span>
@@ -1324,17 +1369,15 @@ Test IoU: 0.81172.. Test Accuracy: 0.92177..
 
 <h2 id="-참고-자료-"><font color="blue"> 참고 자료 </font></h2>
 
-<p>[1] Dataset: <a href="https://github.com/AnTao97/PointCloudDatasets">https://github.com/AnTao97/PointCloudDatasets </a></p>
-<ul>
-  <li>As mentioned in the above github, for each shape in these datasets, farthest point sampling algorithm was applied to uniformly sample 2,048 points from shape surface.</li>
-</ul>
-
-<p>[2] Data loading code : <a href="https://github.com/AnTao97/PointCloudDatasets/blob/master/dataset.py">https://github.com/AnTao97/PointCloudDatasets/blob/master/dataset.py</a><br />
-[3] Model code: <a href="https://github.com/AnTao97/dgcnn.pytorch/blob/master/model.py">https://github.com/AnTao97/dgcnn.pytorch/blob/master/model.py</a>  <br />
-[4] Spatial Transformer Networks: <a href="https://www.youtube.com/watch?v=Rv3osRZWGbg">https://www.youtube.com/watch?v=Rv3osRZWGbg</a>  <br />
-[5] DGCNN: <a href="https://www.youtube.com/watch?v=Rv3osRZWGbg">https://www.youtube.com/watch?v=Rv3osRZWGbg</a>  <br />
-[4] <a href="https://arxiv.org/abs/1801.07829v2">https://arxiv.org/abs/1801.07829v2</a><br />
-[5] <a href="https://arxiv.org/abs/1506.02025">https://arxiv.org/abs/1506.02025</a>, NIPS 2015</p>
+<p>[1] DGCNN paper: <a href="https://arxiv.org/abs/1801.07829v2">https://arxiv.org/abs/1801.07829v2</a><br />
+[2] PointNet paper: <a href="https://arxiv.org/abs/1612.00593">https://arxiv.org/abs/1612.00593</a><br />
+[3] Spatial Transformer Networks paper: <a href="https://arxiv.org/abs/1506.02025">https://arxiv.org/abs/1506.02025</a>, NIPS 2015<br />
+[4] DGCNN 설명: <a href="https://www.youtube.com/watch?v=Rv3osRZWGbg">https://www.youtube.com/watch?v=Rv3osRZWGbg</a>  <br />
+[5] PointNet 설명: <a href="https://jhyeup.tistory.com/entry/PointNet">https://jhyeup.tistory.com/entry/PointNet</a><br />
+[6] Spatial Transformer Networks 설명: <a href="https://www.youtube.com/watch?v=Rv3osRZWGbg">https://www.youtube.com/watch?v=Rv3osRZWGbg</a>  <br />
+[7] Model code: <a href="https://github.com/AnTao97/dgcnn.pytorch/blob/master/model.py">https://github.com/AnTao97/dgcnn.pytorch/blob/master/model.py</a>  <br />
+[8] Dataset: <a href="https://github.com/AnTao97/PointCloudDatasets">https://github.com/AnTao97/PointCloudDatasets </a><br />
+[9] Data loading code : <a href="https://github.com/AnTao97/PointCloudDatasets/blob/master/dataset.py">https://github.com/AnTao97/PointCloudDatasets/blob/master/dataset.py</a></p>
 
 
 
@@ -1626,7 +1669,7 @@ Test IoU: 0.81172.. Test Accuracy: 0.92177..
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#프로젝트-소개"> <span class="nav-number">1</span> <span class="nav-text">프로젝트 소개</center</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#packages-"> <span class="nav-number">2</span> <span class="nav-text">Packages </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#arguments-"> <span class="nav-number">3</span> <span class="nav-text">Arguments </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">4</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-augmentations--"> <span class="nav-number">5</span> <span class="nav-text"> Augmentations </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-visualization-"> <span class="nav-number">6</span> <span class="nav-text"> Visualization </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-data-loader-"> <span class="nav-number">7</span> <span class="nav-text"> Data Loader </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-dgcnn-model-"> <span class="nav-number">8</span> <span class="nav-text"> DGCNN Model </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델-성능-지표---iou-"> <span class="nav-number">9</span> <span class="nav-text">모델 성능 지표 - IoU </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-train-"> <span class="nav-number">10</span> <span class="nav-text"> Train </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-test-"> <span class="nav-number">11</span> <span class="nav-text"> Test </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-prediction-result-"> <span class="nav-number">11.1</span> <span class="nav-text"> Prediction result </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-true-label-"> <span class="nav-number">11.2</span> <span class="nav-text"> True label </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-참고-자료-"> <span class="nav-number">12</span> <span class="nav-text"> 참고 자료 </font</span> </a> </li>
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#프로젝트-소개"> <span class="nav-number">1</span> <span class="nav-text">프로젝트 소개</center</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-요약-"> <span class="nav-number">2</span> <span class="nav-text"> 요약 </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#pointnet"> <span class="nav-number">2.1</span> <span class="nav-text">PointNet</font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#dgcnn"> <span class="nav-number">2.2</span> <span class="nav-text">DGCNN</font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#packages-"> <span class="nav-number">3</span> <span class="nav-text">Packages </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#arguments-"> <span class="nav-number">4</span> <span class="nav-text">Arguments </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#데이터-불러오기"> <span class="nav-number">5</span> <span class="nav-text">데이터 불러오기</font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-augmentations--"> <span class="nav-number">6</span> <span class="nav-text"> Augmentations </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-visualization-"> <span class="nav-number">7</span> <span class="nav-text"> Visualization </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-data-loader-"> <span class="nav-number">8</span> <span class="nav-text"> Data Loader </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-dgcnn-model-"> <span class="nav-number">9</span> <span class="nav-text"> DGCNN Model </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#모델-성능-지표---iou-"> <span class="nav-number">10</span> <span class="nav-text">모델 성능 지표 - IoU </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-train-"> <span class="nav-number">11</span> <span class="nav-text"> Train </font</span> </a> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-test-"> <span class="nav-number">12</span> <span class="nav-text"> Test </font</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-prediction-result-"> <span class="nav-number">12.1</span> <span class="nav-text"> Prediction result </font</span> </a> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#-true-label-"> <span class="nav-number">12.2</span> <span class="nav-text"> True label </font</span> </a> </li> </ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#-참고-자료-"> <span class="nav-number">13</span> <span class="nav-text"> 참고 자료 </font</span> </a> </li>
     </ol>
   </div>
             
